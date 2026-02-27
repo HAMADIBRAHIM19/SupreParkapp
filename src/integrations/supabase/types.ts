@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          created_at: string
+          crew_id: string | null
+          id: string
+          location: string
+          notes: string | null
+          scheduled_at: string
+          seeker_id: string
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+          vehicle_plate: string
+        }
+        Insert: {
+          created_at?: string
+          crew_id?: string | null
+          id?: string
+          location: string
+          notes?: string | null
+          scheduled_at: string
+          seeker_id: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          vehicle_plate: string
+        }
+        Update: {
+          created_at?: string
+          crew_id?: string | null
+          id?: string
+          location?: string
+          notes?: string | null
+          scheduled_at?: string
+          seeker_id?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          vehicle_plate?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_type: Database["public"]["Enums"]["account_type"]
@@ -56,6 +95,12 @@ export type Database = {
     }
     Enums: {
       account_type: "seeker" | "crew"
+      booking_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -184,6 +229,13 @@ export const Constants = {
   public: {
     Enums: {
       account_type: ["seeker", "crew"],
+      booking_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "completed",
+        "cancelled",
+      ],
     },
   },
 } as const

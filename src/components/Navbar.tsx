@@ -29,10 +29,16 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           {user ? (
-            <Button variant="ghost" size="sm" className="font-semibold gap-2" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4" />
-              تسجيل خروج
-            </Button>
+            <>
+              <Button variant="ghost" size="sm" className="font-semibold" asChild>
+                <Link to="/dashboard">لوحة التحكم</Link>
+              </Button>
+              <Button variant="ghost" size="sm" className="font-semibold gap-2" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4" />
+                تسجيل خروج
+              </Button>
+            </>
+
           ) : (
             <>
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
