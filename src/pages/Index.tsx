@@ -62,10 +62,10 @@ const Index = () => {
       {isSeeker && (
         <Button
           onClick={() => setDialogOpen(true)}
-          className="fixed bottom-6 right-6 z-50 rounded-full w-14 h-14 shadow-xl gap-0"
-          size="icon"
+          className="fixed bottom-6 right-6 z-50 rounded-full shadow-xl gap-2 px-5 h-14"
         >
-          <Plus className="w-7 h-7" />
+          <Plus className="w-6 h-6" />
+          <span className="font-bold text-base">طلب حجز جديد</span>
         </Button>
       )}
 
