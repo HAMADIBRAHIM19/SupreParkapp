@@ -15,7 +15,7 @@ const steps = [
   },
   {
     icon: Car,
-    title: "وصّل واركن",
+    title: "أوصل وتلقى أحد أفراد طاقمنا حاجز لك موقف",
     description: "الحاجز يحفظ لك الموقف حتى توصل. استلم موقفك بكل راحة!",
     color: "bg-primary/10 text-primary",
   },
