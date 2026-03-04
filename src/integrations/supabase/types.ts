@@ -16,8 +16,10 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          contact_number: string | null
           created_at: string
           crew_id: string | null
+          expected_arrival: string | null
           id: string
           location: string
           notes: string | null
@@ -25,11 +27,14 @@ export type Database = {
           seeker_id: string
           status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
+          vehicle_name: string | null
           vehicle_plate: string
         }
         Insert: {
+          contact_number?: string | null
           created_at?: string
           crew_id?: string | null
+          expected_arrival?: string | null
           id?: string
           location: string
           notes?: string | null
@@ -37,11 +42,14 @@ export type Database = {
           seeker_id: string
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
+          vehicle_name?: string | null
           vehicle_plate: string
         }
         Update: {
+          contact_number?: string | null
           created_at?: string
           crew_id?: string | null
+          expected_arrival?: string | null
           id?: string
           location?: string
           notes?: string | null
@@ -49,6 +57,7 @@ export type Database = {
           seeker_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
+          vehicle_name?: string | null
           vehicle_plate?: string
         }
         Relationships: []

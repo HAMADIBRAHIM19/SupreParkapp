@@ -180,7 +180,9 @@ const CrewBookingsTable = ({
           <TableHeader>
             <TableRow>
               <TableHead className="text-right">الموقع</TableHead>
+              <TableHead className="text-right">السيارة</TableHead>
               <TableHead className="text-right">لوحة السيارة</TableHead>
+              <TableHead className="text-right">رقم التواصل</TableHead>
               <TableHead className="text-right">الموعد</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
               {(type === "available" || type === "active") && <TableHead className="text-right">إجراء</TableHead>}
@@ -195,7 +197,9 @@ const CrewBookingsTable = ({
                     {booking.location}
                   </div>
                 </TableCell>
+                <TableCell>{booking.vehicle_name || "—"}</TableCell>
                 <TableCell>{booking.vehicle_plate}</TableCell>
+                <TableCell dir="ltr" className="text-sm">{booking.contact_number || "—"}</TableCell>
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
                 <TableCell>
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
