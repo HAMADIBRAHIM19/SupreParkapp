@@ -10,10 +10,14 @@ import Footer from "@/components/Footer";
 import CrewHeroSection from "@/components/CrewHeroSection";
 import CrewHowItWorks from "@/components/CrewHowItWorks";
 import CrewFeaturesSection from "@/components/CrewFeaturesSection";
+import NewBookingDialog from "@/components/NewBookingDialog";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 const Index = () => {
   const { user, loading } = useAuth();
   const [accountType, setAccountType] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -31,6 +35,7 @@ const Index = () => {
   }, [user]);
 
   const isCrew = accountType === "crew";
+  const isSeeker = user && accountType === "seeker";
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,6 +57,25 @@ const Index = () => {
         )}
       </main>
       <Footer />
+
+      {/* Floating New Booking Button for Seeker */}
+      {isSeeker && (
+        <Button
+          onClick={() => setDialogOpen(true)}
+          className="fixed bottom-6 right-6 z-50 rounded-full w-14 h-14 shadow-xl gap-0"
+          size="icon"
+        >
+          <Plus className="w-7 h-7" />
+        </Button>
+      )}
+
+      {isSeeker && (
+        <NewBookingDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onBookingCreated={() => {}}
+        />
+      )}
     </div>
   );
 };
