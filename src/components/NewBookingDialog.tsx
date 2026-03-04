@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Car, Phone, Clock, FileText, Send } from "lucide-react";
+import LocationPickerMap, { LocationInfo } from "@/components/LocationPickerMap";
 
 interface NewBookingDialogProps {
   open: boolean;
@@ -19,8 +20,8 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<LocationInfo | null>(null);
   const [form, setForm] = useState({
-    location: "",
     vehicle_name: "",
     vehicle_plate: "",
     contact_number: "",
@@ -28,18 +29,22 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     notes: "",
   });
 
-  const handleOpenGoogleMaps = () => {
-    window.open("https://www.google.com/maps", "_blank");
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!selectedLocation) {
+      toast({ title: "خطأ", description: "يرجى تحديد موقع الحجز على الخريطة", variant: "destructive" });
+      return;
+    }
 
     setLoading(true);
+    const locationText = [selectedLocation.name, selectedLocation.neighborhood, selectedLocation.city]
+      .filter(Boolean)
+      .join(" - ");
+
     const { error } = await supabase.from("bookings").insert({
       seeker_id: user.id,
-      location: form.location,
+      location: locationText || selectedLocation.fullAddress,
       vehicle_name: form.vehicle_name || null,
       vehicle_plate: form.vehicle_plate,
       contact_number: form.contact_number || null,
@@ -56,7 +61,8 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     }
 
     toast({ title: "تم بنجاح", description: "تم إنشاء طلب الحجز بنجاح" });
-    setForm({ location: "", vehicle_name: "", vehicle_plate: "", contact_number: "", scheduled_at: "", notes: "" });
+    setForm({ vehicle_name: "", vehicle_plate: "", contact_number: "", scheduled_at: "", notes: "" });
+    setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
   };
@@ -68,26 +74,16 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
           <DialogTitle className="text-right text-lg font-bold">طلب حجز جديد</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Location */}
+          {/* Location Map */}
           <div className="space-y-2">
-            <Label htmlFor="location" className="flex items-center gap-2">
+            <Label className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary" />
-              موقع الحجز
+              حدد موقع الحجز على الخريطة
             </Label>
-            <div className="flex gap-2">
-              <Input
-                id="location"
-                required
-                placeholder="أدخل موقع الحجز أو الصقه من قوقل ماب"
-                value={form.location}
-                onChange={(e) => setForm({ ...form, location: e.target.value })}
-                className="flex-1"
-              />
-              <Button type="button" variant="outline" size="icon" onClick={handleOpenGoogleMaps} title="فتح قوقل ماب">
-                <MapPin className="w-4 h-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">افتح قوقل ماب وانسخ رابط الموقع أو اسمه</p>
+            <LocationPickerMap
+              onLocationSelect={setSelectedLocation}
+              selectedLocation={selectedLocation}
+            />
           </div>
 
           {/* Vehicle Name */}
