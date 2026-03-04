@@ -71,9 +71,9 @@ const Dashboard = () => {
         </div>
 
         {profile?.account_type === "crew" ? (
-          <CrewDashboard bookings={bookings} loading={loading} onRefresh={fetchBookings} />
+          <CrewDashboard bookings={bookings} loading={loading} onRefresh={fetchBookings} profileName={profile?.full_name} />
         ) : (
-          <SeekerDashboard bookings={bookings} loading={loading} onBookingCreated={fetchBookings} />
+          <SeekerDashboard bookings={bookings} loading={loading} onBookingCreated={fetchBookings} profileName={profile?.full_name} />
         )}
       </main>
     </div>
