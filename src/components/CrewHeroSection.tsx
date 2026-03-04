@@ -1,9 +1,26 @@
-import { HandHelping, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { HandHelping, ArrowLeft, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CrewHeroSection = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("bookings")
+      .select("id", { count: "exact", head: true })
+      .is("crew_id", null)
+      .eq("status", "pending")
+      .then(({ count }) => {
+        if (count !== null) setPendingCount(count);
+      });
+  }, [user]);
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
@@ -33,14 +50,23 @@ const CrewHeroSection = () => {
           استقبل طلبات حجز المواقف من الباحثين القريبين منك، تواصل معهم، واحجز لهم الموقف. اكسب دخل إضافي بكل سهولة!
         </p>
 
-        <Button
-          size="lg"
-          className="rounded-xl gap-2 px-8 font-bold text-base"
-          onClick={() => navigate("/dashboard")}
-        >
-          افتح لوحة التحكم
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
+        {pendingCount > 0 && (
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-3 rounded-2xl text-base font-bold mb-6">
+            <Inbox className="w-5 h-5" />
+            <span>{pendingCount} طلب متاح للقبول</span>
+          </div>
+        )}
+
+        <div>
+          <Button
+            size="lg"
+            className="rounded-xl gap-2 px-8 font-bold text-base"
+            onClick={() => navigate("/dashboard")}
+          >
+            افتح لوحة التحكم
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        </div>
 
         <div className="flex items-center justify-center gap-8 md:gap-16 mt-14">
           {[
