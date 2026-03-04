@@ -65,11 +65,14 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       <div className="rounded-lg overflow-hidden border" style={{ height: 250 }}>
         <MapContainer
           center={selectedLocation ? [selectedLocation.lat, selectedLocation.lng] : defaultCenter}
-          zoom={12}
+          zoom={16}
           style={{ height: "100%", width: "100%" }}
           attributionControl={false}
         >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
+          />
           <ClickHandler onMapClick={reverseGeocode} />
           {selectedLocation && (
             <Marker position={[selectedLocation.lat, selectedLocation.lng]} />
