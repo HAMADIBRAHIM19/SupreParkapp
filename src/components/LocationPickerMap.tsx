@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -25,17 +24,12 @@ interface LocationPickerMapProps {
   selectedLocation: LocationInfo | null;
 }
 
-function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
-  useMapEvents({
-    click(e) {
-      onMapClick(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
-
 const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPickerMapProps) => {
+  const mapRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+
   const defaultCenter: [number, number] = [24.7136, 46.6753]; // Riyadh
 
   const reverseGeocode = async (lat: number, lng: number) => {
@@ -60,25 +54,39 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     }
   };
 
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+
+    const center = selectedLocation ? [selectedLocation.lat, selectedLocation.lng] as [number, number] : defaultCenter;
+
+    const map = L.map(containerRef.current).setView(center, 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+
+    map.on("click", (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+
+      if (markerRef.current) {
+        markerRef.current.setLatLng([lat, lng]);
+      } else {
+        markerRef.current = L.marker([lat, lng]).addTo(map);
+      }
+
+      reverseGeocode(lat, lng);
+    });
+
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      markerRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="space-y-2">
-      <div className="rounded-lg overflow-hidden border" style={{ height: 250 }}>
-        <MapContainer
-          center={selectedLocation ? [selectedLocation.lat, selectedLocation.lng] : defaultCenter}
-          zoom={16}
-          style={{ height: "100%", width: "100%" }}
-          attributionControl={false}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maxZoom={19}
-          />
-          <ClickHandler onMapClick={reverseGeocode} />
-          {selectedLocation && (
-            <Marker position={[selectedLocation.lat, selectedLocation.lng]} />
-          )}
-        </MapContainer>
-      </div>
+      <div ref={containerRef} className="rounded-lg overflow-hidden border" style={{ height: 250 }} />
 
       {loading && (
         <p className="text-xs text-muted-foreground animate-pulse">جاري تحديد الموقع...</p>
