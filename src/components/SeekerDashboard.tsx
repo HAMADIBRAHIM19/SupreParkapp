@@ -31,9 +31,10 @@ interface SeekerDashboardProps {
   bookings: Booking[];
   loading: boolean;
   onBookingCreated: () => void;
+  profileName?: string;
 }
 
-const SeekerDashboard = ({ bookings, loading, onBookingCreated }: SeekerDashboardProps) => {
+const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: SeekerDashboardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
@@ -42,7 +43,10 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated }: SeekerDashboar
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-muted-foreground">لوحة تحكم الباحث</p>
+        <div>
+          {profileName && <p className="text-base font-semibold text-foreground">{profileName}</p>}
+          <p className="text-sm text-muted-foreground">لوحة تحكم الباحث</p>
+        </div>
         <Button className="rounded-xl font-bold gap-2" onClick={() => setDialogOpen(true)}>
           <Plus className="w-4 h-4" />
           طلب حجز جديد

@@ -31,9 +31,10 @@ interface CrewDashboardProps {
   bookings: Booking[];
   loading: boolean;
   onRefresh: () => void;
+  profileName?: string;
 }
 
-const CrewDashboard = ({ bookings, loading, onRefresh }: CrewDashboardProps) => {
+const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashboardProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -72,7 +73,10 @@ const CrewDashboard = ({ bookings, loading, onRefresh }: CrewDashboardProps) => 
 
   return (
     <>
-      <p className="text-sm text-muted-foreground mb-6">لوحة تحكم الطاقم</p>
+      <div className="mb-6">
+        {profileName && <p className="text-base font-semibold text-foreground">{profileName}</p>}
+        <p className="text-sm text-muted-foreground">لوحة تحكم الطاقم</p>
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
