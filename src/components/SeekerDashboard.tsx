@@ -10,22 +10,22 @@ import { CalendarDays, MapPin, Car, Clock, Plus } from "lucide-react";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import type { BookingStatus, Booking } from "@/types/booking";
 
-const statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusMap: Record<BookingStatus, {label: string;variant: "default" | "secondary" | "destructive" | "outline";}> = {
   pending: { label: "قيد الانتظار", variant: "secondary" },
   approved: { label: "مقبول", variant: "default" },
   rejected: { label: "مرفوض", variant: "destructive" },
   completed: { label: "مكتمل", variant: "outline" },
-  cancelled: { label: "ملغي", variant: "destructive" },
+  cancelled: { label: "ملغي", variant: "destructive" }
 };
 
 const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString("ar-SA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+new Date(date).toLocaleDateString("ar-SA", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit"
+});
 
 interface SeekerDashboardProps {
   bookings: Booking[];
@@ -45,7 +45,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       <div className="flex items-center justify-between mb-6">
         <div>
           {profileName && <p className="text-base font-semibold text-foreground">{profileName}</p>}
-          <p className="text-sm text-muted-foreground">لوحة تحكم الباحث</p>
+          <p className="text-sm text-muted-foreground">لوحة تحكم الباحث عن موقف</p>
         </div>
         <Button className="rounded-xl font-bold gap-2" onClick={() => setDialogOpen(true)}>
           <Plus className="w-4 h-4" />
@@ -105,19 +105,19 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       </Tabs>
 
       <NewBookingDialog open={dialogOpen} onOpenChange={setDialogOpen} onBookingCreated={onBookingCreated} />
-    </>
-  );
+    </>);
+
 };
 
-const BookingsTable = ({ bookings, loading }: { bookings: Booking[]; loading: boolean }) => {
+const BookingsTable = ({ bookings, loading }: {bookings: Booking[];loading: boolean;}) => {
   if (loading) {
     return (
       <Card>
         <CardContent className="p-6 space-y-4">
           {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}
         </CardContent>
-      </Card>
-    );
+      </Card>);
+
   }
 
   if (bookings.length === 0) {
@@ -127,8 +127,8 @@ const BookingsTable = ({ bookings, loading }: { bookings: Booking[]; loading: bo
           <Car className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
           <p className="text-muted-foreground font-medium">لا توجد طلبات حجز</p>
         </CardContent>
-      </Card>
-    );
+      </Card>);
+
   }
 
   return (
@@ -144,8 +144,8 @@ const BookingsTable = ({ bookings, loading }: { bookings: Booking[]; loading: bo
             </TableRow>
           </TableHeader>
           <TableBody>
-            {bookings.map((booking) => (
-              <TableRow key={booking.id}>
+            {bookings.map((booking) =>
+            <TableRow key={booking.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -158,12 +158,12 @@ const BookingsTable = ({ bookings, loading }: { bookings: Booking[]; loading: bo
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 };
 
 export default SeekerDashboard;
