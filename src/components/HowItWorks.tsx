@@ -3,19 +3,19 @@ import { MapPin, UserCheck, Car } from "lucide-react";
 const steps = [
   {
     icon: MapPin,
-    title: "استقبل الوجهة المختارة",
+    title: "حدد وجهتك",
     description: "اكتب الموقع اللي تبي تروحه وحدد الوقت المتوقع لوصولك.",
     color: "bg-primary/10 text-primary",
   },
   {
     icon: UserCheck,
-    title: "استقبل طلبات الباحث عن موقف",
-    description: "تصفح قائمة الباحثين عن موقف القريبين منك واختر الأنسب حسب التقييم والسعر.",
+    title: "اختر الحاجز",
+    description: "تصفح قائمة الحاجزين القريبين واختر الأنسب حسب التقييم والسعر.",
     color: "bg-accent/15 text-accent-foreground",
   },
   {
     icon: Car,
-    title: "أوصل واحجز الموقف",
+    title: "وصّل واركن",
     description: "الحاجز يحفظ لك الموقف حتى توصل. استلم موقفك بكل راحة!",
     color: "bg-primary/10 text-primary",
   },
