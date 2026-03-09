@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import type { BookingStatus, Booking } from "@/types/booking";
 
@@ -97,7 +98,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <TabsTrigger value="past">السابقة ({pastBookings.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="active">
-          <BookingsTable bookings={activeBookings} loading={loading} />
+          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} />
         </TabsContent>
         <TabsContent value="past">
           <BookingsTable bookings={pastBookings} loading={loading} />
@@ -109,7 +110,24 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
 
 };
 
-const BookingsTable = ({ bookings, loading }: {bookings: Booking[];loading: boolean;}) => {
+const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void;}) => {
+  const { toast } = useToast();
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const handleCancel = async (id: string) => {
+    setCancellingId(id);
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: "cancelled" as const })
+      .eq("id", id);
+    setCancellingId(null);
+    if (error) {
+      toast({ title: "خطأ", description: "حدث خطأ أثناء إلغاء الطلب", variant: "destructive" });
+    } else {
+      toast({ title: "تم", description: "تم إلغاء الطلب بنجاح" });
+      onBookingUpdated?.();
+    }
+  };
   if (loading) {
     return (
       <Card>
@@ -141,6 +159,7 @@ const BookingsTable = ({ bookings, loading }: {bookings: Booking[];loading: bool
               <TableHead className="text-right">لوحة السيارة</TableHead>
               <TableHead className="text-right">الموعد</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
+              <TableHead className="text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -156,6 +175,20 @@ const BookingsTable = ({ bookings, loading }: {bookings: Booking[];loading: bool
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
                 <TableCell>
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
+                </TableCell>
+                <TableCell>
+                  {booking.status === "pending" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                      disabled={cancellingId === booking.id}
+                      onClick={() => handleCancel(booking.id)}
+                    >
+                      <XCircle className="w-4 h-4" />
+                      {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             )}
