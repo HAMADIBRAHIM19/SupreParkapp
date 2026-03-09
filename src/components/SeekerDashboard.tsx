@@ -159,6 +159,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
               <TableHead className="text-right">لوحة السيارة</TableHead>
               <TableHead className="text-right">الموعد</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
+              <TableHead className="text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -174,6 +175,20 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
                 <TableCell>
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
+                </TableCell>
+                <TableCell>
+                  {booking.status === "pending" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                      disabled={cancellingId === booking.id}
+                      onClick={() => handleCancel(booking.id)}
+                    >
+                      <XCircle className="w-4 h-4" />
+                      {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             )}
