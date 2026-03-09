@@ -110,7 +110,24 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
 
 };
 
-const BookingsTable = ({ bookings, loading }: {bookings: Booking[];loading: boolean;}) => {
+const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void;}) => {
+  const { toast } = useToast();
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const handleCancel = async (id: string) => {
+    setCancellingId(id);
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: "cancelled" as const })
+      .eq("id", id);
+    setCancellingId(null);
+    if (error) {
+      toast({ title: "خطأ", description: "حدث خطأ أثناء إلغاء الطلب", variant: "destructive" });
+    } else {
+      toast({ title: "تم", description: "تم إلغاء الطلب بنجاح" });
+      onBookingUpdated?.();
+    }
+  };
   if (loading) {
     return (
       <Card>
