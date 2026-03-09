@@ -98,7 +98,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <TabsTrigger value="past">السابقة ({pastBookings.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="active">
-          <BookingsTable bookings={activeBookings} loading={loading} />
+          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} />
         </TabsContent>
         <TabsContent value="past">
           <BookingsTable bookings={pastBookings} loading={loading} />
