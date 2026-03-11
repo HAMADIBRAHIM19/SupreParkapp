@@ -39,12 +39,12 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     setLoading(true);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar&addressdetails=1`
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar&addressdetails=1&zoom=18`
       );
       const data = await res.json();
       const addr = data.address || {};
 
-      const name = data.display_name?.split(",")[0] || addr.road || addr.building || "موقع محدد";
+      const name = addr.amenity || addr.shop || addr.tourism || addr.leisure || addr.building || addr.road || data.display_name?.split(",")[0] || "موقع محدد";
       const neighborhood = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || "";
       const city = addr.city || addr.town || addr.state || "";
       const fullAddress = data.display_name || "";
