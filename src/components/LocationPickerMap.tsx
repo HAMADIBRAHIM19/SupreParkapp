@@ -180,6 +180,16 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
           >
             {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           </Button>
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            onClick={handleLocateMe}
+            disabled={locating}
+            title="موقعي الحالي"
+          >
+            {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
+          </Button>
         </div>
 
         {showResults && searchResults.length > 0 && (
