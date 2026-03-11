@@ -37,23 +37,6 @@ const HeroSection = () => {
           تطبيق Parklet يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل. وفّر وقتك وأعصابك!
         </p>
 
-        {/* Search Bar */}
-        <div className="max-w-xl mx-auto bg-card rounded-2xl shadow-xl border p-3 flex items-center gap-3">
-          <div className="flex-1 relative">
-            <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="وين تبي تروح؟"
-              className="border-0 bg-transparent pr-10 text-base focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-          </div>
-          <Button size="lg" className="rounded-xl gap-2 px-6 font-bold">
-            <Search className="w-5 h-5" />
-            ابحث
-          </Button>
-        </div>
-
         {/* Stats */}
         <div className="flex items-center justify-center gap-8 md:gap-16 mt-14">
           {[
