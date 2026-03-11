@@ -23,9 +23,11 @@ export type Database = {
           id: string
           location: string
           notes: string | null
+          payment_status: string
           scheduled_at: string
           seeker_id: string
           status: Database["public"]["Enums"]["booking_status"]
+          stripe_session_id: string | null
           updated_at: string
           vehicle_name: string | null
           vehicle_plate: string
@@ -38,9 +40,11 @@ export type Database = {
           id?: string
           location: string
           notes?: string | null
+          payment_status?: string
           scheduled_at: string
           seeker_id: string
           status?: Database["public"]["Enums"]["booking_status"]
+          stripe_session_id?: string | null
           updated_at?: string
           vehicle_name?: string | null
           vehicle_plate: string
@@ -53,9 +57,11 @@ export type Database = {
           id?: string
           location?: string
           notes?: string | null
+          payment_status?: string
           scheduled_at?: string
           seeker_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
+          stripe_session_id?: string | null
           updated_at?: string
           vehicle_name?: string | null
           vehicle_plate?: string
