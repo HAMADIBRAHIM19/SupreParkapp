@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, LocateFixed } from "lucide-react";
 
 // Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -43,6 +43,8 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  const [locating, setLocating] = useState(false);
 
   const defaultCenter: [number, number] = [24.7136, 46.6753]; // Riyadh
 
@@ -104,6 +106,28 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     reverseGeocode(lat, lng);
   };
 
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        if (mapRef.current) {
+          mapRef.current.setView([lat, lng], 16);
+        }
+        if (markerRef.current) {
+          markerRef.current.setLatLng([lat, lng]);
+        } else if (mapRef.current) {
+          markerRef.current = L.marker([lat, lng]).addTo(mapRef.current);
+        }
+        setLocating(false);
+        reverseGeocode(lat, lng);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -155,6 +179,16 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
             disabled={searching || !searchQuery.trim()}
           >
             {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          </Button>
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            onClick={handleLocateMe}
+            disabled={locating}
+            title="موقعي الحالي"
+          >
+            {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
           </Button>
         </div>
 
