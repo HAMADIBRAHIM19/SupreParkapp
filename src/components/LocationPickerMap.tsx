@@ -35,19 +35,49 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   const defaultCenter: [number, number] = [24.7136, 46.6753];
 
+  const findNearbyPOI = async (lat: number, lng: number): Promise<string | null> => {
+    try {
+      const radius = 30; // meters
+      const query = `
+        [out:json][timeout:5];
+        (
+          node["name"](around:${radius},${lat},${lng});
+          way["name"](around:${radius},${lat},${lng});
+        );
+        out body 1;
+      `;
+      const res = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: `data=${encodeURIComponent(query)}`,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      const data = await res.json();
+      const element = data.elements?.[0];
+      if (element?.tags?.name) {
+        return element.tags["name:ar"] || element.tags.name;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
   const reverseGeocode = async (lat: number, lng: number) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar&addressdetails=1&zoom=18`
-      );
-      const data = await res.json();
-      const addr = data.address || {};
+      const [nominatimRes, poiName] = await Promise.all([
+        fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar&addressdetails=1&zoom=18`
+        ).then((r) => r.json()),
+        findNearbyPOI(lat, lng),
+      ]);
 
-      const name = addr.amenity || addr.shop || addr.tourism || addr.leisure || addr.building || addr.road || data.display_name?.split(",")[0] || "موقع محدد";
+      const addr = nominatimRes.address || {};
+      const fallbackName = addr.amenity || addr.shop || addr.tourism || addr.leisure || addr.building || addr.road || nominatimRes.display_name?.split(",")[0] || "موقع محدد";
+      const name = poiName || fallbackName;
       const neighborhood = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || "";
       const city = addr.city || addr.town || addr.state || "";
-      const fullAddress = data.display_name || "";
+      const fullAddress = nominatimRes.display_name || "";
 
       onLocationSelect({ lat, lng, name, neighborhood, city, fullAddress });
     } catch {
