@@ -134,7 +134,10 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     const center = selectedLocation ? [selectedLocation.lat, selectedLocation.lng] as [number, number] : defaultCenter;
 
     const map = L.map(containerRef.current).setView(center, 16);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+    L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+      maxZoom: 20,
+      attribution: '&copy; Google Maps',
+    }).addTo(map);
 
     map.on("click", (e: L.LeafletMouseEvent) => {
       const { lat, lng } = e.latlng;
