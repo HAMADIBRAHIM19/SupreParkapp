@@ -216,7 +216,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
                       disabled={deletingId === booking.id}
                       onClick={() => handleDelete(booking.id)}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash className="w-4 h-4" />
                       {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
                     </Button>
                   )}
