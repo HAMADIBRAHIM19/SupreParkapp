@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, LocateFixed } from "lucide-react";
 
 // Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
