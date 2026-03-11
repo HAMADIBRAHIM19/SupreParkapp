@@ -44,6 +44,8 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
 
+  const [locating, setLocating] = useState(false);
+
   const defaultCenter: [number, number] = [24.7136, 46.6753]; // Riyadh
 
   const reverseGeocode = async (lat: number, lng: number) => {
