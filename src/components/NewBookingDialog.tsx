@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Car, Phone, Clock, FileText, Send } from "lucide-react";
+import { MapPin, Car, Phone, Clock, FileText, Send, Loader2 } from "lucide-react";
 import LocationPickerMap, { LocationInfo } from "@/components/LocationPickerMap";
 
 interface NewBookingDialogProps {
@@ -15,6 +15,30 @@ interface NewBookingDialogProps {
   onOpenChange: (open: boolean) => void;
   onBookingCreated: () => void;
 }
+
+// Dynamic pricing logic based on time
+const calculatePrice = (scheduledAt: string): number => {
+  const date = new Date(scheduledAt);
+  const hour = date.getHours();
+  const isWeekend = date.getDay() === 5 || date.getDay() === 6; // Friday & Saturday
+  
+  let basePrice = 15; // Base price in SAR
+  
+  // Peak hours: 12-2pm and 6-10pm
+  if ((hour >= 12 && hour <= 14) || (hour >= 18 && hour <= 22)) {
+    basePrice = 25;
+  }
+  // Late night discount
+  if (hour >= 23 || hour < 6) {
+    basePrice = 10;
+  }
+  // Weekend surcharge
+  if (isWeekend) {
+    basePrice += 5;
+  }
+  
+  return basePrice;
+};
 
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
   const { user } = useAuth();
@@ -29,6 +53,8 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     notes: "",
   });
 
+  const price = form.scheduled_at ? calculatePrice(form.scheduled_at) : null;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -42,7 +68,8 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
       .filter(Boolean)
       .join(" - ");
 
-    const { error } = await supabase.from("bookings").insert({
+    // 1. Create booking
+    const { data: booking, error } = await supabase.from("bookings").insert({
       seeker_id: user.id,
       location: locationText || selectedLocation.fullAddress,
       vehicle_name: form.vehicle_name || null,
@@ -51,20 +78,33 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
       scheduled_at: new Date(form.scheduled_at).toISOString(),
       expected_arrival: form.scheduled_at ? new Date(form.scheduled_at).toISOString() : null,
       notes: form.notes || null,
-    });
+    }).select("id").single();
 
-    setLoading(false);
-
-    if (error) {
+    if (error || !booking) {
+      setLoading(false);
       toast({ title: "خطأ", description: "حدث خطأ أثناء إنشاء الحجز", variant: "destructive" });
       return;
     }
 
-    toast({ title: "تم بنجاح", description: "تم إنشاء طلب الحجز بنجاح" });
+    // 2. Redirect to Stripe checkout
+    const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
+      "create-booking-payment",
+      { body: { bookingId: booking.id, amount: price } }
+    );
+
+    setLoading(false);
+
+    if (paymentError || !paymentData?.url) {
+      toast({ title: "خطأ", description: "حدث خطأ أثناء بدء عملية الدفع", variant: "destructive" });
+      return;
+    }
+
+    // Reset form and redirect
     setForm({ vehicle_name: "", vehicle_plate: "", contact_number: "", scheduled_at: "", notes: "" });
     setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
+    window.open(paymentData.url, "_blank");
   };
 
   return (
@@ -147,6 +187,17 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
             />
           </div>
 
+          {/* Dynamic Price Display */}
+          {price !== null && (
+            <div className="bg-primary/10 rounded-xl p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-1">تكلفة الحجز</p>
+              <p className="text-2xl font-black text-primary">{price} ر.س</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                يتغير السعر حسب وقت الحجز
+              </p>
+            </div>
+          )}
+
           {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes" className="flex items-center gap-2">
@@ -162,8 +213,12 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
           </div>
 
           <Button type="submit" className="w-full rounded-xl font-bold gap-2 text-base" disabled={loading}>
-            <Send className="w-4 h-4" />
-            {loading ? "جاري الإرسال..." : "إرسال الطلب"}
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+            {loading ? "جاري المعالجة..." : `إرسال والدفع${price ? ` (${price} ر.س)` : ""}`}
           </Button>
         </form>
       </DialogContent>
