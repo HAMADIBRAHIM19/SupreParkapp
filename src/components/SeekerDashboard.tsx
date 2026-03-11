@@ -113,6 +113,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
 const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void;}) => {
   const { toast } = useToast();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleCancel = async (id: string) => {
     setCancellingId(id);
@@ -128,6 +129,25 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
       onBookingUpdated?.();
     }
   };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.")) {
+      return;
+    }
+    setDeletingId(id);
+    const { error } = await supabase
+      .from("bookings")
+      .delete()
+      .eq("id", id);
+    setDeletingId(null);
+    if (error) {
+      toast({ title: "خطأ", description: "حدث خطأ أثناء حذف الطلب", variant: "destructive" });
+    } else {
+      toast({ title: "تم", description: "تم حذف الطلب بنجاح" });
+      onBookingUpdated?.();
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -177,7 +197,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
                 </TableCell>
                 <TableCell>
-                  {booking.status === "pending" && (
+                  {booking.status === "pending" ? (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -187,6 +207,17 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
                     >
                       <XCircle className="w-4 h-4" />
                       {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                      disabled={deletingId === booking.id}
+                      onClick={() => handleDelete(booking.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
                     </Button>
                   )}
                 </TableCell>
