@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash2 } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import type { BookingStatus, Booking } from "@/types/booking";
@@ -216,7 +216,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
                       disabled={deletingId === booking.id}
                       onClick={() => handleDelete(booking.id)}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash className="w-4 h-4" />
                       {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
                     </Button>
                   )}
