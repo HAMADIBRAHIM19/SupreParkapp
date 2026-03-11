@@ -106,6 +106,28 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     reverseGeocode(lat, lng);
   };
 
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        if (mapRef.current) {
+          mapRef.current.setView([lat, lng], 16);
+        }
+        if (markerRef.current) {
+          markerRef.current.setLatLng([lat, lng]);
+        } else if (mapRef.current) {
+          markerRef.current = L.marker([lat, lng]).addTo(mapRef.current);
+        }
+        setLocating(false);
+        reverseGeocode(lat, lng);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
