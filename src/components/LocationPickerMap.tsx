@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Loader2 } from "lucide-react";
 
 // Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -24,11 +27,22 @@ interface LocationPickerMapProps {
   selectedLocation: LocationInfo | null;
 }
 
+interface SearchResult {
+  display_name: string;
+  lat: string;
+  lon: string;
+  address?: Record<string, string>;
+}
+
 const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPickerMapProps) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
   const defaultCenter: [number, number] = [24.7136, 46.6753]; // Riyadh
 
@@ -52,6 +66,42 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = useCallback(async () => {
+    if (!searchQuery.trim()) return;
+    setSearching(true);
+    setShowResults(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&accept-language=ar&addressdetails=1&limit=5&countrycodes=sa`
+      );
+      const data: SearchResult[] = await res.json();
+      setSearchResults(data);
+    } catch {
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  }, [searchQuery]);
+
+  const handleSelectResult = (result: SearchResult) => {
+    const lat = parseFloat(result.lat);
+    const lng = parseFloat(result.lon);
+
+    if (mapRef.current) {
+      mapRef.current.setView([lat, lng], 16);
+    }
+
+    if (markerRef.current) {
+      markerRef.current.setLatLng([lat, lng]);
+    } else if (mapRef.current) {
+      markerRef.current = L.marker([lat, lng]).addTo(mapRef.current);
+    }
+
+    setShowResults(false);
+    setSearchQuery("");
+    reverseGeocode(lat, lng);
   };
 
   useEffect(() => {
@@ -86,6 +136,50 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   return (
     <div className="space-y-2">
+      {/* Search bar */}
+      <div className="relative">
+        <div className="flex gap-2">
+          <Input
+            placeholder="ابحث عن موقع..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="text-right"
+            dir="rtl"
+          />
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            onClick={handleSearch}
+            disabled={searching || !searchQuery.trim()}
+          >
+            {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          </Button>
+        </div>
+
+        {showResults && searchResults.length > 0 && (
+          <div className="absolute z-[1000] w-full mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto" dir="rtl">
+            {searchResults.map((result, i) => (
+              <button
+                key={i}
+                type="button"
+                className="w-full text-right px-3 py-2 text-sm hover:bg-muted transition-colors border-b last:border-b-0"
+                onClick={() => handleSelectResult(result)}
+              >
+                {result.display_name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {showResults && !searching && searchResults.length === 0 && (
+          <div className="absolute z-[1000] w-full mt-1 bg-background border rounded-lg shadow-lg p-3 text-center text-sm text-muted-foreground" dir="rtl">
+            لا توجد نتائج
+          </div>
+        )}
+      </div>
+
       <div ref={containerRef} className="rounded-lg overflow-hidden border" style={{ height: 250 }} />
 
       {loading && (
