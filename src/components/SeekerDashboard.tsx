@@ -130,7 +130,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
 
 };
 
-const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void;}) => {
+const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCounts }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void; unreadCounts?: Record<string, number>;}) => {
   const { toast } = useToast();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
