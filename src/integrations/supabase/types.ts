@@ -68,6 +68,35 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_read_status: {
+        Row: {
+          booking_id: string
+          id: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_id: string
+          id?: string
+          last_read_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: string
+          id?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_read_status_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           booking_id: string
