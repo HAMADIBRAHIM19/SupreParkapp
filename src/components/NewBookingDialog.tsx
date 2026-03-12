@@ -16,9 +16,9 @@ interface NewBookingDialogProps {
   onBookingCreated: () => void;
 }
 
-// Fixed pricing: 50 SAR per booking
+// Fixed pricing: 39 SAR per booking
 const calculatePrice = (): number => {
-  return 50; // Fixed price in SAR
+  return 39;
 };
 
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
@@ -34,7 +34,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     notes: "",
   });
 
-  const price = 50;
+  const price = 39;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +70,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     // 2. Redirect to Stripe checkout
     const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
       "create-booking-payment",
-      { body: { bookingId: booking.id, amount: 50 } }
+      { body: { bookingId: booking.id, amount: 39 } }
     );
 
     setLoading(false);
@@ -171,7 +171,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
           {/* Fixed Price Display */}
           <div className="bg-primary/10 rounded-xl p-4 text-center">
             <p className="text-sm text-muted-foreground mb-1">تكلفة الحجز</p>
-            <p className="text-2xl font-black text-primary">50 ر.س</p>
+            <p className="text-2xl font-black text-primary">39 ر.س</p>
             <p className="text-xs text-muted-foreground mt-1">
               سعر ثابت لجميع الحجوزات
             </p>

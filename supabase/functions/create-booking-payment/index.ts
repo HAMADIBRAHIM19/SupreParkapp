@@ -48,7 +48,7 @@ serve(async (req) => {
           price_data: {
             currency: "sar",
             product: "prod_U88zoBBALz1B3d",
-            unit_amount: 5000, // 50 SAR in halalas (fixed price)
+            unit_amount: 3900, // 39 SAR in halalas (fixed price)
           },
           quantity: 1,
         },
