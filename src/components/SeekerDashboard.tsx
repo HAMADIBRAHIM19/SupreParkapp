@@ -109,6 +109,15 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       </Tabs>
 
       <NewBookingDialog open={dialogOpen} onOpenChange={setDialogOpen} onBookingCreated={onBookingCreated} />
+      
+      {chatBooking && (
+        <BookingChat
+          open={!!chatBooking}
+          onOpenChange={(open) => !open && setChatBooking(null)}
+          bookingId={chatBooking.id}
+          bookingLocation={chatBooking.location}
+        />
+      )}
     </>);
 
 };
