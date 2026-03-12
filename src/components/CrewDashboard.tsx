@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox } from "lucide-react";
+import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import BookingChat from "@/components/BookingChat";
 import type { BookingStatus, Booking } from "@/types/booking";
 
 const statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -37,6 +39,7 @@ interface CrewDashboardProps {
 const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashboardProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [chatBooking, setChatBooking] = useState<Booking | null>(null);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
@@ -127,12 +130,21 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={handleAccept} />
         </TabsContent>
         <TabsContent value="active">
-          <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onComplete={handleComplete} />
+          <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onComplete={handleComplete} onChat={setChatBooking} />
         </TabsContent>
         <TabsContent value="completed">
           <CrewBookingsTable bookings={completedJobs} loading={loading} type="completed" />
         </TabsContent>
       </Tabs>
+
+      {chatBooking && (
+        <BookingChat
+          open={!!chatBooking}
+          onOpenChange={(open) => !open && setChatBooking(null)}
+          bookingId={chatBooking.id}
+          bookingLocation={chatBooking.location}
+        />
+      )}
     </>
   );
 };
@@ -143,12 +155,14 @@ const CrewBookingsTable = ({
   type,
   onAccept,
   onComplete,
+  onChat,
 }: {
   bookings: Booking[];
   loading: boolean;
   type: "available" | "active" | "completed";
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
+  onChat?: (booking: Booking) => void;
 }) => {
   if (loading) {
     return (
@@ -212,12 +226,22 @@ const CrewBookingsTable = ({
                     </Button>
                   </TableCell>
                 )}
-                {type === "active" && onComplete && (
+                {type === "active" && (
                   <TableCell>
-                    <Button size="sm" variant="outline" className="rounded-xl font-bold gap-1" onClick={() => onComplete(booking.id)}>
-                      <CheckCircle className="w-3.5 h-3.5" />
-                      إكمال
-                    </Button>
+                    <div className="flex gap-1">
+                      {onChat && (
+                        <Button size="sm" variant="ghost" className="rounded-xl gap-1" onClick={() => onChat(booking)}>
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          محادثة
+                        </Button>
+                      )}
+                      {onComplete && (
+                        <Button size="sm" variant="outline" className="rounded-xl font-bold gap-1" onClick={() => onComplete(booking.id)}>
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          إكمال
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 )}
               </TableRow>

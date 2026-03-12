@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import NewBookingDialog from "@/components/NewBookingDialog";
+import BookingChat from "@/components/BookingChat";
 import type { BookingStatus, Booking } from "@/types/booking";
 
 const statusMap: Record<BookingStatus, {label: string;variant: "default" | "secondary" | "destructive" | "outline";}> = {
@@ -38,6 +39,7 @@ interface SeekerDashboardProps {
 
 const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: SeekerDashboardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [chatBooking, setChatBooking] = useState<Booking | null>(null);
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
@@ -99,7 +101,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <TabsTrigger value="past">السابقة ({pastBookings.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="active">
-          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} />
+          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} />
         </TabsContent>
         <TabsContent value="past">
           <BookingsTable bookings={pastBookings} loading={loading} />
@@ -107,11 +109,20 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       </Tabs>
 
       <NewBookingDialog open={dialogOpen} onOpenChange={setDialogOpen} onBookingCreated={onBookingCreated} />
+      
+      {chatBooking && (
+        <BookingChat
+          open={!!chatBooking}
+          onOpenChange={(open) => !open && setChatBooking(null)}
+          bookingId={chatBooking.id}
+          bookingLocation={chatBooking.location}
+        />
+      )}
     </>);
 
 };
 
-const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void;}) => {
+const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void;}) => {
   const { toast } = useToast();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -198,29 +209,42 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated }: {bookings: Booki
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
                 </TableCell>
                 <TableCell>
-                  {booking.status === "pending" ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
-                      disabled={cancellingId === booking.id}
-                      onClick={() => handleCancel(booking.id)}
-                    >
-                      <XCircle className="w-4 h-4" />
-                      {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
-                      disabled={deletingId === booking.id}
-                      onClick={() => handleDelete(booking.id)}
-                    >
-                      <Trash className="w-4 h-4" />
-                      {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
-                    </Button>
-                  )}
+                  <div className="flex gap-1">
+                    {booking.status === "approved" && onChat && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => onChat(booking)}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        محادثة
+                      </Button>
+                    )}
+                    {booking.status === "pending" ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                        disabled={cancellingId === booking.id}
+                        onClick={() => handleCancel(booking.id)}
+                      >
+                        <XCircle className="w-4 h-4" />
+                        {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                        disabled={deletingId === booking.id}
+                        onClick={() => handleDelete(booking.id)}
+                      >
+                        <Trash className="w-4 h-4" />
+                        {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             )}
