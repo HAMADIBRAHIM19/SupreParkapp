@@ -135,21 +135,8 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
             />
           </div>
 
-          {/* Contact Number */}
-          <div className="space-y-2">
-            <Label htmlFor="contact_number" className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-primary" />
-              رقم التواصل
-            </Label>
-            <Input
-              id="contact_number"
-              required
-              type="tel"
-              placeholder="مثال: 05XXXXXXXX"
-              value={form.contact_number}
-              onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
-            />
-          </div>
+
+
 
           {/* Expected Arrival */}
           <div className="space-y-2">
