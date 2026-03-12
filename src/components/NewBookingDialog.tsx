@@ -79,7 +79,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     }
 
     // Reset form and redirect
-    setForm({ vehicle_name: "", vehicle_plate: "", contact_number: "", scheduled_at: "", notes: "" });
+    setForm({ vehicle_name: "", vehicle_plate: "", scheduled_at: "", notes: "" });
     setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
