@@ -18,7 +18,7 @@ interface NewBookingDialogProps {
 
 // Fixed pricing: 50 SAR per booking
 const calculatePrice = (): number => {
-  return 50; // Fixed price in SAR
+  return 39;
 };
 
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
