@@ -20,6 +20,7 @@ interface BookingChatProps {
   onOpenChange: (open: boolean) => void;
   bookingId: string;
   bookingLocation: string;
+  onMarkAsRead?: () => void;
 }
 
 const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation }: BookingChatProps) => {
