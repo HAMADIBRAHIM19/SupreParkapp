@@ -123,6 +123,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           onOpenChange={(open) => !open && setChatBooking(null)}
           bookingId={chatBooking.id}
           bookingLocation={chatBooking.location}
+          onMarkAsRead={() => markAsRead(chatBooking.id)}
         />
       )}
     </>);
