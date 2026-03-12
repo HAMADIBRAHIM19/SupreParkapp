@@ -160,6 +160,7 @@ const CrewBookingsTable = ({
   onAccept,
   onComplete,
   onChat,
+  unreadCounts,
 }: {
   bookings: Booking[];
   loading: boolean;
@@ -167,6 +168,7 @@ const CrewBookingsTable = ({
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
   onChat?: (booking: Booking) => void;
+  unreadCounts?: Record<string, number>;
 }) => {
   if (loading) {
     return (
