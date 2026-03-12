@@ -219,7 +219,7 @@ const CrewBookingsTable = ({
                 </TableCell>
                 <TableCell>{booking.vehicle_name || "—"}</TableCell>
                 <TableCell>{booking.vehicle_plate}</TableCell>
-                <TableCell dir="ltr" className="text-sm">{booking.contact_number || "—"}</TableCell>
+                
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
                 <TableCell>
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
