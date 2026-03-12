@@ -16,7 +16,7 @@ interface NewBookingDialogProps {
   onBookingCreated: () => void;
 }
 
-// Fixed pricing: 50 SAR per booking
+// Fixed pricing: 39 SAR per booking
 const calculatePrice = (): number => {
   return 39;
 };
