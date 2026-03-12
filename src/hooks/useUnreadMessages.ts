@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { playNotificationSound } from "@/lib/notificationSound";
 
 export const useUnreadMessages = (bookingIds: string[]) => {
   const { user } = useAuth();
