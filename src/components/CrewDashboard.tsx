@@ -155,12 +155,14 @@ const CrewBookingsTable = ({
   type,
   onAccept,
   onComplete,
+  onChat,
 }: {
   bookings: Booking[];
   loading: boolean;
   type: "available" | "active" | "completed";
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
+  onChat?: (booking: Booking) => void;
 }) => {
   if (loading) {
     return (
