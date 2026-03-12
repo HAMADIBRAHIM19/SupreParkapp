@@ -23,7 +23,7 @@ interface BookingChatProps {
   onMarkAsRead?: () => void;
 }
 
-const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation }: BookingChatProps) => {
+const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation, onMarkAsRead }: BookingChatProps) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
