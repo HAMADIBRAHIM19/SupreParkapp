@@ -11,6 +11,7 @@ import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle }
 import { useToast } from "@/hooks/use-toast";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
 const statusMap: Record<BookingStatus, {label: string;variant: "default" | "secondary" | "destructive" | "outline";}> = {
