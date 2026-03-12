@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Car, Phone, Clock, FileText, Send, Loader2 } from "lucide-react";
+import { MapPin, Car, Clock, FileText, Send, Loader2 } from "lucide-react";
 import LocationPickerMap, { LocationInfo } from "@/components/LocationPickerMap";
 
 interface NewBookingDialogProps {
@@ -29,7 +29,6 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
   const [form, setForm] = useState({
     vehicle_name: "",
     vehicle_plate: "",
-    contact_number: "",
     scheduled_at: "",
     notes: "",
   });
@@ -55,7 +54,6 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
       location: locationText || selectedLocation.fullAddress,
       vehicle_name: form.vehicle_name || null,
       vehicle_plate: form.vehicle_plate,
-      contact_number: form.contact_number || null,
       scheduled_at: new Date(form.scheduled_at).toISOString(),
       expected_arrival: form.scheduled_at ? new Date(form.scheduled_at).toISOString() : null,
       notes: form.notes || null,
@@ -81,7 +79,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     }
 
     // Reset form and redirect
-    setForm({ vehicle_name: "", vehicle_plate: "", contact_number: "", scheduled_at: "", notes: "" });
+    setForm({ vehicle_name: "", vehicle_plate: "", scheduled_at: "", notes: "" });
     setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
@@ -137,21 +135,8 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
             />
           </div>
 
-          {/* Contact Number */}
-          <div className="space-y-2">
-            <Label htmlFor="contact_number" className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-primary" />
-              رقم التواصل
-            </Label>
-            <Input
-              id="contact_number"
-              required
-              type="tel"
-              placeholder="مثال: 05XXXXXXXX"
-              value={form.contact_number}
-              onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
-            />
-          </div>
+
+
 
           {/* Expected Arrival */}
           <div className="space-y-2">
