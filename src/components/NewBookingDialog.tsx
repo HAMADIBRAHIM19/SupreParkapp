@@ -16,28 +16,9 @@ interface NewBookingDialogProps {
   onBookingCreated: () => void;
 }
 
-// Dynamic pricing logic based on time
-const calculatePrice = (scheduledAt: string): number => {
-  const date = new Date(scheduledAt);
-  const hour = date.getHours();
-  const isWeekend = date.getDay() === 5 || date.getDay() === 6; // Friday & Saturday
-  
-  let basePrice = 15; // Base price in SAR
-  
-  // Peak hours: 12-2pm and 6-10pm
-  if ((hour >= 12 && hour <= 14) || (hour >= 18 && hour <= 22)) {
-    basePrice = 25;
-  }
-  // Late night discount
-  if (hour >= 23 || hour < 6) {
-    basePrice = 10;
-  }
-  // Weekend surcharge
-  if (isWeekend) {
-    basePrice += 5;
-  }
-  
-  return basePrice;
+// Fixed pricing: 50 SAR per booking
+const calculatePrice = (): number => {
+  return 50; // Fixed price in SAR
 };
 
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
@@ -53,7 +34,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     notes: "",
   });
 
-  const price = form.scheduled_at ? calculatePrice(form.scheduled_at) : null;
+  const price = 50;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +70,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     // 2. Redirect to Stripe checkout
     const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
       "create-booking-payment",
-      { body: { bookingId: booking.id, amount: price } }
+      { body: { bookingId: booking.id, amount: 50 } }
     );
 
     setLoading(false);
@@ -187,16 +168,14 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
             />
           </div>
 
-          {/* Dynamic Price Display */}
-          {price !== null && (
-            <div className="bg-primary/10 rounded-xl p-4 text-center">
-              <p className="text-sm text-muted-foreground mb-1">تكلفة الحجز</p>
-              <p className="text-2xl font-black text-primary">{price} ر.س</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                يتغير السعر حسب وقت الحجز
-              </p>
-            </div>
-          )}
+          {/* Fixed Price Display */}
+          <div className="bg-primary/10 rounded-xl p-4 text-center">
+            <p className="text-sm text-muted-foreground mb-1">تكلفة الحجز</p>
+            <p className="text-2xl font-black text-primary">50 ر.س</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              سعر ثابت لجميع الحجوزات
+            </p>
+          </div>
 
           {/* Notes */}
           <div className="space-y-2">
