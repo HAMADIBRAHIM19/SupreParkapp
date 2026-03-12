@@ -47,6 +47,8 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const activeJobs = myBookings.filter((b) => b.status === "approved");
   const completedJobs = myBookings.filter((b) => b.status === "completed");
 
+  const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
+  const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
   const handleAccept = async (bookingId: string) => {
     const { error } = await supabase
       .from("bookings")
