@@ -202,7 +202,7 @@ const CrewBookingsTable = ({
               <TableHead className="text-right">الموقع</TableHead>
               <TableHead className="text-right">السيارة</TableHead>
               <TableHead className="text-right">لوحة السيارة</TableHead>
-              <TableHead className="text-right">رقم التواصل</TableHead>
+              
               <TableHead className="text-right">الموعد</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
               {(type === "available" || type === "active") && <TableHead className="text-right">إجراء</TableHead>}
