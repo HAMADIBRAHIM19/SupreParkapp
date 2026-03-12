@@ -45,6 +45,12 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
 
+  const approvedBookingIds = useMemo(() => 
+    bookings.filter((b) => b.status === "approved").map((b) => b.id), 
+    [bookings]
+  );
+  const { unreadCounts, markAsRead } = useUnreadMessages(approvedBookingIds);
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
