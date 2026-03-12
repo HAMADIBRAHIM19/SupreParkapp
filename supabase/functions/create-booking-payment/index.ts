@@ -39,7 +39,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create checkout session with dynamic price
+    // Create checkout session with fixed price of 50 SAR
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -48,7 +48,7 @@ serve(async (req) => {
           price_data: {
             currency: "sar",
             product: "prod_U88zoBBALz1B3d",
-            unit_amount: Math.round(amount * 100), // amount in halalas
+            unit_amount: 5000, // 50 SAR in halalas (fixed price)
           },
           quantity: 1,
         },

@@ -70,7 +70,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     // 2. Redirect to Stripe checkout
     const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
       "create-booking-payment",
-      { body: { bookingId: booking.id, amount: price } }
+      { body: { bookingId: booking.id, amount: 50 } }
     );
 
     setLoading(false);
