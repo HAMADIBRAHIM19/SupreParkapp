@@ -209,29 +209,42 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat }: {booking
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
                 </TableCell>
                 <TableCell>
-                  {booking.status === "pending" ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
-                      disabled={cancellingId === booking.id}
-                      onClick={() => handleCancel(booking.id)}
-                    >
-                      <XCircle className="w-4 h-4" />
-                      {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
-                      disabled={deletingId === booking.id}
-                      onClick={() => handleDelete(booking.id)}
-                    >
-                      <Trash className="w-4 h-4" />
-                      {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
-                    </Button>
-                  )}
+                  <div className="flex gap-1">
+                    {booking.status === "approved" && onChat && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => onChat(booking)}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        محادثة
+                      </Button>
+                    )}
+                    {booking.status === "pending" ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                        disabled={cancellingId === booking.id}
+                        onClick={() => handleCancel(booking.id)}
+                      >
+                        <XCircle className="w-4 h-4" />
+                        {cancellingId === booking.id ? "جاري الإلغاء..." : "إلغاء"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+                        disabled={deletingId === booking.id}
+                        onClick={() => handleDelete(booking.id)}
+                      >
+                        <Trash className="w-4 h-4" />
+                        {deletingId === booking.id ? "جاري الحذف..." : "حذف"}
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             )}
