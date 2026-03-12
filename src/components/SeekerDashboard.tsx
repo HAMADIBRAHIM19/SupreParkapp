@@ -39,6 +39,7 @@ interface SeekerDashboardProps {
 
 const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: SeekerDashboardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [chatBooking, setChatBooking] = useState<Booking | null>(null);
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
