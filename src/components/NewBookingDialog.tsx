@@ -171,7 +171,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
           {/* Fixed Price Display */}
           <div className="bg-primary/10 rounded-xl p-4 text-center">
             <p className="text-sm text-muted-foreground mb-1">تكلفة الحجز</p>
-            <p className="text-2xl font-black text-primary">50 ر.س</p>
+            <p className="text-2xl font-black text-primary">39 ر.س</p>
             <p className="text-xs text-muted-foreground mt-1">
               سعر ثابت لجميع الحجوزات
             </p>
