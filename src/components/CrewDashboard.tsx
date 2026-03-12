@@ -136,6 +136,15 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           <CrewBookingsTable bookings={completedJobs} loading={loading} type="completed" />
         </TabsContent>
       </Tabs>
+
+      {chatBooking && (
+        <BookingChat
+          open={!!chatBooking}
+          onOpenChange={(open) => !open && setChatBooking(null)}
+          bookingId={chatBooking.id}
+          bookingLocation={chatBooking.location}
+        />
+      )}
     </>
   );
 };
