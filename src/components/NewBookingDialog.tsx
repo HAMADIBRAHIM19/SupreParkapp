@@ -54,7 +54,6 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
       location: locationText || selectedLocation.fullAddress,
       vehicle_name: form.vehicle_name || null,
       vehicle_plate: form.vehicle_plate,
-      contact_number: form.contact_number || null,
       scheduled_at: new Date(form.scheduled_at).toISOString(),
       expected_arrival: form.scheduled_at ? new Date(form.scheduled_at).toISOString() : null,
       notes: form.notes || null,
