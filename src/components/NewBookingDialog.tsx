@@ -16,28 +16,9 @@ interface NewBookingDialogProps {
   onBookingCreated: () => void;
 }
 
-// Dynamic pricing logic based on time
-const calculatePrice = (scheduledAt: string): number => {
-  const date = new Date(scheduledAt);
-  const hour = date.getHours();
-  const isWeekend = date.getDay() === 5 || date.getDay() === 6; // Friday & Saturday
-  
-  let basePrice = 15; // Base price in SAR
-  
-  // Peak hours: 12-2pm and 6-10pm
-  if ((hour >= 12 && hour <= 14) || (hour >= 18 && hour <= 22)) {
-    basePrice = 25;
-  }
-  // Late night discount
-  if (hour >= 23 || hour < 6) {
-    basePrice = 10;
-  }
-  // Weekend surcharge
-  if (isWeekend) {
-    basePrice += 5;
-  }
-  
-  return basePrice;
+// Fixed pricing: 50 SAR per booking
+const calculatePrice = (): number => {
+  return 50; // Fixed price in SAR
 };
 
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
