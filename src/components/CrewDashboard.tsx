@@ -226,12 +226,22 @@ const CrewBookingsTable = ({
                     </Button>
                   </TableCell>
                 )}
-                {type === "active" && onComplete && (
+                {type === "active" && (
                   <TableCell>
-                    <Button size="sm" variant="outline" className="rounded-xl font-bold gap-1" onClick={() => onComplete(booking.id)}>
-                      <CheckCircle className="w-3.5 h-3.5" />
-                      إكمال
-                    </Button>
+                    <div className="flex gap-1">
+                      {onChat && (
+                        <Button size="sm" variant="ghost" className="rounded-xl gap-1" onClick={() => onChat(booking)}>
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          محادثة
+                        </Button>
+                      )}
+                      {onComplete && (
+                        <Button size="sm" variant="outline" className="rounded-xl font-bold gap-1" onClick={() => onComplete(booking.id)}>
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          إكمال
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 )}
               </TableRow>
