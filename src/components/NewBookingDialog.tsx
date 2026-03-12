@@ -34,7 +34,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     notes: "",
   });
 
-  const price = form.scheduled_at ? calculatePrice(form.scheduled_at) : null;
+  const price = 50;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
