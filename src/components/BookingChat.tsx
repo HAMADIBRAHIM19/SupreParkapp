@@ -20,9 +20,10 @@ interface BookingChatProps {
   onOpenChange: (open: boolean) => void;
   bookingId: string;
   bookingLocation: string;
+  onMarkAsRead?: () => void;
 }
 
-const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation }: BookingChatProps) => {
+const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation, onMarkAsRead }: BookingChatProps) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -42,6 +43,7 @@ const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation }: Booking
     };
 
     fetchMessages();
+    onMarkAsRead?.();
 
     const channel = supabase
       .channel(`chat-${bookingId}`)

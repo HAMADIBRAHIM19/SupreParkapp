@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle }
 import { useToast } from "@/hooks/use-toast";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
 const statusMap: Record<BookingStatus, {label: string;variant: "default" | "secondary" | "destructive" | "outline";}> = {
@@ -43,6 +44,12 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
+
+  const approvedBookingIds = useMemo(() => 
+    bookings.filter((b) => b.status === "approved").map((b) => b.id), 
+    [bookings]
+  );
+  const { unreadCounts, markAsRead } = useUnreadMessages(approvedBookingIds);
 
   return (
     <>
@@ -101,7 +108,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <TabsTrigger value="past">السابقة ({pastBookings.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="active">
-          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} />
+          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} unreadCounts={unreadCounts} />
         </TabsContent>
         <TabsContent value="past">
           <BookingsTable bookings={pastBookings} loading={loading} />
@@ -116,13 +123,14 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           onOpenChange={(open) => !open && setChatBooking(null)}
           bookingId={chatBooking.id}
           bookingLocation={chatBooking.location}
+          onMarkAsRead={() => markAsRead(chatBooking.id)}
         />
       )}
     </>);
 
 };
 
-const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void;}) => {
+const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCounts }: {bookings: Booking[];loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void; unreadCounts?: Record<string, number>;}) => {
   const { toast } = useToast();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -214,11 +222,16 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat }: {booking
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="gap-1"
+                        className="gap-1 relative"
                         onClick={() => onChat(booking)}
                       >
                         <MessageCircle className="w-4 h-4" />
                         محادثة
+                        {unreadCounts && unreadCounts[booking.id] > 0 && (
+                          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                            {unreadCounts[booking.id]}
+                          </span>
+                        )}
                       </Button>
                     )}
                     {booking.status === "pending" ? (

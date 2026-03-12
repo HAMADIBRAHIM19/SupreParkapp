@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
 const statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -46,6 +47,8 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const activeJobs = myBookings.filter((b) => b.status === "approved");
   const completedJobs = myBookings.filter((b) => b.status === "completed");
 
+  const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
+  const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
   const handleAccept = async (bookingId: string) => {
     const { error } = await supabase
       .from("bookings")
@@ -130,7 +133,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={handleAccept} />
         </TabsContent>
         <TabsContent value="active">
-          <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onComplete={handleComplete} onChat={setChatBooking} />
+          <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onComplete={handleComplete} onChat={setChatBooking} unreadCounts={unreadCounts} />
         </TabsContent>
         <TabsContent value="completed">
           <CrewBookingsTable bookings={completedJobs} loading={loading} type="completed" />
@@ -143,6 +146,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           onOpenChange={(open) => !open && setChatBooking(null)}
           bookingId={chatBooking.id}
           bookingLocation={chatBooking.location}
+          onMarkAsRead={() => markAsRead(chatBooking.id)}
         />
       )}
     </>
@@ -156,6 +160,7 @@ const CrewBookingsTable = ({
   onAccept,
   onComplete,
   onChat,
+  unreadCounts,
 }: {
   bookings: Booking[];
   loading: boolean;
@@ -163,6 +168,7 @@ const CrewBookingsTable = ({
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
   onChat?: (booking: Booking) => void;
+  unreadCounts?: Record<string, number>;
 }) => {
   if (loading) {
     return (
@@ -230,9 +236,14 @@ const CrewBookingsTable = ({
                   <TableCell>
                     <div className="flex gap-1">
                       {onChat && (
-                        <Button size="sm" variant="ghost" className="rounded-xl gap-1" onClick={() => onChat(booking)}>
+                        <Button size="sm" variant="ghost" className="rounded-xl gap-1 relative" onClick={() => onChat(booking)}>
                           <MessageCircle className="w-3.5 h-3.5" />
                           محادثة
+                          {unreadCounts && unreadCounts[booking.id] > 0 && (
+                            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                              {unreadCounts[booking.id]}
+                            </span>
+                          )}
                         </Button>
                       )}
                       {onComplete && (
