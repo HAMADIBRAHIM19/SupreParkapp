@@ -34,7 +34,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     notes: "",
   });
 
-  const price = 50;
+  const price = 39;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
