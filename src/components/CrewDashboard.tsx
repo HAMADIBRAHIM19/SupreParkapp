@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
 const statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
