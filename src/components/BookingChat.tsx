@@ -57,7 +57,11 @@ const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation, onMarkAsR
           filter: `booking_id=eq.${bookingId}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
+          const newMsg = payload.new as Message;
+          setMessages((prev) => [...prev, newMsg]);
+          if (newMsg.sender_id !== user?.id) {
+            playNotificationSound();
+          }
         }
       )
       .subscribe();
