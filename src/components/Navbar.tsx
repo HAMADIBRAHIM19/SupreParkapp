@@ -32,6 +32,7 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
+              <NotificationsBell />
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">لوحة التحكم</Link>
               </Button>
