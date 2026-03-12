@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Car, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import NotificationsBell from "@/components/NotificationsBell";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -30,6 +31,7 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
+              <NotificationsBell />
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">لوحة التحكم</Link>
               </Button>
