@@ -43,6 +43,7 @@ const BookingChat = ({ open, onOpenChange, bookingId, bookingLocation, onMarkAsR
     };
 
     fetchMessages();
+    onMarkAsRead?.();
 
     const channel = supabase
       .channel(`chat-${bookingId}`)
