@@ -38,6 +38,7 @@ interface CrewDashboardProps {
 const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashboardProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [chatBooking, setChatBooking] = useState<Booking | null>(null);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
