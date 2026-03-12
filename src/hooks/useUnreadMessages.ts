@@ -61,6 +61,7 @@ export const useUnreadMessages = (bookingIds: string[]) => {
               ...prev,
               [msg.booking_id]: (prev[msg.booking_id] || 0) + 1,
             }));
+            playNotificationSound();
           }
         }
       )
