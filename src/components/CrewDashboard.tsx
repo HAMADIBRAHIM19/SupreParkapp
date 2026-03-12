@@ -146,6 +146,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           onOpenChange={(open) => !open && setChatBooking(null)}
           bookingId={chatBooking.id}
           bookingLocation={chatBooking.location}
+          onMarkAsRead={() => markAsRead(chatBooking.id)}
         />
       )}
     </>
