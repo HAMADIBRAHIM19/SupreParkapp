@@ -29,7 +29,6 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
   const [form, setForm] = useState({
     vehicle_name: "",
     vehicle_plate: "",
-    contact_number: "",
     scheduled_at: "",
     notes: "",
   });
