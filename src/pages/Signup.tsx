@@ -16,7 +16,6 @@ const Signup = () => {
     password: "",
     username: "",
     fullName: "",
-    phone: "",
     accountType: "seeker" as "seeker" | "crew",
   });
   const [showPassword, setShowPassword] = useState(false);
