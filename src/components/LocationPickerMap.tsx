@@ -1,7 +1,14 @@
+/// <reference types="google.maps" />
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, LocateFixed } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+declare global {
+  interface Window {
+    google?: typeof google;
+  }
+}
 
 export interface LocationInfo {
   lat: number;
