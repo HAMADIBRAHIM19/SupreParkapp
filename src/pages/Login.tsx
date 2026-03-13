@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Car, LogIn, Eye, EyeOff } from "lucide-react";
+import { Car, LogIn, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 const Login = () => {
