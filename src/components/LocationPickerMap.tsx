@@ -227,14 +227,15 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         </Button>
       </div>
 
-      <div ref={containerRef} className="rounded-lg overflow-hidden border" style={{ height: 250 }}>
+      <div className="relative rounded-lg overflow-hidden border" style={{ height: 250 }}>
+        <div ref={containerRef} className="w-full h-full" />
         {!mapReady && !mapError && (
-          <div className="flex items-center justify-center h-full bg-muted/30">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/30 z-10">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
         )}
         {mapError && (
-          <div className="flex items-center justify-center h-full bg-muted/30 text-sm text-destructive">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/30 text-sm text-destructive z-10">
             {mapError}
           </div>
         )}
