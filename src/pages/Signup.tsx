@@ -107,6 +107,7 @@ const Signup = () => {
               />
             </div>
 
+            <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
               <div className="relative">
                 <Input
