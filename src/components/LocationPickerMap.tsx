@@ -18,6 +18,7 @@ export interface LocationInfo {
   name: string;
   neighborhood: string;
   city: string;
+  street: string;
   fullAddress: string;
 }
 
@@ -77,11 +78,12 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       const name = poiName || fallbackName;
       const neighborhood = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || "";
       const city = addr.city || addr.town || addr.state || "";
+      const street = addr.road || addr.street || "";
       const fullAddress = nominatimRes.display_name || "";
 
-      onLocationSelect({ lat, lng, name, neighborhood, city, fullAddress });
+      onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
-      onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", fullAddress: `${lat}, ${lng}` });
+      onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
     } finally {
       setLoading(false);
     }
@@ -167,6 +169,9 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       {selectedLocation && !loading && (
         <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir="rtl">
           <p className="font-semibold text-foreground">{selectedLocation.name}</p>
+          {selectedLocation.street && (
+            <p className="text-muted-foreground">الشارع: {selectedLocation.street}</p>
+          )}
           {selectedLocation.neighborhood && (
             <p className="text-muted-foreground">الحي: {selectedLocation.neighborhood}</p>
           )}
