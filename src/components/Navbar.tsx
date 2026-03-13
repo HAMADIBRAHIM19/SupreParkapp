@@ -35,6 +35,11 @@ const Navbar = () => {
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">لوحة التحكم</Link>
               </Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
+                <Link to="/settings">
+                  <Settings className="w-4 h-4" />
+                </Link>
+              </Button>
               <Button variant="ghost" size="sm" className="font-semibold gap-2" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
                 تسجيل خروج
