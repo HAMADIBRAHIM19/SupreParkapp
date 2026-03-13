@@ -42,7 +42,6 @@ const Signup = () => {
         data: {
           username: formData.username,
           full_name: formData.fullName,
-          phone: formData.phone,
           account_type: formData.accountType,
         },
         emailRedirectTo: window.location.origin,
