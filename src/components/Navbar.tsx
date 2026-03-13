@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, LogOut } from "lucide-react";
+import { Car, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationsBell from "@/components/NotificationsBell";
