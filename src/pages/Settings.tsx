@@ -11,7 +11,7 @@ import { ArrowRight, Eye, EyeOff, Save, User, Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 const Settings = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState("");
@@ -25,7 +25,6 @@ const Settings = () => {
   const [savingName, setSavingName] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
-  const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -36,22 +35,11 @@ const Settings = () => {
   useEffect(() => {
     if (user) {
       setEmail(user.email || "");
-      fetchProfile();
+      if (profile) {
+        setFullName(profile.full_name);
+      }
     }
-  }, [user]);
-
-  const fetchProfile = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("user_id", user.id)
-      .single();
-    if (data) {
-      setFullName(data.full_name);
-    }
-    setLoadingProfile(false);
-  };
+  }, [user, profile]);
 
   const handleUpdateName = async (e: React.FormEvent) => {
     e.preventDefault();
