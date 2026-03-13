@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const CTASection = () => {
-  const navigate = useNavigate";
+  const navigate = useNavigate();
   return (
     <section className="py-24" dir="rtl">
       <div className="container mx-auto px-6">
