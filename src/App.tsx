@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Install from "./pages/Install";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
