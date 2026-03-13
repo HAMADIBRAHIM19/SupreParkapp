@@ -18,6 +18,7 @@ export interface LocationInfo {
   name: string;
   neighborhood: string;
   city: string;
+  street: string;
   fullAddress: string;
 }
 
