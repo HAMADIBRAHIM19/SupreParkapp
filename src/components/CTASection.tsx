@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CTASection = () => {
+  const navigate = useNavigate();
   return (
     <section className="py-24" dir="rtl">
       <div className="container mx-auto px-6">
@@ -20,6 +22,7 @@ const CTASection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
+                onClick={() => navigate("/signup")}
                 className="bg-white text-primary hover:bg-white/90 font-bold rounded-xl px-8 gap-2 text-base"
               >
                 ابدأ الآن
@@ -28,7 +31,8 @@ const CTASection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/30 text-primary-foreground hover:bg-white/10 font-bold rounded-xl px-8 text-base"
+                onClick={() => navigate("/signup")}
+                className="border-green-500 text-green-600 hover:bg-green-50 font-bold rounded-xl px-8 text-base"
               >
                 سجّل كحاجز
               </Button>
