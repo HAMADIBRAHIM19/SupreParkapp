@@ -78,11 +78,12 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       const name = poiName || fallbackName;
       const neighborhood = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || "";
       const city = addr.city || addr.town || addr.state || "";
+      const street = addr.road || addr.street || "";
       const fullAddress = nominatimRes.display_name || "";
 
-      onLocationSelect({ lat, lng, name, neighborhood, city, fullAddress });
+      onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
-      onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", fullAddress: `${lat}, ${lng}` });
+      onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
     } finally {
       setLoading(false);
     }
