@@ -1,16 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, LocateFixed } from "lucide-react";
-
-// Fix default marker icon
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
+import { supabase } from "@/integrations/supabase/client";
 
 export interface LocationInfo {
   lat: number;
@@ -27,59 +18,80 @@ interface LocationPickerMapProps {
   selectedLocation: LocationInfo | null;
 }
 
+// Load Google Maps script dynamically
+let googleMapsPromise: Promise<void> | null = null;
+
+const loadGoogleMaps = async (): Promise<void> => {
+  if (googleMapsPromise) return googleMapsPromise;
+  if (window.google?.maps) return Promise.resolve();
+
+  googleMapsPromise = (async () => {
+    const { data, error } = await supabase.functions.invoke("get-maps-key");
+    if (error || !data?.key) throw new Error("Failed to load Maps API key");
+
+    return new Promise<void>((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&language=ar&region=SA`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Failed to load Google Maps"));
+      document.head.appendChild(script);
+    });
+  })();
+
+  return googleMapsPromise;
+};
+
 const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPickerMapProps) => {
-  const mapRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
+  const geocoderRef = useRef<google.maps.Geocoder | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
 
-  const defaultCenter: [number, number] = [24.7136, 46.6753];
+  const defaultCenter = { lat: 24.7136, lng: 46.6753 };
 
-  const findNearbyPOI = async (lat: number, lng: number): Promise<string | null> => {
-    try {
-      const radius = 30; // meters
-      const query = `
-        [out:json][timeout:5];
-        (
-          node["name"](around:${radius},${lat},${lng});
-          way["name"](around:${radius},${lat},${lng});
-        );
-        out body 1;
-      `;
-      const res = await fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        body: `data=${encodeURIComponent(query)}`,
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
-      const data = await res.json();
-      const element = data.elements?.[0];
-      if (element?.tags?.name) {
-        return element.tags["name:ar"] || element.tags.name;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  };
-
-  const reverseGeocode = async (lat: number, lng: number) => {
+  const reverseGeocode = useCallback(async (lat: number, lng: number) => {
+    if (!geocoderRef.current) return;
     setLoading(true);
-    try {
-      const [nominatimRes, poiName] = await Promise.all([
-        fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar&addressdetails=1&zoom=18`
-        ).then((r) => r.json()),
-        findNearbyPOI(lat, lng),
-      ]);
 
-      const addr = nominatimRes.address || {};
-      const fallbackName = addr.amenity || addr.shop || addr.tourism || addr.leisure || addr.building || addr.road || nominatimRes.display_name?.split(",")[0] || "موقع محدد";
-      const name = poiName || fallbackName;
-      const neighborhood = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || "";
-      const city = addr.city || addr.town || addr.state || "";
-      const street = addr.road || addr.street || "";
-      const fullAddress = nominatimRes.display_name || "";
+    try {
+      const response = await geocoderRef.current.geocode({ location: { lat, lng } });
+      const results = response.results;
+
+      if (!results?.length) {
+        onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+        return;
+      }
+
+      // Find the most detailed result (POI or street address)
+      const poiResult = results.find(r =>
+        r.types.includes("point_of_interest") ||
+        r.types.includes("establishment") ||
+        r.types.includes("store") ||
+        r.types.includes("restaurant") ||
+        r.types.includes("cafe") ||
+        r.types.includes("food")
+      );
+
+      const bestResult = poiResult || results[0];
+      const components = bestResult.address_components;
+
+      const getComponent = (type: string) =>
+        components.find(c => c.types.includes(type))?.long_name || "";
+
+      const name = poiResult
+        ? (getComponent("point_of_interest") || getComponent("establishment") || bestResult.formatted_address.split(",")[0])
+        : (getComponent("route") || getComponent("street_address") || bestResult.formatted_address.split(",")[0]);
+
+      const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
+      const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
+      const street = getComponent("route") || "";
+      const fullAddress = bestResult.formatted_address || "";
 
       onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
@@ -87,7 +99,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     } finally {
       setLoading(false);
     }
-  };
+  }, [onLocationSelect]);
 
   const handleLocateMe = () => {
     if (!navigator.geolocation) return;
@@ -95,13 +107,19 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
+        const position = { lat, lng };
         if (mapRef.current) {
-          mapRef.current.setView([lat, lng], 16);
+          mapRef.current.setCenter(position);
+          mapRef.current.setZoom(17);
         }
         if (markerRef.current) {
-          markerRef.current.setLatLng([lat, lng]);
+          markerRef.current.setPosition(position);
         } else if (mapRef.current) {
-          markerRef.current = L.marker([lat, lng]).addTo(mapRef.current);
+          markerRef.current = new google.maps.Marker({
+            position,
+            map: mapRef.current,
+            animation: google.maps.Animation.DROP,
+          });
         }
         setLocating(false);
         reverseGeocode(lat, lng);
@@ -112,34 +130,76 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
   };
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    if (!containerRef.current) return;
 
-    const center = selectedLocation ? [selectedLocation.lat, selectedLocation.lng] as [number, number] : defaultCenter;
+    let cancelled = false;
 
-    const map = L.map(containerRef.current).setView(center, 16);
-    L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
-      maxZoom: 20,
-      attribution: '&copy; Google Maps',
-    }).addTo(map);
+    const init = async () => {
+      try {
+        await loadGoogleMaps();
+        if (cancelled || !containerRef.current) return;
 
-    map.on("click", (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
+        const center = selectedLocation
+          ? { lat: selectedLocation.lat, lng: selectedLocation.lng }
+          : defaultCenter;
 
-      if (markerRef.current) {
-        markerRef.current.setLatLng([lat, lng]);
-      } else {
-        markerRef.current = L.marker([lat, lng]).addTo(map);
+        const map = new google.maps.Map(containerRef.current, {
+          center,
+          zoom: 16,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          zoomControl: true,
+          gestureHandling: "greedy",
+          styles: [],
+        });
+
+        geocoderRef.current = new google.maps.Geocoder();
+
+        if (selectedLocation) {
+          markerRef.current = new google.maps.Marker({
+            position: center,
+            map,
+            animation: google.maps.Animation.DROP,
+          });
+        }
+
+        map.addListener("click", (e: google.maps.MapMouseEvent) => {
+          if (!e.latLng) return;
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+          const position = { lat, lng };
+
+          if (markerRef.current) {
+            markerRef.current.setPosition(position);
+          } else {
+            markerRef.current = new google.maps.Marker({
+              position,
+              map,
+              animation: google.maps.Animation.DROP,
+            });
+          }
+
+          reverseGeocode(lat, lng);
+        });
+
+        mapRef.current = map;
+        setMapReady(true);
+      } catch (err) {
+        console.error("Google Maps init error:", err);
+        setMapError("تعذر تحميل الخريطة");
       }
+    };
 
-      reverseGeocode(lat, lng);
-    });
-
-    mapRef.current = map;
+    init();
 
     return () => {
-      map.remove();
+      cancelled = true;
+      if (markerRef.current) {
+        markerRef.current.setMap(null);
+        markerRef.current = null;
+      }
       mapRef.current = null;
-      markerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -152,7 +212,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
           size="sm"
           variant="outline"
           onClick={handleLocateMe}
-          disabled={locating}
+          disabled={locating || !mapReady}
           className="gap-2"
         >
           {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
@@ -160,7 +220,18 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         </Button>
       </div>
 
-      <div ref={containerRef} className="rounded-lg overflow-hidden border" style={{ height: 250 }} />
+      <div ref={containerRef} className="rounded-lg overflow-hidden border" style={{ height: 250 }}>
+        {!mapReady && !mapError && (
+          <div className="flex items-center justify-center h-full bg-muted/30">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        )}
+        {mapError && (
+          <div className="flex items-center justify-center h-full bg-muted/30 text-sm text-destructive">
+            {mapError}
+          </div>
+        )}
+      </div>
 
       {loading && (
         <p className="text-xs text-muted-foreground animate-pulse">جاري تحديد الموقع...</p>
