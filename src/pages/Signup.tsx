@@ -107,21 +107,6 @@ const Signup = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">رقم الجوال</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="05XXXXXXXX"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                required
-                dir="ltr"
-                className="text-right"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
               <div className="relative">
                 <Input
