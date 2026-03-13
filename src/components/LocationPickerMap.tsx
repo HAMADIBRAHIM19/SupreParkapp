@@ -169,6 +169,9 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       {selectedLocation && !loading && (
         <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir="rtl">
           <p className="font-semibold text-foreground">{selectedLocation.name}</p>
+          {selectedLocation.street && (
+            <p className="text-muted-foreground">الشارع: {selectedLocation.street}</p>
+          )}
           {selectedLocation.neighborhood && (
             <p className="text-muted-foreground">الحي: {selectedLocation.neighborhood}</p>
           )}
