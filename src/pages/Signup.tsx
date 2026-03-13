@@ -16,7 +16,6 @@ const Signup = () => {
     password: "",
     username: "",
     fullName: "",
-    phone: "",
     accountType: "seeker" as "seeker" | "crew",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +42,6 @@ const Signup = () => {
         data: {
           username: formData.username,
           full_name: formData.fullName,
-          phone: formData.phone,
           account_type: formData.accountType,
         },
         emailRedirectTo: window.location.origin,
@@ -103,20 +101,6 @@ const Signup = () => {
                 placeholder="example@email.com"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                required
-                dir="ltr"
-                className="text-right"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">رقم الجوال</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="05XXXXXXXX"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
                 required
                 dir="ltr"
                 className="text-right"
