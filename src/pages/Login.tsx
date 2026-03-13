@@ -37,6 +37,17 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4" dir="rtl">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 font-semibold text-muted-foreground hover:text-foreground"
+              onClick={() => navigate("/")}
+            >
+              العودة للرئيسية
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
           <div className="mx-auto w-12 h-12 bg-primary rounded-2xl flex items-center justify-center">
             <Car className="w-6 h-6 text-primary-foreground" />
           </div>
