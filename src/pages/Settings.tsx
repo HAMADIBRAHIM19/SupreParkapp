@@ -56,6 +56,7 @@ const Settings = () => {
       toast.error("حدث خطأ أثناء تحديث الاسم");
     } else {
       toast.success("تم تحديث الاسم بنجاح");
+      await refreshProfile();
     }
     setSavingName(false);
   };
