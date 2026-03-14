@@ -194,6 +194,50 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
         mapRef.current = map;
         setMapReady(true);
+
+        // Initialize Places Autocomplete
+        if (searchInputRef.current) {
+          const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
+            componentRestrictions: { country: "sa" },
+            fields: ["geometry", "formatted_address", "address_components", "name"],
+          });
+          autocomplete.bindTo("bounds", map);
+          autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (!place.geometry?.location) return;
+
+            const lat = place.geometry.location.lat();
+            const lng = place.geometry.location.lng();
+            const position = { lat, lng };
+
+            map.setCenter(position);
+            map.setZoom(17);
+
+            if (markerRef.current) {
+              markerRef.current.setPosition(position);
+            } else {
+              markerRef.current = new google.maps.Marker({
+                position,
+                map,
+                animation: google.maps.Animation.DROP,
+              });
+            }
+
+            // Extract address from place details
+            const components = place.address_components || [];
+            const getComponent = (type: string) =>
+              components.find(c => c.types.includes(type))?.long_name || "";
+
+            const name = place.name || place.formatted_address?.split(",")[0] || "";
+            const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
+            const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
+            const street = getComponent("route") || "";
+            const fullAddress = place.formatted_address || "";
+
+            onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
+          });
+          autocompleteRef.current = autocomplete;
+        }
       } catch (err) {
         console.error("Google Maps init error:", err);
         setMapError("تعذر تحميل الخريطة");
@@ -209,6 +253,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         markerRef.current = null;
       }
       mapRef.current = null;
+      autocompleteRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
