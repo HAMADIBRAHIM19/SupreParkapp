@@ -1,7 +1,7 @@
 /// <reference types="google.maps" />
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, LocateFixed } from "lucide-react";
+import { Loader2, LocateFixed, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 declare global {
