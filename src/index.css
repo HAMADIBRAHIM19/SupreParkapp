@@ -96,3 +96,9 @@
     font-family: 'Cairo', sans-serif;
   }
 }
+
+/* Google Places Autocomplete dropdown styling */
+.pac-container {
+  z-index: 10000 !important;
+  font-family: 'Cairo', sans-serif;
+}

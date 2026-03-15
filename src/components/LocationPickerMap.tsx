@@ -54,7 +54,6 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
@@ -64,43 +63,65 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   const defaultCenter = { lat: 24.7136, lng: 46.6753 };
 
+  // Find nearby POI using Places Service
+  const findNearbyPOI = useCallback((lat: number, lng: number): Promise<string | null> => {
+    if (!mapRef.current) return Promise.resolve(null);
+
+    const service = new google.maps.places.PlacesService(mapRef.current);
+    const location = new google.maps.LatLng(lat, lng);
+
+    return new Promise((resolve) => {
+      service.nearbySearch(
+        { location, radius: 50, type: "point_of_interest" },
+        (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && results?.length) {
+            resolve(results[0].name || null);
+          } else {
+            resolve(null);
+          }
+        }
+      );
+    });
+  }, []);
+
   const reverseGeocode = useCallback(async (lat: number, lng: number) => {
     if (!geocoderRef.current) return;
     setLoading(true);
 
     try {
+      // Try to find a nearby POI name
+      const poiName = await findNearbyPOI(lat, lng);
+
       const response = await geocoderRef.current.geocode({ location: { lat, lng } });
       const results = response.results;
 
       if (!results?.length) {
-        onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+        onLocationSelect({ lat, lng, name: poiName || "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
         return;
       }
 
-      // Find the most detailed result (POI or street address)
-      const poiResult = results.find(r =>
-        r.types.includes("point_of_interest") ||
-        r.types.includes("establishment") ||
-        r.types.includes("store") ||
-        r.types.includes("restaurant") ||
-        r.types.includes("cafe") ||
-        r.types.includes("food")
-      );
-
-      const bestResult = poiResult || results[0];
+      const bestResult = results[0];
       const components = bestResult.address_components;
-
       const getComponent = (type: string) =>
         components.find(c => c.types.includes(type))?.long_name || "";
-
-      const name = poiResult
-        ? (getComponent("point_of_interest") || getComponent("establishment") || bestResult.formatted_address.split(",")[0])
-        : (getComponent("route") || getComponent("street_address") || bestResult.formatted_address.split(",")[0]);
 
       const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
       const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
       const street = getComponent("route") || "";
       const fullAddress = bestResult.formatted_address || "";
+
+      // Use POI name if found, otherwise fallback to geocoding
+      let name: string;
+      if (poiName) {
+        name = poiName;
+      } else {
+        const poiGeoResult = results.find(r =>
+          r.types.some(t => ["point_of_interest", "establishment", "store", "restaurant", "cafe", "food"].includes(t))
+        );
+        name = poiGeoResult
+          ? poiGeoResult.formatted_address.split(",")[0]
+          : (street || neighborhood || bestResult.formatted_address.split(",")[0]);
+      }
 
       onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
@@ -108,7 +129,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     } finally {
       setLoading(false);
     }
-  }, [onLocationSelect]);
+  }, [onLocationSelect, findNearbyPOI]);
 
   const handleLocateMe = () => {
     if (!navigator.geolocation) return;
@@ -124,11 +145,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         if (markerRef.current) {
           markerRef.current.setPosition(position);
         } else if (mapRef.current) {
-          markerRef.current = new google.maps.Marker({
-            position,
-            map: mapRef.current,
-            animation: google.maps.Animation.DROP,
-          });
+          markerRef.current = new google.maps.Marker({ position, map: mapRef.current, animation: google.maps.Animation.DROP });
         }
         setLocating(false);
         reverseGeocode(lat, lng);
@@ -140,7 +157,6 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   useEffect(() => {
     if (!containerRef.current) return;
-
     let cancelled = false;
 
     const init = async () => {
@@ -153,24 +169,15 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
           : defaultCenter;
 
         const map = new google.maps.Map(containerRef.current, {
-          center,
-          zoom: 16,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-          zoomControl: true,
-          gestureHandling: "greedy",
-          styles: [],
+          center, zoom: 16,
+          mapTypeControl: false, streetViewControl: false, fullscreenControl: false,
+          zoomControl: true, gestureHandling: "greedy",
         });
 
         geocoderRef.current = new google.maps.Geocoder();
 
         if (selectedLocation) {
-          markerRef.current = new google.maps.Marker({
-            position: center,
-            map,
-            animation: google.maps.Animation.DROP,
-          });
+          markerRef.current = new google.maps.Marker({ position: center, map, animation: google.maps.Animation.DROP });
         }
 
         map.addListener("click", (e: google.maps.MapMouseEvent) => {
@@ -178,17 +185,11 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
           const position = { lat, lng };
-
           if (markerRef.current) {
             markerRef.current.setPosition(position);
           } else {
-            markerRef.current = new google.maps.Marker({
-              position,
-              map,
-              animation: google.maps.Animation.DROP,
-            });
+            markerRef.current = new google.maps.Marker({ position, map, animation: google.maps.Animation.DROP });
           }
-
           reverseGeocode(lat, lng);
         });
 
@@ -199,7 +200,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         if (searchInputRef.current) {
           const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
             componentRestrictions: { country: "sa" },
-            fields: ["geometry", "formatted_address", "address_components", "name"],
+            fields: ["geometry", "formatted_address", "address_components", "name", "types"],
           });
           autocomplete.bindTo("bounds", map);
           autocomplete.addListener("place_changed", () => {
@@ -208,22 +209,16 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
             const lat = place.geometry.location.lat();
             const lng = place.geometry.location.lng();
-            const position = { lat, lng };
 
-            map.setCenter(position);
+            map.setCenter({ lat, lng });
             map.setZoom(17);
 
             if (markerRef.current) {
-              markerRef.current.setPosition(position);
+              markerRef.current.setPosition({ lat, lng });
             } else {
-              markerRef.current = new google.maps.Marker({
-                position,
-                map,
-                animation: google.maps.Animation.DROP,
-              });
+              markerRef.current = new google.maps.Marker({ position: { lat, lng }, map, animation: google.maps.Animation.DROP });
             }
 
-            // Extract address from place details
             const components = place.address_components || [];
             const getComponent = (type: string) =>
               components.find(c => c.types.includes(type))?.long_name || "";
@@ -236,7 +231,6 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
             onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
           });
-          autocompleteRef.current = autocomplete;
         }
       } catch (err) {
         console.error("Google Maps init error:", err);
@@ -248,12 +242,8 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
     return () => {
       cancelled = true;
-      if (markerRef.current) {
-        markerRef.current.setMap(null);
-        markerRef.current = null;
-      }
+      if (markerRef.current) { markerRef.current.setMap(null); markerRef.current = null; }
       mapRef.current = null;
-      autocompleteRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -273,14 +263,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       </div>
 
       <div className="flex justify-end">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={handleLocateMe}
-          disabled={locating || !mapReady}
-          className="gap-2"
-        >
+        <Button type="button" size="sm" variant="outline" onClick={handleLocateMe} disabled={locating || !mapReady} className="gap-2">
           {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
           موقعي الحالي
         </Button>
@@ -300,22 +283,14 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         )}
       </div>
 
-      {loading && (
-        <p className="text-xs text-muted-foreground animate-pulse">جاري تحديد الموقع...</p>
-      )}
+      {loading && <p className="text-xs text-muted-foreground animate-pulse">جاري تحديد الموقع...</p>}
 
       {selectedLocation && !loading && (
         <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir="rtl">
           <p className="font-semibold text-foreground">{selectedLocation.name}</p>
-          {selectedLocation.street && (
-            <p className="text-muted-foreground">الشارع: {selectedLocation.street}</p>
-          )}
-          {selectedLocation.neighborhood && (
-            <p className="text-muted-foreground">الحي: {selectedLocation.neighborhood}</p>
-          )}
-          {selectedLocation.city && (
-            <p className="text-muted-foreground">المدينة: {selectedLocation.city}</p>
-          )}
+          {selectedLocation.street && <p className="text-muted-foreground">الشارع: {selectedLocation.street}</p>}
+          {selectedLocation.neighborhood && <p className="text-muted-foreground">الحي: {selectedLocation.neighborhood}</p>}
+          {selectedLocation.city && <p className="text-muted-foreground">المدينة: {selectedLocation.city}</p>}
         </div>
       )}
     </div>
