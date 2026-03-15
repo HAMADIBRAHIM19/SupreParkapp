@@ -97,17 +97,7 @@
   }
 }
 
-/* Google Places Autocomplete Element styling */
-gmp-place-autocomplete {
-  --gmpx-color-surface: hsl(var(--background));
-  --gmpx-color-on-surface: hsl(var(--foreground));
-  --gmpx-color-primary: hsl(var(--primary));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.375rem;
-  font-family: 'Cairo', sans-serif;
-  direction: rtl;
-}
-
+/* Google Places Autocomplete dropdown styling */
 .pac-container {
   z-index: 10000 !important;
   font-family: 'Cairo', sans-serif;
