@@ -54,8 +54,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -64,43 +63,94 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   const defaultCenter = { lat: 24.7136, lng: 46.6753 };
 
+  // Find nearby POI using Places Service
+  const findNearbyPOI = useCallback(async (lat: number, lng: number): Promise<LocationInfo | null> => {
+    if (!mapRef.current) return null;
+
+    const service = new google.maps.places.PlacesService(mapRef.current);
+    const location = new google.maps.LatLng(lat, lng);
+
+    return new Promise((resolve) => {
+      service.nearbySearch(
+        {
+          location,
+          radius: 50, // 50 meters radius
+          type: "point_of_interest",
+        },
+        (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+            const place = results[0];
+            const placeLocation = place.geometry?.location;
+            // Only use if very close (within ~50m)
+            if (placeLocation) {
+              const distance = google.maps.geometry?.spherical?.computeDistanceBetween(location, placeLocation);
+              if (distance === undefined || distance < 100) {
+                resolve({
+                  lat,
+                  lng,
+                  name: place.name || "",
+                  neighborhood: "",
+                  city: "",
+                  street: "",
+                  fullAddress: place.vicinity || "",
+                });
+                return;
+              }
+            }
+          }
+          resolve(null);
+        }
+      );
+    });
+  }, []);
+
   const reverseGeocode = useCallback(async (lat: number, lng: number) => {
     if (!geocoderRef.current) return;
     setLoading(true);
 
     try {
+      // Try to find a nearby POI first
+      const poiResult = await findNearbyPOI(lat, lng);
+      
       const response = await geocoderRef.current.geocode({ location: { lat, lng } });
       const results = response.results;
 
       if (!results?.length) {
-        onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+        onLocationSelect(poiResult || { lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
         return;
       }
 
-      // Find the most detailed result (POI or street address)
-      const poiResult = results.find(r =>
-        r.types.includes("point_of_interest") ||
-        r.types.includes("establishment") ||
-        r.types.includes("store") ||
-        r.types.includes("restaurant") ||
-        r.types.includes("cafe") ||
-        r.types.includes("food")
-      );
-
-      const bestResult = poiResult || results[0];
+      const bestResult = results[0];
       const components = bestResult.address_components;
 
       const getComponent = (type: string) =>
         components.find(c => c.types.includes(type))?.long_name || "";
 
-      const name = poiResult
-        ? (getComponent("point_of_interest") || getComponent("establishment") || bestResult.formatted_address.split(",")[0])
-        : (getComponent("route") || getComponent("street_address") || bestResult.formatted_address.split(",")[0]);
-
       const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
       const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
       const street = getComponent("route") || "";
       const fullAddress = bestResult.formatted_address || "";
+
+      // Use POI name if found, otherwise use geocoding result
+      let name: string;
+      if (poiResult && poiResult.name) {
+        name = poiResult.name;
+      } else {
+        // Try to get a meaningful name from geocoding
+        const poiGeoResult = results.find(r =>
+          r.types.includes("point_of_interest") ||
+          r.types.includes("establishment") ||
+          r.types.includes("store") ||
+          r.types.includes("restaurant") ||
+          r.types.includes("cafe") ||
+          r.types.includes("food")
+        );
+        if (poiGeoResult) {
+          name = poiGeoResult.formatted_address.split(",")[0];
+        } else {
+          name = street || neighborhood || bestResult.formatted_address.split(",")[0];
+        }
+      }
 
       onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
@@ -108,7 +158,20 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     } finally {
       setLoading(false);
     }
-  }, [onLocationSelect]);
+  }, [onLocationSelect, findNearbyPOI]);
+
+  const placeMarker = useCallback((lat: number, lng: number) => {
+    const position = { lat, lng };
+    if (markerRef.current) {
+      markerRef.current.setPosition(position);
+    } else if (mapRef.current) {
+      markerRef.current = new google.maps.Marker({
+        position,
+        map: mapRef.current,
+        animation: google.maps.Animation.DROP,
+      });
+    }
+  }, []);
 
   const handleLocateMe = () => {
     if (!navigator.geolocation) return;
@@ -116,20 +179,11 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
-        const position = { lat, lng };
         if (mapRef.current) {
-          mapRef.current.setCenter(position);
+          mapRef.current.setCenter({ lat, lng });
           mapRef.current.setZoom(17);
         }
-        if (markerRef.current) {
-          markerRef.current.setPosition(position);
-        } else if (mapRef.current) {
-          markerRef.current = new google.maps.Marker({
-            position,
-            map: mapRef.current,
-            animation: google.maps.Animation.DROP,
-          });
-        }
+        placeMarker(lat, lng);
         setLocating(false);
         reverseGeocode(lat, lng);
       },
@@ -177,13 +231,12 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
           if (!e.latLng) return;
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
-          const position = { lat, lng };
 
           if (markerRef.current) {
-            markerRef.current.setPosition(position);
+            markerRef.current.setPosition({ lat, lng });
           } else {
             markerRef.current = new google.maps.Marker({
-              position,
+              position: { lat, lng },
               map,
               animation: google.maps.Animation.DROP,
             });
@@ -195,48 +248,67 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         mapRef.current = map;
         setMapReady(true);
 
-        // Initialize Places Autocomplete
-        if (searchInputRef.current) {
-          const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
-            componentRestrictions: { country: "sa" },
-            fields: ["geometry", "formatted_address", "address_components", "name"],
-          });
-          autocomplete.bindTo("bounds", map);
-          autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
-            if (!place.geometry?.location) return;
+        // Initialize new PlaceAutocompleteElement
+        if (searchContainerRef.current) {
+          try {
+            const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+              componentRestrictions: { country: "sa" },
+            });
 
-            const lat = place.geometry.location.lat();
-            const lng = place.geometry.location.lng();
-            const position = { lat, lng };
+            // Style the element
+            placeAutocomplete.style.width = "100%";
+            placeAutocomplete.style.height = "40px";
 
-            map.setCenter(position);
-            map.setZoom(17);
+            // Clear and append
+            searchContainerRef.current.innerHTML = "";
+            searchContainerRef.current.appendChild(placeAutocomplete);
 
-            if (markerRef.current) {
-              markerRef.current.setPosition(position);
-            } else {
-              markerRef.current = new google.maps.Marker({
-                position,
-                map,
-                animation: google.maps.Animation.DROP,
+            placeAutocomplete.addEventListener("gmp-placeselect", async (event: any) => {
+              const place = event.place;
+              if (!place) return;
+
+              // Fetch full place details
+              await place.fetchFields({
+                fields: ["displayName", "formattedAddress", "location", "addressComponents"],
               });
-            }
 
-            // Extract address from place details
-            const components = place.address_components || [];
-            const getComponent = (type: string) =>
-              components.find(c => c.types.includes(type))?.long_name || "";
+              const location = place.location;
+              if (!location) return;
 
-            const name = place.name || place.formatted_address?.split(",")[0] || "";
-            const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
-            const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
-            const street = getComponent("route") || "";
-            const fullAddress = place.formatted_address || "";
+              const lat = location.lat();
+              const lng = location.lng();
 
-            onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
-          });
-          autocompleteRef.current = autocomplete;
+              map.setCenter({ lat, lng });
+              map.setZoom(17);
+
+              if (markerRef.current) {
+                markerRef.current.setPosition({ lat, lng });
+              } else {
+                markerRef.current = new google.maps.Marker({
+                  position: { lat, lng },
+                  map,
+                  animation: google.maps.Animation.DROP,
+                });
+              }
+
+              // Extract address components
+              const addressComponents = place.addressComponents || [];
+              const getComponent = (type: string) => {
+                const comp = addressComponents.find((c: any) => c.types?.includes(type));
+                return comp?.longText || "";
+              };
+
+              const name = place.displayName || place.formattedAddress?.split(",")[0] || "";
+              const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
+              const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
+              const street = getComponent("route") || "";
+              const fullAddress = place.formattedAddress || "";
+
+              onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
+            });
+          } catch (err) {
+            console.warn("PlaceAutocompleteElement not available, falling back to basic search:", err);
+          }
         }
       } catch (err) {
         console.error("Google Maps init error:", err);
@@ -253,23 +325,18 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         markerRef.current = null;
       }
       mapRef.current = null;
-      autocompleteRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="space-y-2">
-      {/* Search Input */}
-      <div className="relative">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-        <input
-          ref={searchInputRef}
-          type="text"
-          placeholder="ابحث عن موقع..."
-          className="flex h-10 w-full rounded-md border border-input bg-background pr-9 pl-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          dir="rtl"
-        />
+      {/* Search Input Container */}
+      <div className="relative" ref={searchContainerRef}>
+        <div className="flex h-10 w-full rounded-md border border-input bg-background items-center pr-3 gap-2 text-sm text-muted-foreground">
+          <Search className="w-4 h-4 shrink-0" />
+          <span>جاري تحميل البحث...</span>
+        </div>
       </div>
 
       <div className="flex justify-end">
