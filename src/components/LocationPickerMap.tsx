@@ -38,7 +38,7 @@ const loadGoogleMaps = async (): Promise<void> => {
 
     return new Promise<void>((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&language=ar&region=SA`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places,geometry&language=ar&region=SA`;
       script.async = true;
       script.defer = true;
       script.onload = () => resolve();
