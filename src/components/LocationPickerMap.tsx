@@ -251,7 +251,9 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         // Initialize new PlaceAutocompleteElement
         if (searchContainerRef.current) {
           try {
-            const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+            const { PlaceAutocompleteElement } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+
+            const placeAutocomplete = new PlaceAutocompleteElement({
               componentRestrictions: { country: "sa" },
             });
 
@@ -264,30 +266,16 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
             searchContainerRef.current.appendChild(placeAutocomplete);
 
             placeAutocomplete.addEventListener("gmp-placeselect", async (event: any) => {
-              console.log("gmp-placeselect event fired:", event);
               const place = event.place;
-              if (!place) {
-                console.warn("No place in event");
-                return;
-              }
+              if (!place) return;
 
               try {
-                // Fetch full place details
                 await place.fetchFields({
                   fields: ["displayName", "formattedAddress", "location", "addressComponents"],
                 });
 
-                console.log("Place details:", {
-                  displayName: place.displayName,
-                  formattedAddress: place.formattedAddress,
-                  location: place.location,
-                });
-
                 const location = place.location;
-                if (!location) {
-                  console.warn("No location in place");
-                  return;
-                }
+                if (!location) return;
 
                 const lat = location.lat();
                 const lng = location.lng();
@@ -305,7 +293,6 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
                   });
                 }
 
-                // Extract address components
                 const addressComponents = place.addressComponents || [];
                 const getComponent = (type: string) => {
                   const comp = addressComponents.find((c: any) => c.types?.includes(type));
@@ -324,7 +311,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
               }
             });
           } catch (err) {
-            console.warn("PlaceAutocompleteElement not available, falling back to basic search:", err);
+            console.warn("PlaceAutocompleteElement not available:", err);
           }
         }
       } catch (err) {
