@@ -251,7 +251,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         // Initialize new PlaceAutocompleteElement
         if (searchContainerRef.current) {
           try {
-            const { PlaceAutocompleteElement } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+            const { PlaceAutocompleteElement } = await google.maps.importLibrary("places") as any;
 
             const placeAutocomplete = new PlaceAutocompleteElement({
               componentRestrictions: { country: "sa" },
