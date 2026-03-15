@@ -264,47 +264,64 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
             searchContainerRef.current.appendChild(placeAutocomplete);
 
             placeAutocomplete.addEventListener("gmp-placeselect", async (event: any) => {
+              console.log("gmp-placeselect event fired:", event);
               const place = event.place;
-              if (!place) return;
-
-              // Fetch full place details
-              await place.fetchFields({
-                fields: ["displayName", "formattedAddress", "location", "addressComponents"],
-              });
-
-              const location = place.location;
-              if (!location) return;
-
-              const lat = location.lat();
-              const lng = location.lng();
-
-              map.setCenter({ lat, lng });
-              map.setZoom(17);
-
-              if (markerRef.current) {
-                markerRef.current.setPosition({ lat, lng });
-              } else {
-                markerRef.current = new google.maps.Marker({
-                  position: { lat, lng },
-                  map,
-                  animation: google.maps.Animation.DROP,
-                });
+              if (!place) {
+                console.warn("No place in event");
+                return;
               }
 
-              // Extract address components
-              const addressComponents = place.addressComponents || [];
-              const getComponent = (type: string) => {
-                const comp = addressComponents.find((c: any) => c.types?.includes(type));
-                return comp?.longText || "";
-              };
+              try {
+                // Fetch full place details
+                await place.fetchFields({
+                  fields: ["displayName", "formattedAddress", "location", "addressComponents"],
+                });
 
-              const name = place.displayName || place.formattedAddress?.split(",")[0] || "";
-              const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
-              const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
-              const street = getComponent("route") || "";
-              const fullAddress = place.formattedAddress || "";
+                console.log("Place details:", {
+                  displayName: place.displayName,
+                  formattedAddress: place.formattedAddress,
+                  location: place.location,
+                });
 
-              onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
+                const location = place.location;
+                if (!location) {
+                  console.warn("No location in place");
+                  return;
+                }
+
+                const lat = location.lat();
+                const lng = location.lng();
+
+                map.setCenter({ lat, lng });
+                map.setZoom(17);
+
+                if (markerRef.current) {
+                  markerRef.current.setPosition({ lat, lng });
+                } else {
+                  markerRef.current = new google.maps.Marker({
+                    position: { lat, lng },
+                    map,
+                    animation: google.maps.Animation.DROP,
+                  });
+                }
+
+                // Extract address components
+                const addressComponents = place.addressComponents || [];
+                const getComponent = (type: string) => {
+                  const comp = addressComponents.find((c: any) => c.types?.includes(type));
+                  return comp?.longText || "";
+                };
+
+                const name = place.displayName || place.formattedAddress?.split(",")[0] || "";
+                const neighborhood = getComponent("neighborhood") || getComponent("sublocality_level_1") || getComponent("sublocality") || "";
+                const city = getComponent("locality") || getComponent("administrative_area_level_1") || "";
+                const street = getComponent("route") || "";
+                const fullAddress = place.formattedAddress || "";
+
+                onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
+              } catch (err) {
+                console.error("Error fetching place details:", err);
+              }
             });
           } catch (err) {
             console.warn("PlaceAutocompleteElement not available, falling back to basic search:", err);
