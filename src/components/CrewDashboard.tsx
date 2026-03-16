@@ -118,7 +118,22 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-6 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              {walletLoading ? (
+                <Skeleton className="h-8 w-20" />
+              ) : (
+                <p className="text-2xl font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</p>
+              )}
+              <p className="text-sm text-muted-foreground">رصيد المحفظة</p>
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardContent className="pt-6 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -135,6 +150,24 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
             <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
               <HandHelping className="w-5 h-5 text-accent-foreground" />
             </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">{activeJobs.length}</p>
+              <p className="text-sm text-muted-foreground">مهام قيد التنفيذ</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-destructive" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">{completedJobs.length}</p>
+              <p className="text-sm text-muted-foreground">مهام مكتملة</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{activeJobs.length}</p>
               <p className="text-sm text-muted-foreground">مهام قيد التنفيذ</p>
