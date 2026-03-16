@@ -164,6 +164,42 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           onMarkAsRead={() => markAsRead(chatBooking.id)}
         />
       )}
+
+      {/* Accept Dialog */}
+      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>قبول الطلب - بيانات سيارتك</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="crew-vehicle-name">اسم السيارة</Label>
+              <Input
+                id="crew-vehicle-name"
+                placeholder="مثال: كامري 2024"
+                value={crewVehicleName}
+                onChange={(e) => setCrewVehicleName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="crew-vehicle-plate">لوحة السيارة *</Label>
+              <Input
+                id="crew-vehicle-plate"
+                placeholder="مثال: أ ب ت 1234"
+                value={crewVehiclePlate}
+                onChange={(e) => setCrewVehiclePlate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex-row-reverse gap-2">
+            <Button onClick={handleAccept} disabled={accepting || !crewVehiclePlate.trim()}>
+              {accepting ? "جاري القبول..." : "تأكيد القبول"}
+            </Button>
+            <Button variant="outline" onClick={() => setAcceptDialogOpen(false)}>إلغاء</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
