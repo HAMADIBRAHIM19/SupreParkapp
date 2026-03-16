@@ -145,7 +145,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
         </TabsList>
 
         <TabsContent value="available">
-          <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={handleAccept} />
+          <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={openAcceptDialog} />
         </TabsContent>
         <TabsContent value="active">
           <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} unreadCounts={unreadCounts} />
