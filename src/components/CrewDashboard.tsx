@@ -288,6 +288,71 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Withdraw Dialog */}
+      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>طلب سحب رصيد</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="p-3 rounded-lg bg-muted text-sm text-center">
+              الرصيد المتاح: <span className="font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</span>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-amount">المبلغ (ر.س) *</Label>
+              <Input
+                id="withdraw-amount"
+                type="number"
+                step="0.01"
+                min="1"
+                max={walletBalance ?? 0}
+                placeholder="أدخل المبلغ"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-holder">اسم صاحب الحساب *</Label>
+              <Input
+                id="withdraw-holder"
+                placeholder="الاسم كما في الحساب البنكي"
+                value={withdrawHolderName}
+                onChange={(e) => setWithdrawHolderName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-bank">اسم البنك</Label>
+              <Input
+                id="withdraw-bank"
+                placeholder="مثال: الراجحي"
+                value={withdrawBankName}
+                onChange={(e) => setWithdrawBankName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-iban">رقم الآيبان (IBAN) *</Label>
+              <Input
+                id="withdraw-iban"
+                placeholder="SA..."
+                value={withdrawIban}
+                onChange={(e) => setWithdrawIban(e.target.value)}
+                dir="ltr"
+                className="text-left"
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex-row-reverse gap-2">
+            <Button
+              onClick={handleWithdraw}
+              disabled={withdrawing || !withdrawAmount || !withdrawIban.trim() || !withdrawHolderName.trim()}
+            >
+              {withdrawing ? "جاري الإرسال..." : "تأكيد طلب السحب"}
+            </Button>
+            <Button variant="outline" onClick={() => setWithdrawOpen(false)}>إلغاء</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
