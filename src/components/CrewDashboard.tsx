@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet } from "lucide-react";
+import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet, ArrowDownToLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
