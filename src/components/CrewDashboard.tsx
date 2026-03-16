@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet } from "lucide-react";
+import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet, ArrowDownToLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -50,7 +50,14 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
   const [accepting, setAccepting] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletId, setWalletId] = useState<string | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawBankName, setWithdrawBankName] = useState("");
+  const [withdrawIban, setWithdrawIban] = useState("");
+  const [withdrawHolderName, setWithdrawHolderName] = useState("");
+  const [withdrawing, setWithdrawing] = useState(false);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
@@ -65,16 +72,52 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
     setWalletLoading(true);
     const { data } = await supabase
       .from("crew_wallets")
-      .select("balance")
+      .select("id, balance")
       .eq("user_id", user.id)
       .maybeSingle();
     setWalletBalance(data?.balance ?? 0);
+    setWalletId(data?.id ?? null);
     setWalletLoading(false);
   };
 
   useEffect(() => {
     fetchWallet();
   }, [user?.id, bookings]);
+
+  const handleWithdraw = async () => {
+    const amount = parseFloat(withdrawAmount);
+    if (!walletId || !amount || amount <= 0 || amount > (walletBalance ?? 0)) {
+      toast({ title: "خطأ", description: "يرجى إدخال مبلغ صحيح", variant: "destructive" });
+      return;
+    }
+    if (!withdrawIban.trim() || !withdrawHolderName.trim()) {
+      toast({ title: "خطأ", description: "يرجى إدخال بيانات الحساب البنكي", variant: "destructive" });
+      return;
+    }
+    setWithdrawing(true);
+    const { error } = await supabase
+      .from("withdrawal_requests")
+      .insert({
+        wallet_id: walletId,
+        user_id: user?.id,
+        amount,
+        bank_name: withdrawBankName.trim() || null,
+        iban: withdrawIban.trim(),
+        holder_name: withdrawHolderName.trim(),
+      });
+    setWithdrawing(false);
+    if (error) {
+      toast({ title: "خطأ", description: error.message?.includes("غير كافٍ") ? "الرصيد غير كافٍ" : "حدث خطأ أثناء طلب السحب", variant: "destructive" });
+      return;
+    }
+    toast({ title: "تم", description: "تم إرسال طلب السحب بنجاح" });
+    setWithdrawOpen(false);
+    setWithdrawAmount("");
+    setWithdrawBankName("");
+    setWithdrawIban("");
+    setWithdrawHolderName("");
+    fetchWallet();
+  };
 
   const openAcceptDialog = (bookingId: string) => {
     setAcceptingBookingId(bookingId);
@@ -120,18 +163,30 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="pt-6 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-primary" />
+          <CardContent className="pt-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                {walletLoading ? (
+                  <Skeleton className="h-8 w-20" />
+                ) : (
+                  <p className="text-2xl font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</p>
+                )}
+                <p className="text-sm text-muted-foreground">رصيد المحفظة</p>
+              </div>
             </div>
-            <div>
-              {walletLoading ? (
-                <Skeleton className="h-8 w-20" />
-              ) : (
-                <p className="text-2xl font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</p>
-              )}
-              <p className="text-sm text-muted-foreground">رصيد المحفظة</p>
-            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1 rounded-xl font-bold border-primary/30 text-primary hover:bg-primary/10"
+              disabled={!walletBalance || walletBalance <= 0}
+              onClick={() => setWithdrawOpen(true)}
+            >
+              <ArrowDownToLine className="w-3.5 h-3.5" />
+              سحب
+            </Button>
           </CardContent>
         </Card>
         <Card>
@@ -230,6 +285,71 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
               {accepting ? "جاري القبول..." : "تأكيد القبول"}
             </Button>
             <Button variant="outline" onClick={() => setAcceptDialogOpen(false)}>إلغاء</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Withdraw Dialog */}
+      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>طلب سحب رصيد</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="p-3 rounded-lg bg-muted text-sm text-center">
+              الرصيد المتاح: <span className="font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</span>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-amount">المبلغ (ر.س) *</Label>
+              <Input
+                id="withdraw-amount"
+                type="number"
+                step="0.01"
+                min="1"
+                max={walletBalance ?? 0}
+                placeholder="أدخل المبلغ"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-holder">اسم صاحب الحساب *</Label>
+              <Input
+                id="withdraw-holder"
+                placeholder="الاسم كما في الحساب البنكي"
+                value={withdrawHolderName}
+                onChange={(e) => setWithdrawHolderName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-bank">اسم البنك</Label>
+              <Input
+                id="withdraw-bank"
+                placeholder="مثال: الراجحي"
+                value={withdrawBankName}
+                onChange={(e) => setWithdrawBankName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="withdraw-iban">رقم الآيبان (IBAN) *</Label>
+              <Input
+                id="withdraw-iban"
+                placeholder="SA..."
+                value={withdrawIban}
+                onChange={(e) => setWithdrawIban(e.target.value)}
+                dir="ltr"
+                className="text-left"
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex-row-reverse gap-2">
+            <Button
+              onClick={handleWithdraw}
+              disabled={withdrawing || !withdrawAmount || !withdrawIban.trim() || !withdrawHolderName.trim()}
+            >
+              {withdrawing ? "جاري الإرسال..." : "تأكيد طلب السحب"}
+            </Button>
+            <Button variant="outline" onClick={() => setWithdrawOpen(false)}>إلغاء</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
