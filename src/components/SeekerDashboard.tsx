@@ -253,16 +253,33 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
                             </span>
                           )}
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1 rounded-xl font-bold"
-                          disabled={completingId === booking.id}
-                          onClick={() => handleComplete(booking.id)}
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                          {completingId === booking.id ? "جاري..." : "إكتمال الطلب"}
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1 rounded-xl font-bold"
+                              disabled={completingId === booking.id}
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              {completingId === booking.id ? "جاري..." : "إكتمال الطلب"}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent dir="rtl">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>تأكيد إكتمال الطلب</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                هل أنت متأكد من إكتمال هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="flex-row-reverse gap-2">
+                              <AlertDialogAction onClick={() => handleComplete(booking.id)}>
+                                نعم، إكتمال الطلب
+                              </AlertDialogAction>
+                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </>
                     )}
                     {booking.status === "pending" ? (
