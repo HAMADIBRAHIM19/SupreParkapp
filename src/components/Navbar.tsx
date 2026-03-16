@@ -41,6 +41,11 @@ const Navbar = () => {
           {user ? (
             <>
               <NotificationsBell />
+              {isAdmin && (
+                <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
+                  <Link to="/admin"><ShieldCheck className="w-4 h-4" /> المسؤول</Link>
+                </Button>
+              )}
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">لوحة التحكم</Link>
               </Button>
