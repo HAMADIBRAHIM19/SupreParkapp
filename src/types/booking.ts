@@ -13,4 +13,6 @@ export interface Booking {
   created_at: string;
   crew_id: string | null;
   seeker_id: string;
+  crew_vehicle_name: string | null;
+  crew_vehicle_plate: string | null;
 }

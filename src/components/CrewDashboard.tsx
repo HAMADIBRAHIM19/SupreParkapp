@@ -44,6 +44,11 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const { user } = useAuth();
   const { toast } = useToast();
   const [chatBooking, setChatBooking] = useState<Booking | null>(null);
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [acceptingBookingId, setAcceptingBookingId] = useState<string | null>(null);
+  const [crewVehicleName, setCrewVehicleName] = useState("");
+  const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
+  const [accepting, setAccepting] = useState(false);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
@@ -52,17 +57,37 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
 
   const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
   const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
-  const handleAccept = async (bookingId: string) => {
+
+  const openAcceptDialog = (bookingId: string) => {
+    setAcceptingBookingId(bookingId);
+    setCrewVehicleName("");
+    setCrewVehiclePlate("");
+    setAcceptDialogOpen(true);
+  };
+
+  const handleAccept = async () => {
+    if (!acceptingBookingId || !crewVehiclePlate.trim()) {
+      toast({ title: "خطأ", description: "يرجى إدخال لوحة السيارة", variant: "destructive" });
+      return;
+    }
+    setAccepting(true);
     const { error } = await supabase
       .from("bookings")
-      .update({ crew_id: user?.id, status: "approved" as BookingStatus })
-      .eq("id", bookingId);
+      .update({
+        crew_id: user?.id,
+        status: "approved" as BookingStatus,
+        crew_vehicle_name: crewVehicleName.trim() || null,
+        crew_vehicle_plate: crewVehiclePlate.trim(),
+      })
+      .eq("id", acceptingBookingId);
+    setAccepting(false);
 
     if (error) {
       toast({ title: "خطأ", description: "حدث خطأ أثناء قبول الطلب", variant: "destructive" });
       return;
     }
     toast({ title: "تم القبول", description: "تم قبول الطلب بنجاح" });
+    setAcceptDialogOpen(false);
     onRefresh();
   };
 
