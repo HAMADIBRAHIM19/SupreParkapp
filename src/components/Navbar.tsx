@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Car, LogOut, Settings } from "lucide-react";
+import { Car, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationsBell from "@/components/NotificationsBell";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
