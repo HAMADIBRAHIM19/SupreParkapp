@@ -235,20 +235,32 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
                 <TableCell>
                   <div className="flex gap-1">
                     {booking.status === "approved" && onChat && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-1 relative"
-                        onClick={() => onChat(booking)}
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        محادثة
-                        {unreadCounts && unreadCounts[booking.id] > 0 && (
-                          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                            {unreadCounts[booking.id]}
-                          </span>
-                        )}
-                      </Button>
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1 relative"
+                          onClick={() => onChat(booking)}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          محادثة
+                          {unreadCounts && unreadCounts[booking.id] > 0 && (
+                            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                              {unreadCounts[booking.id]}
+                            </span>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1 rounded-xl font-bold"
+                          disabled={completingId === booking.id}
+                          onClick={() => handleComplete(booking.id)}
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          {completingId === booking.id ? "جاري..." : "إكتمال الطلب"}
+                        </Button>
+                      </>
                     )}
                     {booking.status === "pending" ? (
                       <Button
