@@ -63,19 +63,6 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
     onRefresh();
   };
 
-  const handleComplete = async (bookingId: string) => {
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status: "completed" as BookingStatus })
-      .eq("id", bookingId);
-
-    if (error) {
-      toast({ title: "خطأ", description: "حدث خطأ أثناء إكمال الطلب", variant: "destructive" });
-      return;
-    }
-    toast({ title: "تم الإكمال", description: "تم تحديث حالة الطلب" });
-    onRefresh();
-  };
 
   return (
     <>
