@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle } from "lucide-react";
+import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -49,6 +49,8 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const [crewVehicleName, setCrewVehicleName] = useState("");
   const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
   const [accepting, setAccepting] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletLoading, setWalletLoading] = useState(true);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
@@ -57,6 +59,22 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
 
   const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
   const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
+
+  const fetchWallet = async () => {
+    if (!user?.id) return;
+    setWalletLoading(true);
+    const { data } = await supabase
+      .from("crew_wallets")
+      .select("balance")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    setWalletBalance(data?.balance ?? 0);
+    setWalletLoading(false);
+  };
+
+  useEffect(() => {
+    fetchWallet();
+  }, [user?.id, bookings]);
 
   const openAcceptDialog = (bookingId: string) => {
     setAcceptingBookingId(bookingId);
@@ -100,7 +118,22 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-6 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              {walletLoading ? (
+                <Skeleton className="h-8 w-20" />
+              ) : (
+                <p className="text-2xl font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</p>
+              )}
+              <p className="text-sm text-muted-foreground">رصيد المحفظة</p>
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardContent className="pt-6 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
