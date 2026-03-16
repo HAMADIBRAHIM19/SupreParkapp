@@ -212,10 +212,15 @@ const CrewBookingsTable = ({
             {bookings.map((booking) => (
               <TableRow key={booking.id}>
                 <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-muted-foreground" />
-                    {booking.location}
-                  </div>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.location)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-primary hover:underline"
+                  >
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    <span className="line-clamp-1">{booking.location}</span>
+                  </a>
                 </TableCell>
                 <TableCell>{booking.vehicle_name || "—"}</TableCell>
                 <TableCell>{booking.vehicle_plate}</TableCell>
