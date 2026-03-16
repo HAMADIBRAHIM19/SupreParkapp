@@ -19,6 +19,8 @@ export type Database = {
           contact_number: string | null
           created_at: string
           crew_id: string | null
+          crew_vehicle_name: string | null
+          crew_vehicle_plate: string | null
           expected_arrival: string | null
           id: string
           location: string
@@ -36,6 +38,8 @@ export type Database = {
           contact_number?: string | null
           created_at?: string
           crew_id?: string | null
+          crew_vehicle_name?: string | null
+          crew_vehicle_plate?: string | null
           expected_arrival?: string | null
           id?: string
           location: string
@@ -53,6 +57,8 @@ export type Database = {
           contact_number?: string | null
           created_at?: string
           crew_id?: string | null
+          crew_vehicle_name?: string | null
+          crew_vehicle_plate?: string | null
           expected_arrival?: string | null
           id?: string
           location?: string
