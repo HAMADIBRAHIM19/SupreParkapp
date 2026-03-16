@@ -134,6 +134,22 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
   const { toast } = useToast();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [completingId, setCompletingId] = useState<string | null>(null);
+
+  const handleComplete = async (id: string) => {
+    setCompletingId(id);
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: "completed" as const })
+      .eq("id", id);
+    setCompletingId(null);
+    if (error) {
+      toast({ title: "خطأ", description: "حدث خطأ أثناء إكمال الطلب", variant: "destructive" });
+    } else {
+      toast({ title: "تم", description: "تم إكمال الطلب بنجاح" });
+      onBookingUpdated?.();
+    }
+  };
 
   const handleCancel = async (id: string) => {
     setCancellingId(id);
