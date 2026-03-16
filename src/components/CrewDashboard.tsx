@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
@@ -41,6 +44,11 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const { user } = useAuth();
   const { toast } = useToast();
   const [chatBooking, setChatBooking] = useState<Booking | null>(null);
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [acceptingBookingId, setAcceptingBookingId] = useState<string | null>(null);
+  const [crewVehicleName, setCrewVehicleName] = useState("");
+  const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
+  const [accepting, setAccepting] = useState(false);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
@@ -49,17 +57,37 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
 
   const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
   const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
-  const handleAccept = async (bookingId: string) => {
+
+  const openAcceptDialog = (bookingId: string) => {
+    setAcceptingBookingId(bookingId);
+    setCrewVehicleName("");
+    setCrewVehiclePlate("");
+    setAcceptDialogOpen(true);
+  };
+
+  const handleAccept = async () => {
+    if (!acceptingBookingId || !crewVehiclePlate.trim()) {
+      toast({ title: "خطأ", description: "يرجى إدخال لوحة السيارة", variant: "destructive" });
+      return;
+    }
+    setAccepting(true);
     const { error } = await supabase
       .from("bookings")
-      .update({ crew_id: user?.id, status: "approved" as BookingStatus })
-      .eq("id", bookingId);
+      .update({
+        crew_id: user?.id,
+        status: "approved" as BookingStatus,
+        crew_vehicle_name: crewVehicleName.trim() || null,
+        crew_vehicle_plate: crewVehiclePlate.trim(),
+      })
+      .eq("id", acceptingBookingId);
+    setAccepting(false);
 
     if (error) {
       toast({ title: "خطأ", description: "حدث خطأ أثناء قبول الطلب", variant: "destructive" });
       return;
     }
     toast({ title: "تم القبول", description: "تم قبول الطلب بنجاح" });
+    setAcceptDialogOpen(false);
     onRefresh();
   };
 
@@ -117,7 +145,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
         </TabsList>
 
         <TabsContent value="available">
-          <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={handleAccept} />
+          <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={openAcceptDialog} />
         </TabsContent>
         <TabsContent value="active">
           <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} unreadCounts={unreadCounts} />
@@ -136,6 +164,42 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           onMarkAsRead={() => markAsRead(chatBooking.id)}
         />
       )}
+
+      {/* Accept Dialog */}
+      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+        <DialogContent dir="rtl" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>قبول الطلب - بيانات سيارتك</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="crew-vehicle-name">اسم السيارة</Label>
+              <Input
+                id="crew-vehicle-name"
+                placeholder="مثال: كامري 2024"
+                value={crewVehicleName}
+                onChange={(e) => setCrewVehicleName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="crew-vehicle-plate">لوحة السيارة *</Label>
+              <Input
+                id="crew-vehicle-plate"
+                placeholder="مثال: أ ب ت 1234"
+                value={crewVehiclePlate}
+                onChange={(e) => setCrewVehiclePlate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex-row-reverse gap-2">
+            <Button onClick={handleAccept} disabled={accepting || !crewVehiclePlate.trim()}>
+              {accepting ? "جاري القبول..." : "تأكيد القبول"}
+            </Button>
+            <Button variant="outline" onClick={() => setAcceptDialogOpen(false)}>إلغاء</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

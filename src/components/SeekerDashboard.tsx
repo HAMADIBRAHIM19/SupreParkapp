@@ -216,6 +216,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
             <TableRow>
               <TableHead className="text-right">الموقع</TableHead>
               <TableHead className="text-right">لوحة السيارة</TableHead>
+              <TableHead className="text-right">سيارة الطاقم</TableHead>
               <TableHead className="text-right">الموعد</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
               <TableHead className="text-right"></TableHead>
@@ -231,6 +232,17 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
                   </div>
                 </TableCell>
                 <TableCell>{booking.vehicle_plate}</TableCell>
+                <TableCell>
+                  {booking.status === "approved" && booking.crew_vehicle_plate ? (
+                    <div className="text-sm flex items-center gap-1 text-primary font-medium">
+                      <Car className="w-3.5 h-3.5" />
+                      {booking.crew_vehicle_name && <span>{booking.crew_vehicle_name}</span>}
+                      <span className="text-muted-foreground">({booking.crew_vehicle_plate})</span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
                 <TableCell>
                   <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
