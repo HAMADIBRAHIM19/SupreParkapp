@@ -72,16 +72,52 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
     setWalletLoading(true);
     const { data } = await supabase
       .from("crew_wallets")
-      .select("balance")
+      .select("id, balance")
       .eq("user_id", user.id)
       .maybeSingle();
     setWalletBalance(data?.balance ?? 0);
+    setWalletId(data?.id ?? null);
     setWalletLoading(false);
   };
 
   useEffect(() => {
     fetchWallet();
   }, [user?.id, bookings]);
+
+  const handleWithdraw = async () => {
+    const amount = parseFloat(withdrawAmount);
+    if (!walletId || !amount || amount <= 0 || amount > (walletBalance ?? 0)) {
+      toast({ title: "خطأ", description: "يرجى إدخال مبلغ صحيح", variant: "destructive" });
+      return;
+    }
+    if (!withdrawIban.trim() || !withdrawHolderName.trim()) {
+      toast({ title: "خطأ", description: "يرجى إدخال بيانات الحساب البنكي", variant: "destructive" });
+      return;
+    }
+    setWithdrawing(true);
+    const { error } = await supabase
+      .from("withdrawal_requests")
+      .insert({
+        wallet_id: walletId,
+        user_id: user?.id,
+        amount,
+        bank_name: withdrawBankName.trim() || null,
+        iban: withdrawIban.trim(),
+        holder_name: withdrawHolderName.trim(),
+      });
+    setWithdrawing(false);
+    if (error) {
+      toast({ title: "خطأ", description: error.message?.includes("غير كافٍ") ? "الرصيد غير كافٍ" : "حدث خطأ أثناء طلب السحب", variant: "destructive" });
+      return;
+    }
+    toast({ title: "تم", description: "تم إرسال طلب السحب بنجاح" });
+    setWithdrawOpen(false);
+    setWithdrawAmount("");
+    setWithdrawBankName("");
+    setWithdrawIban("");
+    setWithdrawHolderName("");
+    fetchWallet();
+  };
 
   const openAcceptDialog = (bookingId: string) => {
     setAcceptingBookingId(bookingId);
