@@ -49,6 +49,8 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const [crewVehicleName, setCrewVehicleName] = useState("");
   const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
   const [accepting, setAccepting] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletLoading, setWalletLoading] = useState(true);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
@@ -57,6 +59,22 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
 
   const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
   const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
+
+  const fetchWallet = async () => {
+    if (!user?.id) return;
+    setWalletLoading(true);
+    const { data } = await supabase
+      .from("crew_wallets")
+      .select("balance")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    setWalletBalance(data?.balance ?? 0);
+    setWalletLoading(false);
+  };
+
+  useEffect(() => {
+    fetchWallet();
+  }, [user?.id, bookings]);
 
   const openAcceptDialog = (bookingId: string) => {
     setAcceptingBookingId(bookingId);
