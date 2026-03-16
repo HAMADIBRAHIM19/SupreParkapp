@@ -1,12 +1,21 @@
 import { Button } from "@/components/ui/button";
-import { Car, LogOut, Settings } from "lucide-react";
+import { Car, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationsBell from "@/components/NotificationsBell";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin")
+      .then(({ data }) => setIsAdmin(!!(data && data.length > 0)));
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -32,6 +41,11 @@ const Navbar = () => {
           {user ? (
             <>
               <NotificationsBell />
+              {isAdmin && (
+                <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
+                  <Link to="/admin"><ShieldCheck className="w-4 h-4" /> المسؤول</Link>
+                </Button>
+              )}
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">لوحة التحكم</Link>
               </Button>
