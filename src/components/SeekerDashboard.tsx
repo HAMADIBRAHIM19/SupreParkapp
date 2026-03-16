@@ -216,6 +216,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
             <TableRow>
               <TableHead className="text-right">الموقع</TableHead>
               <TableHead className="text-right">لوحة السيارة</TableHead>
+              <TableHead className="text-right">سيارة الطاقم</TableHead>
               <TableHead className="text-right">الموعد</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
               <TableHead className="text-right"></TableHead>
