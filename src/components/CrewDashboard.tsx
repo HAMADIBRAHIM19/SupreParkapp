@@ -63,19 +63,6 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
     onRefresh();
   };
 
-  const handleComplete = async (bookingId: string) => {
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status: "completed" as BookingStatus })
-      .eq("id", bookingId);
-
-    if (error) {
-      toast({ title: "خطأ", description: "حدث خطأ أثناء إكمال الطلب", variant: "destructive" });
-      return;
-    }
-    toast({ title: "تم الإكمال", description: "تم تحديث حالة الطلب" });
-    onRefresh();
-  };
 
   return (
     <>
@@ -133,7 +120,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           <CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={handleAccept} />
         </TabsContent>
         <TabsContent value="active">
-          <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onComplete={handleComplete} onChat={setChatBooking} unreadCounts={unreadCounts} />
+          <CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} unreadCounts={unreadCounts} />
         </TabsContent>
         <TabsContent value="completed">
           <CrewBookingsTable bookings={completedJobs} loading={loading} type="completed" />
@@ -158,7 +145,6 @@ const CrewBookingsTable = ({
   loading,
   type,
   onAccept,
-  onComplete,
   onChat,
   unreadCounts,
 }: {
@@ -166,7 +152,6 @@ const CrewBookingsTable = ({
   loading: boolean;
   type: "available" | "active" | "completed";
   onAccept?: (id: string) => void;
-  onComplete?: (id: string) => void;
   onChat?: (booking: Booking) => void;
   unreadCounts?: Record<string, number>;
 }) => {
@@ -249,12 +234,6 @@ const CrewBookingsTable = ({
                               {unreadCounts[booking.id]}
                             </span>
                           )}
-                        </Button>
-                      )}
-                      {onComplete && (
-                        <Button size="sm" variant="outline" className="rounded-xl font-bold gap-1" onClick={() => onComplete(booking.id)}>
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          إكمال
                         </Button>
                       )}
                     </div>

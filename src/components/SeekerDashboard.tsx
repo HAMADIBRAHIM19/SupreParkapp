@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
@@ -134,6 +134,22 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
   const { toast } = useToast();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [completingId, setCompletingId] = useState<string | null>(null);
+
+  const handleComplete = async (id: string) => {
+    setCompletingId(id);
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: "completed" as const })
+      .eq("id", id);
+    setCompletingId(null);
+    if (error) {
+      toast({ title: "خطأ", description: "حدث خطأ أثناء إكمال الطلب", variant: "destructive" });
+    } else {
+      toast({ title: "تم", description: "تم إكمال الطلب بنجاح" });
+      onBookingUpdated?.();
+    }
+  };
 
   const handleCancel = async (id: string) => {
     setCancellingId(id);
@@ -219,20 +235,32 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
                 <TableCell>
                   <div className="flex gap-1">
                     {booking.status === "approved" && onChat && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-1 relative"
-                        onClick={() => onChat(booking)}
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        محادثة
-                        {unreadCounts && unreadCounts[booking.id] > 0 && (
-                          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                            {unreadCounts[booking.id]}
-                          </span>
-                        )}
-                      </Button>
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1 relative"
+                          onClick={() => onChat(booking)}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          محادثة
+                          {unreadCounts && unreadCounts[booking.id] > 0 && (
+                            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                              {unreadCounts[booking.id]}
+                            </span>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1 rounded-xl font-bold"
+                          disabled={completingId === booking.id}
+                          onClick={() => handleComplete(booking.id)}
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          {completingId === booking.id ? "جاري..." : "إكتمال الطلب"}
+                        </Button>
+                      </>
                     )}
                     {booking.status === "pending" ? (
                       <Button
