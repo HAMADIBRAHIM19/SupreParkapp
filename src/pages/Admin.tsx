@@ -103,8 +103,8 @@ const Admin = () => {
 
   const statusBadge = (status: string) => {
     switch (status) {
-      case "pending": return <Badge variant="outline" className="text-yellow-600 border-yellow-400">قيد الانتظار</Badge>;
-      case "approved": return <Badge className="bg-green-600">تمت الموافقة</Badge>;
+      case "pending": return <Badge variant="outline">قيد الانتظار</Badge>;
+      case "approved": return <Badge variant="default">تمت الموافقة</Badge>;
       case "rejected": return <Badge variant="destructive">مرفوض</Badge>;
       default: return <Badge variant="secondary">{status}</Badge>;
     }
