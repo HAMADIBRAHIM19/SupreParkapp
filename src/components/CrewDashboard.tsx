@@ -163,18 +163,30 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="pt-6 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-primary" />
+          <CardContent className="pt-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                {walletLoading ? (
+                  <Skeleton className="h-8 w-20" />
+                ) : (
+                  <p className="text-2xl font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</p>
+                )}
+                <p className="text-sm text-muted-foreground">رصيد المحفظة</p>
+              </div>
             </div>
-            <div>
-              {walletLoading ? (
-                <Skeleton className="h-8 w-20" />
-              ) : (
-                <p className="text-2xl font-bold text-primary">{walletBalance?.toFixed(2)} ر.س</p>
-              )}
-              <p className="text-sm text-muted-foreground">رصيد المحفظة</p>
-            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1 rounded-xl font-bold border-primary/30 text-primary hover:bg-primary/10"
+              disabled={!walletBalance || walletBalance <= 0}
+              onClick={() => setWithdrawOpen(true)}
+            >
+              <ArrowDownToLine className="w-3.5 h-3.5" />
+              سحب
+            </Button>
           </CardContent>
         </Card>
         <Card>
