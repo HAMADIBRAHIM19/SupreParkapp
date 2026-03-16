@@ -50,7 +50,14 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
   const [accepting, setAccepting] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletId, setWalletId] = useState<string | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawBankName, setWithdrawBankName] = useState("");
+  const [withdrawIban, setWithdrawIban] = useState("");
+  const [withdrawHolderName, setWithdrawHolderName] = useState("");
+  const [withdrawing, setWithdrawing] = useState(false);
 
   const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
