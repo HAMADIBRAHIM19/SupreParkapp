@@ -236,12 +236,6 @@ const CrewBookingsTable = ({
                           )}
                         </Button>
                       )}
-                      {onComplete && (
-                        <Button size="sm" variant="outline" className="rounded-xl font-bold gap-1" onClick={() => onComplete(booking.id)}>
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          إكمال
-                        </Button>
-                      )}
                     </div>
                   </TableCell>
                 )}
