@@ -9,6 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin")
+      .then(({ data }) => setIsAdmin(!!(data && data.length > 0)));
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
