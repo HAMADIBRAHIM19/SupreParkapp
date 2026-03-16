@@ -168,24 +168,6 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           </CardContent>
         </Card>
       </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">{activeJobs.length}</p>
-              <p className="text-sm text-muted-foreground">مهام قيد التنفيذ</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">{completedJobs.length}</p>
-              <p className="text-sm text-muted-foreground">مهام مكتملة</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Tabs */}
       <Tabs defaultValue="available" className="w-full">
