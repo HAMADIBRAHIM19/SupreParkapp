@@ -145,7 +145,6 @@ const CrewBookingsTable = ({
   loading,
   type,
   onAccept,
-  onComplete,
   onChat,
   unreadCounts,
 }: {
@@ -153,7 +152,6 @@ const CrewBookingsTable = ({
   loading: boolean;
   type: "available" | "active" | "completed";
   onAccept?: (id: string) => void;
-  onComplete?: (id: string) => void;
   onChat?: (booking: Booking) => void;
   unreadCounts?: Record<string, number>;
 }) => {
