@@ -1,8 +1,11 @@
 import { Car } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
+  const { t, dir } = useLanguage();
+
   return (
-    <footer className="border-t py-12 bg-muted/20" dir="rtl">
+    <footer className="border-t py-12 bg-muted/20" dir={dir}>
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
@@ -11,9 +14,7 @@ const Footer = () => {
             </div>
             <span className="font-bold text-foreground">Parklet</span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            © 2026 Parklet. جميع الحقوق محفوظة.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("allRightsReserved")}</p>
         </div>
       </div>
     </footer>

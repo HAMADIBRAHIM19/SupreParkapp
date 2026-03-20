@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Car, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { Car, LogOut, Settings, ShieldCheck, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationsBell from "@/components/NotificationsBell";
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const { t, lang, setLang, dir } = useLanguage();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -23,7 +25,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b" dir="rtl">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b" dir={dir}>
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
@@ -33,21 +35,31 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <a href="#how" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">كيف يعمل؟</a>
-          <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">المميزات</a>
+          <a href="#how" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t("howItWorks")}</a>
+          <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t("features")}</a>
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1 font-semibold text-xs"
+            onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+          >
+            <Globe className="w-4 h-4" />
+            {lang === "ar" ? "EN" : "عربي"}
+          </Button>
+
           {user ? (
             <>
               <NotificationsBell />
               {isAdmin && (
                 <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
-                  <Link to="/admin"><ShieldCheck className="w-4 h-4" /> المسؤول</Link>
+                  <Link to="/admin"><ShieldCheck className="w-4 h-4" /> {t("admin")}</Link>
                 </Button>
               )}
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
-                <Link to="/dashboard">لوحة التحكم</Link>
+                <Link to="/dashboard">{t("dashboard")}</Link>
               </Button>
               <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
                 <Link to="/settings">
@@ -56,17 +68,16 @@ const Navbar = () => {
               </Button>
               <Button variant="ghost" size="sm" className="font-semibold gap-2" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
-                تسجيل خروج
+                {t("signOut")}
               </Button>
             </>
-
           ) : (
             <>
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
-                <Link to="/login">تسجيل دخول</Link>
+                <Link to="/login">{t("login")}</Link>
               </Button>
               <Button size="sm" className="rounded-xl font-bold" asChild>
-                <Link to="/signup">سجّل مجاناً</Link>
+                <Link to="/signup">{t("signupFree")}</Link>
               </Button>
             </>
           )}
