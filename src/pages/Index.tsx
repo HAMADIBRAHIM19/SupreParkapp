@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -16,6 +17,7 @@ import { Plus } from "lucide-react";
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const [accountType, setAccountType] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
