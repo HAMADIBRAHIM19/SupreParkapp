@@ -1,0 +1,661 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+type Lang = "ar" | "en";
+
+const translations = {
+  ar: {
+    // Navbar
+    howItWorks: "كيف يعمل؟",
+    features: "المميزات",
+    admin: "المسؤول",
+    dashboard: "لوحة التحكم",
+    signOut: "تسجيل خروج",
+    login: "تسجيل دخول",
+    signupFree: "سجّل مجاناً",
+
+    // Hero
+    heroBadge: "احجز موقفك قبل ما توصل",
+    heroTitle1: "ما تدور على",
+    heroSpot: "موقف",
+    heroTitle2: "خلّ أحد يحجزه لك",
+    heroDesc: "تطبيق Parklet يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل. وفّر وقتك وأعصابك!",
+    statSpots: "موقف تم حجزه",
+    statCrew: "حاجز نشط",
+    statRating: "تقييم المستخدمين",
+
+    // HowItWorks
+    howLabel: "كيف يعمل؟",
+    howTitle: "ثلاث خطوات بس",
+    howDesc: "عملية سهلة وسريعة تخلّيك تحصل موقف بدون عناء",
+    step1Title: "حدد وجهتك",
+    step1Desc: "اكتب الموقع اللي تبي تروحه وحدد الوقت المتوقع لوصولك.",
+    step2Title: "اختر الحاجز",
+    step2Desc: "تصفح قائمة الحاجزين القريبين واختر الأنسب حسب التقييم والسعر.",
+    step3Title: "أوصل وتلقى أحد أفراد طاقمنا حاجز لك موقف",
+    step3Desc: "الحاجز يحفظ لك الموقف حتى توصل. استلم موقفك بكل راحة!",
+
+    // Features
+    whyParklet: "ليش Parklet؟",
+    featuresTitle: "مميزات تخلّيك ترتاح",
+    featSaveTime: "توفير الوقت",
+    featSaveTimeDesc: "ما تحتاج تلف وتدور، موقفك جاهز قبل ما توصل.",
+    featSafety: "أمان وثقة",
+    featSafetyDesc: "جميع الحاجزين موثقين ومقيّمين من المستخدمين.",
+    featPrice: "أسعار معقولة",
+    featPriceDesc: "ادفع فقط مبلغ بسيط مقابل راحة بالك.",
+    featRating: "نظام تقييم",
+    featRatingDesc: "قيّم تجربتك واختر الحاجزين الأعلى تقييماً.",
+    featChat: "تواصل مباشر",
+    featChatDesc: "تواصل مع الحاجز مباشرة عبر الدردشة داخل التطبيق.",
+    featTracking: "تتبع مباشر",
+    featTrackingDesc: "تابع موقع الحاجز والموقف على الخريطة في الوقت الفعلي.",
+
+    // CTA
+    ctaTitle: "جاهز تحجز موقفك؟",
+    ctaDesc: "انضم لآلاف المستخدمين اللي وفّروا وقتهم وأعصابهم مع Parklet",
+    ctaStart: "ابدأ الآن",
+    ctaSignupCrew: "سجّل كحاجز",
+
+    // Crew Hero
+    crewBadge: "ابدأ باستقبال الطلبات الآن",
+    crewHeroTitle1: "كن",
+    crewHeroSpot: "الحاجز",
+    crewHeroTitle2: "واكسب من وقتك",
+    crewHeroDesc: "استقبل طلبات حجز المواقف من الباحثين القريبين منك، تواصل معهم، واحجز لهم الموقف. اكسب دخل إضافي بكل سهولة!",
+    crewAvailable: "طلب متاح للقبول",
+    openDashboard: "افتح لوحة التحكم",
+    statCrewActive: "حاجز نشط",
+    statCompleted: "طلب تم إنجازه",
+    statCrewRating: "تقييم الحاجزين",
+
+    // Crew HowItWorks
+    crewHowLabel: "كيف تعمل كحاجز؟",
+    crewHowTitle: "أربع خطوات بسيطة",
+    crewHowDesc: "عملية واضحة وسهلة تخلّيك تبدأ تكسب من وقتك",
+    crewStep1Title: "استقبل الطلب",
+    crewStep1Desc: "تصلك طلبات حجز المواقف من الباحثين حسب الوجهة المختارة. اختر الطلب المناسب لك واقبله.",
+    crewStep2Title: "تواصل مع الباحث",
+    crewStep2Desc: "بعد قبول الطلب، تواصل مع الباحث لتنسيق التفاصيل وتأكيد الموقع والوقت المتوقع للوصول.",
+    crewStep3Title: "توجّه للموقع",
+    crewStep3Desc: "انطلق إلى الوجهة المحددة قبل وصول الباحث وابحث عن موقف مناسب في المنطقة.",
+    crewStep4Title: "احجز الموقف",
+    crewStep4Desc: "احجز الموقف وانتظر وصول الباحث. بمجرد وصوله واستلامه للموقف، أكمل الطلب واحصل على مكافأتك!",
+
+    // Crew Features
+    crewWhyJoin: "ليش تنضم كحاجز؟",
+    crewFeatTitle: "مميزات تخلّيك تبدأ اليوم",
+    crewFeatIncome: "دخل إضافي",
+    crewFeatIncomeDesc: "اكسب مبلغ مقابل كل موقف تحجزه للباحثين.",
+    crewFeatFlex: "مرونة الوقت",
+    crewFeatFlexDesc: "اشتغل بالوقت اللي يناسبك بدون التزام.",
+    crewFeatNearby: "طلبات قريبة",
+    crewFeatNearbyDesc: "استقبل طلبات من مواقع قريبة منك.",
+    crewFeatReputation: "بناء سمعة",
+    crewFeatReputationDesc: "كل طلب مكتمل يرفع تقييمك ويزيد فرصك.",
+    crewFeatNotif: "إشعارات فورية",
+    crewFeatNotifDesc: "تنبيهات مباشرة عند وصول طلبات جديدة.",
+    crewFeatProtection: "حماية وضمان",
+    crewFeatProtectionDesc: "نظام آمن يحفظ حقوقك كحاجز.",
+
+    // Footer
+    allRightsReserved: "© 2026 Parklet. جميع الحقوق محفوظة.",
+
+    // Login
+    backToHome: "العودة للرئيسية",
+    loginTitle: "تسجيل الدخول",
+    loginDesc: "أدخل بياناتك للوصول إلى حسابك",
+    email: "البريد الإلكتروني",
+    password: "كلمة المرور",
+    loggingIn: "جارٍ تسجيل الدخول...",
+    loginBtn: "تسجيل الدخول",
+    noAccount: "ليس لديك حساب؟",
+    signupNow: "سجّل الآن",
+    invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    loginSuccess: "تم تسجيل الدخول بنجاح!",
+
+    // Signup
+    signupTitle: "إنشاء حساب جديد",
+    signupDesc: "انضم إلى Parklet واحجز موقفك بسهولة",
+    fullName: "الاسم الكامل",
+    username: "اسم المستخدم",
+    passwordMin: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    accountType: "نوع الحساب",
+    seekerLabel: "أبحث عن موقف",
+    crewLabel: "أحد أفراد الطاقم",
+    creatingAccount: "جارٍ إنشاء الحساب...",
+    createAccount: "إنشاء حساب",
+    hasAccount: "لديك حساب بالفعل؟",
+    loginNow: "سجّل دخولك",
+    signupSuccess: "تم إنشاء الحساب! تحقق من بريدك الإلكتروني لتأكيد الحساب.",
+
+    // Dashboard
+    welcome: "مرحباً",
+    seekerDashLabel: "لوحة تحكم الباحث عن موقف",
+    crewDashLabel: "لوحة تحكم الطاقم",
+
+    // Seeker Dashboard
+    newBooking: "طلب حجز جديد",
+    activeRequests: "طلبات نشطة",
+    totalRequests: "إجمالي الطلبات",
+    pastRequests: "طلبات سابقة",
+    activeTab: "النشطة",
+    pastTab: "السابقة",
+    location: "الموقع",
+    vehiclePlate: "لوحة السيارة",
+    crewVehicle: "سيارة الطاقم",
+    date: "الموعد",
+    status: "الحالة",
+    chat: "محادثة",
+    completeOrder: "إكتمال الطلب",
+    completing: "جاري...",
+    confirmComplete: "تأكيد إكتمال الطلب",
+    confirmCompleteDesc: "هل أنت متأكد من إكتمال هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.",
+    yesComplete: "نعم، إكتمال الطلب",
+    cancel: "إلغاء",
+    cancelling: "جاري الإلغاء...",
+    delete: "حذف",
+    deleting: "جاري الحذف...",
+    noBookings: "لا توجد طلبات حجز",
+    confirmDelete: "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.",
+
+    // Statuses
+    statusPending: "قيد الانتظار",
+    statusApproved: "مقبول",
+    statusRejected: "مرفوض",
+    statusCompleted: "مكتمل",
+    statusCancelled: "ملغي",
+    statusCrewApproved: "تم القبول",
+
+    // Crew Dashboard
+    walletBalance: "رصيد المحفظة",
+    withdraw: "سحب",
+    availableRequests: "طلبات متاحة",
+    tasksInProgress: "مهام قيد التنفيذ",
+    completedTasks: "مهام مكتملة",
+    availableTab: "المتاحة",
+    myTasks: "مهامي",
+    completedTab: "المكتملة",
+    walletTab: "المحفظة",
+    accept: "قبول",
+    acceptOrder: "قبول الطلب - بيانات سيارتك",
+    vehicleName: "اسم السيارة",
+    vehiclePlateLabel: "لوحة السيارة *",
+    accepting: "جاري القبول...",
+    confirmAccept: "تأكيد القبول",
+    noAvailable: "لا توجد طلبات متاحة حالياً",
+    noActive: "لا توجد مهام قيد التنفيذ",
+    noCompleted: "لا توجد مهام مكتملة",
+    vehicle: "السيارة",
+
+    // Wallet
+    withdrawRequest: "طلب سحب رصيد",
+    availableBalance: "الرصيد المتاح:",
+    amount: "المبلغ (ر.س) *",
+    enterAmount: "أدخل المبلغ",
+    accountHolder: "اسم صاحب الحساب *",
+    accountHolderPlaceholder: "الاسم كما في الحساب البنكي",
+    bankName: "اسم البنك",
+    iban: "رقم الآيبان (IBAN) *",
+    submitting: "جاري الإرسال...",
+    confirmWithdraw: "تأكيد طلب السحب",
+    transactionLog: "سجل العمليات",
+    withdrawalRequests: "طلبات السحب",
+    noTransactions: "لا توجد عمليات بعد",
+    noWithdrawals: "لا توجد طلبات سحب بعد",
+    description: "الوصف",
+    amountLabel: "المبلغ",
+    dateLabel: "التاريخ",
+    withdrawalPending: "قيد المراجعة",
+    withdrawalApproved: "تمت الموافقة",
+    withdrawalRejected: "مرفوض",
+    sar: "ر.س",
+
+    // Admin
+    adminDashboard: "لوحة تحكم المسؤول",
+    withdrawalRequestsTitle: "طلبات السحب",
+    member: "العضو",
+    bank: "البنك",
+    ibanLabel: "الآيبان",
+    accountHolderName: "اسم صاحب الحساب",
+    action: "إجراء",
+    approve: "قبول",
+    reject: "رفض",
+    noWithdrawalRequests: "لا توجد طلبات سحب",
+    approved: "تمت الموافقة",
+    rejected: "تم الرفض",
+
+    // Notifications
+    notifications: "الإشعارات",
+    markAllRead: "تحديد الكل كمقروء",
+    noNotifications: "لا توجد إشعارات",
+    now: "الآن",
+    minutesAgo: "دقيقة",
+    hoursAgo: "ساعة",
+    daysAgo: "يوم",
+    ago: "منذ",
+
+    // New Booking Dialog
+    newBookingTitle: "طلب حجز جديد",
+    selectLocation: "حدد موقع الحجز على الخريطة",
+    vehicleNameLabel: "اسم السيارة",
+    vehiclePlateBooking: "لوحة السيارة",
+    expectedArrival: "الوقت المتوقع للوصول",
+    bookingCost: "تكلفة الحجز",
+    fixedPrice: "سعر ثابت لجميع الحجوزات",
+    notes: "ملاحظات (اختياري)",
+    processing: "جاري المعالجة...",
+    submitAndPay: "إرسال والدفع",
+    selectLocationError: "يرجى تحديد موقع الحجز على الخريطة",
+
+    // Chat
+    chatTitle: "محادثة",
+    noMessages: "لا توجد رسائل بعد. ابدأ المحادثة!",
+    typeMessage: "اكتب رسالة...",
+
+    // Payment
+    paymentCancelled: "تم إلغاء الدفع",
+    paymentCancelledDesc: "تم إلغاء عملية الدفع. طلب الحجز لا يزال محفوظاً ويمكنك إعادة المحاولة من لوحة التحكم.",
+    goToDashboard: "الذهاب للوحة التحكم",
+    paymentSuccess: "تم الدفع بنجاح!",
+    verifying: "جاري التحقق...",
+    paymentSuccessDesc: "تم تأكيد دفعتك وسيتم معالجة طلب الحجز الخاص بك قريباً",
+    paymentErrorDesc: "حدث خطأ أثناء التحقق من الدفع",
+
+    // Settings
+    accountSettings: "إعدادات الحساب",
+    fullNameSetting: "الاسم الكامل",
+    fullNameDesc: "تعديل اسمك المعروض في التطبيق",
+    save: "حفظ",
+    saving: "جارٍ الحفظ...",
+    emailSetting: "البريد الإلكتروني",
+    emailDesc: "تغيير بريدك الإلكتروني يتطلب تأكيداً من البريد الجديد",
+    passwordSetting: "كلمة المرور",
+    passwordDesc: "تغيير كلمة المرور الخاصة بحسابك",
+    newPassword: "كلمة المرور الجديدة",
+    confirmPassword: "تأكيد كلمة المرور",
+    updatePassword: "تحديث كلمة المرور",
+    nameRequired: "الاسم الكامل مطلوب",
+    emailRequired: "البريد الإلكتروني مطلوب",
+    passwordMinSetting: "كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل",
+    passwordMismatch: "كلمة المرور الجديدة غير متطابقة",
+    nameUpdated: "تم تحديث الاسم بنجاح",
+    nameUpdateError: "حدث خطأ أثناء تحديث الاسم",
+    emailConfirmSent: "تم إرسال رابط التأكيد إلى بريدك الإلكتروني الجديد",
+    passwordUpdated: "تم تحديث كلمة المرور بنجاح",
+    language: "اللغة",
+    languageDesc: "تغيير لغة واجهة التطبيق",
+    arabic: "العربية",
+    english: "English",
+
+    // Install
+    installTitle: "تثبيت Parklet",
+    installDesc: "ثبّت التطبيق على جهازك للوصول السريع وتجربة أفضل",
+    installed: "تم التثبيت بنجاح!",
+    iosSteps: "خطوات التثبيت على iPhone:",
+    iosStep1: "اضغط على زر المشاركة (أسفل الشاشة في Safari)",
+    iosStep2: 'اختر "إضافة إلى الشاشة الرئيسية"',
+    iosStep3: 'اضغط "إضافة"',
+    installBtn: "تثبيت التطبيق",
+    openInBrowser: "افتح هذه الصفحة من متصفح الهاتف لتثبيت التطبيق",
+
+    // NotFound
+    pageNotFound: "الصفحة غير موجودة",
+    returnHome: "العودة للرئيسية",
+
+    // Common
+    error: "خطأ",
+    success: "تم",
+    errorOccurred: "حدث خطأ",
+  },
+  en: {
+    // Navbar
+    howItWorks: "How it works?",
+    features: "Features",
+    admin: "Admin",
+    dashboard: "Dashboard",
+    signOut: "Sign Out",
+    login: "Log In",
+    signupFree: "Sign Up Free",
+
+    // Hero
+    heroBadge: "Reserve your spot before you arrive",
+    heroTitle1: "Don't search for a",
+    heroSpot: "spot",
+    heroTitle2: "Let someone reserve it for you",
+    heroDesc: "Parklet connects you with nearby people who reserve a parking spot for you until you arrive. Save your time and nerves!",
+    statSpots: "spots reserved",
+    statCrew: "active crew",
+    statRating: "user rating",
+
+    // HowItWorks
+    howLabel: "How it works?",
+    howTitle: "Just three steps",
+    howDesc: "A simple and fast process to get your spot hassle-free",
+    step1Title: "Set your destination",
+    step1Desc: "Enter the location you're heading to and set your expected arrival time.",
+    step2Title: "Choose a crew member",
+    step2Desc: "Browse nearby crew members and choose the best one based on rating and price.",
+    step3Title: "Arrive and find your spot reserved",
+    step3Desc: "The crew member holds the spot for you until you arrive. Park with ease!",
+
+    // Features
+    whyParklet: "Why Parklet?",
+    featuresTitle: "Features that give you peace of mind",
+    featSaveTime: "Save Time",
+    featSaveTimeDesc: "No need to drive around, your spot is ready before you arrive.",
+    featSafety: "Safe & Trusted",
+    featSafetyDesc: "All crew members are verified and rated by users.",
+    featPrice: "Affordable Prices",
+    featPriceDesc: "Pay a small amount for your peace of mind.",
+    featRating: "Rating System",
+    featRatingDesc: "Rate your experience and choose top-rated crew members.",
+    featChat: "Direct Chat",
+    featChatDesc: "Communicate with your crew member directly through in-app chat.",
+    featTracking: "Live Tracking",
+    featTrackingDesc: "Track the crew member and spot location on the map in real-time.",
+
+    // CTA
+    ctaTitle: "Ready to reserve your spot?",
+    ctaDesc: "Join thousands of users who saved their time and nerves with Parklet",
+    ctaStart: "Get Started",
+    ctaSignupCrew: "Sign up as Crew",
+
+    // Crew Hero
+    crewBadge: "Start receiving requests now",
+    crewHeroTitle1: "Be the",
+    crewHeroSpot: "Crew",
+    crewHeroTitle2: "and earn from your time",
+    crewHeroDesc: "Receive parking reservation requests from nearby seekers, communicate with them, and reserve the spot. Earn extra income easily!",
+    crewAvailable: "requests available to accept",
+    openDashboard: "Open Dashboard",
+    statCrewActive: "active crew",
+    statCompleted: "requests completed",
+    statCrewRating: "crew rating",
+
+    // Crew HowItWorks
+    crewHowLabel: "How to work as crew?",
+    crewHowTitle: "Four simple steps",
+    crewHowDesc: "A clear and easy process to start earning from your time",
+    crewStep1Title: "Receive the request",
+    crewStep1Desc: "You'll receive parking reservation requests from seekers based on the chosen destination. Pick the suitable request and accept it.",
+    crewStep2Title: "Contact the seeker",
+    crewStep2Desc: "After accepting the request, communicate with the seeker to coordinate details and confirm the location and expected arrival time.",
+    crewStep3Title: "Head to the location",
+    crewStep3Desc: "Go to the specified destination before the seeker arrives and find a suitable parking spot in the area.",
+    crewStep4Title: "Reserve the spot",
+    crewStep4Desc: "Reserve the spot and wait for the seeker to arrive. Once they arrive and take the spot, complete the request and get your reward!",
+
+    // Crew Features
+    crewWhyJoin: "Why join as crew?",
+    crewFeatTitle: "Benefits to start today",
+    crewFeatIncome: "Extra Income",
+    crewFeatIncomeDesc: "Earn money for every spot you reserve for seekers.",
+    crewFeatFlex: "Flexible Time",
+    crewFeatFlexDesc: "Work at times that suit you with no commitment.",
+    crewFeatNearby: "Nearby Requests",
+    crewFeatNearbyDesc: "Receive requests from locations near you.",
+    crewFeatReputation: "Build Reputation",
+    crewFeatReputationDesc: "Every completed request raises your rating and increases your opportunities.",
+    crewFeatNotif: "Instant Notifications",
+    crewFeatNotifDesc: "Direct alerts when new requests arrive.",
+    crewFeatProtection: "Protection & Guarantee",
+    crewFeatProtectionDesc: "A secure system that protects your rights as crew.",
+
+    // Footer
+    allRightsReserved: "© 2026 Parklet. All rights reserved.",
+
+    // Login
+    backToHome: "Back to Home",
+    loginTitle: "Log In",
+    loginDesc: "Enter your credentials to access your account",
+    email: "Email",
+    password: "Password",
+    loggingIn: "Logging in...",
+    loginBtn: "Log In",
+    noAccount: "Don't have an account?",
+    signupNow: "Sign Up Now",
+    invalidCredentials: "Invalid email or password",
+    loginSuccess: "Logged in successfully!",
+
+    // Signup
+    signupTitle: "Create New Account",
+    signupDesc: "Join Parklet and reserve your spot easily",
+    fullName: "Full Name",
+    username: "Username",
+    passwordMin: "Password must be at least 6 characters",
+    accountType: "Account Type",
+    seekerLabel: "Looking for a spot",
+    crewLabel: "Crew member",
+    creatingAccount: "Creating account...",
+    createAccount: "Create Account",
+    hasAccount: "Already have an account?",
+    loginNow: "Log In",
+    signupSuccess: "Account created! Check your email to confirm your account.",
+
+    // Dashboard
+    welcome: "Welcome",
+    seekerDashLabel: "Seeker Dashboard",
+    crewDashLabel: "Crew Dashboard",
+
+    // Seeker Dashboard
+    newBooking: "New Booking",
+    activeRequests: "Active Requests",
+    totalRequests: "Total Requests",
+    pastRequests: "Past Requests",
+    activeTab: "Active",
+    pastTab: "Past",
+    location: "Location",
+    vehiclePlate: "Vehicle Plate",
+    crewVehicle: "Crew Vehicle",
+    date: "Date",
+    status: "Status",
+    chat: "Chat",
+    completeOrder: "Complete Order",
+    completing: "Completing...",
+    confirmComplete: "Confirm Order Completion",
+    confirmCompleteDesc: "Are you sure you want to complete this order? This action cannot be undone.",
+    yesComplete: "Yes, Complete",
+    cancel: "Cancel",
+    cancelling: "Cancelling...",
+    delete: "Delete",
+    deleting: "Deleting...",
+    noBookings: "No bookings found",
+    confirmDelete: "Are you sure you want to delete this order? This action cannot be undone.",
+
+    // Statuses
+    statusPending: "Pending",
+    statusApproved: "Approved",
+    statusRejected: "Rejected",
+    statusCompleted: "Completed",
+    statusCancelled: "Cancelled",
+    statusCrewApproved: "Accepted",
+
+    // Crew Dashboard
+    walletBalance: "Wallet Balance",
+    withdraw: "Withdraw",
+    availableRequests: "Available Requests",
+    tasksInProgress: "Tasks in Progress",
+    completedTasks: "Completed Tasks",
+    availableTab: "Available",
+    myTasks: "My Tasks",
+    completedTab: "Completed",
+    walletTab: "Wallet",
+    accept: "Accept",
+    acceptOrder: "Accept Order - Your Vehicle Details",
+    vehicleName: "Vehicle Name",
+    vehiclePlateLabel: "Vehicle Plate *",
+    accepting: "Accepting...",
+    confirmAccept: "Confirm Accept",
+    noAvailable: "No available requests at the moment",
+    noActive: "No tasks in progress",
+    noCompleted: "No completed tasks",
+    vehicle: "Vehicle",
+
+    // Wallet
+    withdrawRequest: "Withdrawal Request",
+    availableBalance: "Available Balance:",
+    amount: "Amount (SAR) *",
+    enterAmount: "Enter amount",
+    accountHolder: "Account Holder Name *",
+    accountHolderPlaceholder: "Name as in bank account",
+    bankName: "Bank Name",
+    iban: "IBAN Number *",
+    submitting: "Submitting...",
+    confirmWithdraw: "Confirm Withdrawal",
+    transactionLog: "Transaction Log",
+    withdrawalRequests: "Withdrawal Requests",
+    noTransactions: "No transactions yet",
+    noWithdrawals: "No withdrawal requests yet",
+    description: "Description",
+    amountLabel: "Amount",
+    dateLabel: "Date",
+    withdrawalPending: "Under Review",
+    withdrawalApproved: "Approved",
+    withdrawalRejected: "Rejected",
+    sar: "SAR",
+
+    // Admin
+    adminDashboard: "Admin Dashboard",
+    withdrawalRequestsTitle: "Withdrawal Requests",
+    member: "Member",
+    bank: "Bank",
+    ibanLabel: "IBAN",
+    accountHolderName: "Account Holder",
+    action: "Action",
+    approve: "Approve",
+    reject: "Reject",
+    noWithdrawalRequests: "No withdrawal requests",
+    approved: "Approved",
+    rejected: "Rejected",
+
+    // Notifications
+    notifications: "Notifications",
+    markAllRead: "Mark all as read",
+    noNotifications: "No notifications",
+    now: "Now",
+    minutesAgo: "min",
+    hoursAgo: "hr",
+    daysAgo: "day",
+    ago: "ago",
+
+    // New Booking Dialog
+    newBookingTitle: "New Booking Request",
+    selectLocation: "Select booking location on map",
+    vehicleNameLabel: "Vehicle Name",
+    vehiclePlateBooking: "Vehicle Plate",
+    expectedArrival: "Expected Arrival Time",
+    bookingCost: "Booking Cost",
+    fixedPrice: "Fixed price for all bookings",
+    notes: "Notes (optional)",
+    processing: "Processing...",
+    submitAndPay: "Submit & Pay",
+    selectLocationError: "Please select a booking location on the map",
+
+    // Chat
+    chatTitle: "Chat",
+    noMessages: "No messages yet. Start the conversation!",
+    typeMessage: "Type a message...",
+
+    // Payment
+    paymentCancelled: "Payment Cancelled",
+    paymentCancelledDesc: "The payment was cancelled. Your booking request is still saved and you can retry from the dashboard.",
+    goToDashboard: "Go to Dashboard",
+    paymentSuccess: "Payment Successful!",
+    verifying: "Verifying...",
+    paymentSuccessDesc: "Your payment has been confirmed and your booking will be processed soon",
+    paymentErrorDesc: "An error occurred while verifying payment",
+
+    // Settings
+    accountSettings: "Account Settings",
+    fullNameSetting: "Full Name",
+    fullNameDesc: "Edit your display name in the app",
+    save: "Save",
+    saving: "Saving...",
+    emailSetting: "Email",
+    emailDesc: "Changing your email requires confirmation from the new email",
+    passwordSetting: "Password",
+    passwordDesc: "Change your account password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm Password",
+    updatePassword: "Update Password",
+    nameRequired: "Full name is required",
+    emailRequired: "Email is required",
+    passwordMinSetting: "New password must be at least 6 characters",
+    passwordMismatch: "Passwords do not match",
+    nameUpdated: "Name updated successfully",
+    nameUpdateError: "Error updating name",
+    emailConfirmSent: "Confirmation link sent to your new email",
+    passwordUpdated: "Password updated successfully",
+    language: "Language",
+    languageDesc: "Change the app interface language",
+    arabic: "العربية",
+    english: "English",
+
+    // Install
+    installTitle: "Install Parklet",
+    installDesc: "Install the app on your device for quick access and a better experience",
+    installed: "Installed successfully!",
+    iosSteps: "Installation steps on iPhone:",
+    iosStep1: "Tap the Share button (bottom of screen in Safari)",
+    iosStep2: 'Choose "Add to Home Screen"',
+    iosStep3: 'Tap "Add"',
+    installBtn: "Install App",
+    openInBrowser: "Open this page in your phone's browser to install the app",
+
+    // NotFound
+    pageNotFound: "Page not found",
+    returnHome: "Return to Home",
+
+    // Common
+    error: "Error",
+    success: "Done",
+    errorOccurred: "An error occurred",
+  },
+} as const;
+
+type TranslationKey = keyof typeof translations.ar;
+
+interface LanguageContextType {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: (key: TranslationKey) => string;
+  dir: "rtl" | "ltr";
+}
+
+const LanguageContext = createContext<LanguageContextType>({
+  lang: "ar",
+  setLang: () => {},
+  t: (key) => key,
+  dir: "rtl",
+});
+
+export const useLanguage = () => useContext(LanguageContext);
+
+export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const [lang, setLangState] = useState<Lang>(() => {
+    const saved = localStorage.getItem("parklet-lang");
+    return (saved === "en" || saved === "ar") ? saved : "ar";
+  });
+
+  const setLang = (newLang: Lang) => {
+    setLangState(newLang);
+    localStorage.setItem("parklet-lang", newLang);
+  };
+
+  const t = (key: TranslationKey): string => {
+    return translations[lang][key] || translations.ar[key] || key;
+  };
+
+  const dir = lang === "ar" ? "rtl" : "ltr";
+
+  useEffect(() => {
+    document.documentElement.dir = dir;
+    document.documentElement.lang = lang;
+  }, [lang, dir]);
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t, dir }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
