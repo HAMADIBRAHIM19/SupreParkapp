@@ -67,7 +67,7 @@ const Index = () => {
           className="fixed bottom-6 right-6 z-50 rounded-full shadow-xl gap-2 px-5 h-14"
         >
           <Plus className="w-6 h-6" />
-          <span className="font-bold text-base">طلب حجز جديد</span>
+          <span className="font-bold text-base">{t("newBooking")}</span>
         </Button>
       )}
 
