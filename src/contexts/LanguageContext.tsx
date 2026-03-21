@@ -246,6 +246,14 @@ const translations = {
     processing: "جاري المعالجة...",
     submitAndPay: "إرسال والدفع",
     selectLocationError: "يرجى تحديد موقع الحجز على الخريطة",
+    searchLocation: "ابحث عن موقع...",
+    myCurrentLocation: "موقعي الحالي",
+    locatingPosition: "جاري تحديد الموقع...",
+    mapLoadError: "تعذر تحميل الخريطة",
+    selectedPosition: "موقع محدد",
+    streetLabel: "الشارع",
+    neighborhoodLabel: "الحي",
+    cityLabel: "المدينة",
 
     // Chat
     chatTitle: "محادثة",
