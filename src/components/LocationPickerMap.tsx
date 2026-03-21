@@ -127,7 +127,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
       onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
-      onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+      onLocationSelect({ lat, lng, name: t("selectedPosition"), neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
     } finally {
       setLoading(false);
     }
