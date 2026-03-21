@@ -52,6 +52,7 @@ const loadGoogleMaps = async (): Promise<void> => {
 };
 
 const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPickerMapProps) => {
+  const { t, dir, lang } = useLanguage();
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
