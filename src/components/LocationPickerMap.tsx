@@ -98,7 +98,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       const results = response.results;
 
       if (!results?.length) {
-        onLocationSelect({ lat, lng, name: poiName || "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+        onLocationSelect({ lat, lng, name: poiName || t("selectedPosition"), neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
         return;
       }
 
