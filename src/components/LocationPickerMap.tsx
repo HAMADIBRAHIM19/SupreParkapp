@@ -264,10 +264,10 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         />
       </div>
 
-      <div className="flex justify-end">
+      <div className={`flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
         <Button type="button" size="sm" variant="outline" onClick={handleLocateMe} disabled={locating || !mapReady} className="gap-2">
           {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
-          موقعي الحالي
+          {t("myCurrentLocation")}
         </Button>
       </div>
 
