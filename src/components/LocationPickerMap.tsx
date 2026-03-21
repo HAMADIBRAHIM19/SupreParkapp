@@ -254,13 +254,13 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     <div className="space-y-2">
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+        <Search className={`absolute ${dir === "rtl" ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none`} />
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="ابحث عن موقع..."
-          className="flex h-10 w-full rounded-md border border-input bg-background pr-9 pl-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          dir="rtl"
+          placeholder={t("searchLocation")}
+          className={`flex h-10 w-full rounded-md border border-input bg-background ${dir === "rtl" ? "pr-9 pl-3" : "pl-9 pr-3"} py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
+          dir={dir}
         />
       </div>
 
