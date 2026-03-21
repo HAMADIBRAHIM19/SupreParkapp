@@ -558,6 +558,14 @@ const translations = {
     processing: "Processing...",
     submitAndPay: "Submit & Pay",
     selectLocationError: "Please select a booking location on the map",
+    searchLocation: "Search for a location...",
+    myCurrentLocation: "My Location",
+    locatingPosition: "Locating...",
+    mapLoadError: "Failed to load map",
+    selectedPosition: "Selected location",
+    streetLabel: "Street",
+    neighborhoodLabel: "Neighborhood",
+    cityLabel: "City",
 
     // Chat
     chatTitle: "Chat",
