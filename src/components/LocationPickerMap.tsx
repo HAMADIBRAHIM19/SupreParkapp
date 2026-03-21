@@ -285,14 +285,14 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         )}
       </div>
 
-      {loading && <p className="text-xs text-muted-foreground animate-pulse">جاري تحديد الموقع...</p>}
+      {loading && <p className="text-xs text-muted-foreground animate-pulse">{t("locatingPosition")}</p>}
 
       {selectedLocation && !loading && (
-        <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir="rtl">
+        <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir={dir}>
           <p className="font-semibold text-foreground">{selectedLocation.name}</p>
-          {selectedLocation.street && <p className="text-muted-foreground">الشارع: {selectedLocation.street}</p>}
-          {selectedLocation.neighborhood && <p className="text-muted-foreground">الحي: {selectedLocation.neighborhood}</p>}
-          {selectedLocation.city && <p className="text-muted-foreground">المدينة: {selectedLocation.city}</p>}
+          {selectedLocation.street && <p className="text-muted-foreground">{t("streetLabel")}: {selectedLocation.street}</p>}
+          {selectedLocation.neighborhood && <p className="text-muted-foreground">{t("neighborhoodLabel")}: {selectedLocation.neighborhood}</p>}
+          {selectedLocation.city && <p className="text-muted-foreground">{t("cityLabel")}: {selectedLocation.city}</p>}
         </div>
       )}
     </div>
