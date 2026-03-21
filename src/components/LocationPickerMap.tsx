@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, LocateFixed, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 declare global {
   interface Window {
@@ -51,6 +52,7 @@ const loadGoogleMaps = async (): Promise<void> => {
 };
 
 const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPickerMapProps) => {
+  const { t, dir, lang } = useLanguage();
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
@@ -96,7 +98,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
       const results = response.results;
 
       if (!results?.length) {
-        onLocationSelect({ lat, lng, name: poiName || "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+        onLocationSelect({ lat, lng, name: poiName || t("selectedPosition"), neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
         return;
       }
 
@@ -125,7 +127,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
       onLocationSelect({ lat, lng, name, neighborhood, city, street, fullAddress });
     } catch {
-      onLocationSelect({ lat, lng, name: "موقع محدد", neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
+      onLocationSelect({ lat, lng, name: t("selectedPosition"), neighborhood: "", city: "", street: "", fullAddress: `${lat}, ${lng}` });
     } finally {
       setLoading(false);
     }
@@ -234,7 +236,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         }
       } catch (err) {
         console.error("Google Maps init error:", err);
-        setMapError("تعذر تحميل الخريطة");
+        setMapError(t("mapLoadError"));
       }
     };
 
@@ -252,20 +254,20 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     <div className="space-y-2">
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+        <Search className={`absolute ${dir === "rtl" ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none`} />
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="ابحث عن موقع..."
-          className="flex h-10 w-full rounded-md border border-input bg-background pr-9 pl-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          dir="rtl"
+          placeholder={t("searchLocation")}
+          className={`flex h-10 w-full rounded-md border border-input bg-background ${dir === "rtl" ? "pr-9 pl-3" : "pl-9 pr-3"} py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
+          dir={dir}
         />
       </div>
 
-      <div className="flex justify-end">
+      <div className={`flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
         <Button type="button" size="sm" variant="outline" onClick={handleLocateMe} disabled={locating || !mapReady} className="gap-2">
           {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
-          موقعي الحالي
+          {t("myCurrentLocation")}
         </Button>
       </div>
 
@@ -283,14 +285,14 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         )}
       </div>
 
-      {loading && <p className="text-xs text-muted-foreground animate-pulse">جاري تحديد الموقع...</p>}
+      {loading && <p className="text-xs text-muted-foreground animate-pulse">{t("locatingPosition")}</p>}
 
       {selectedLocation && !loading && (
-        <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir="rtl">
+        <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm" dir={dir}>
           <p className="font-semibold text-foreground">{selectedLocation.name}</p>
-          {selectedLocation.street && <p className="text-muted-foreground">الشارع: {selectedLocation.street}</p>}
-          {selectedLocation.neighborhood && <p className="text-muted-foreground">الحي: {selectedLocation.neighborhood}</p>}
-          {selectedLocation.city && <p className="text-muted-foreground">المدينة: {selectedLocation.city}</p>}
+          {selectedLocation.street && <p className="text-muted-foreground">{t("streetLabel")}: {selectedLocation.street}</p>}
+          {selectedLocation.neighborhood && <p className="text-muted-foreground">{t("neighborhoodLabel")}: {selectedLocation.neighborhood}</p>}
+          {selectedLocation.city && <p className="text-muted-foreground">{t("cityLabel")}: {selectedLocation.city}</p>}
         </div>
       )}
     </div>

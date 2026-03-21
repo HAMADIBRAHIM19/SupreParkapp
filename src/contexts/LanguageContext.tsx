@@ -246,6 +246,14 @@ const translations = {
     processing: "جاري المعالجة...",
     submitAndPay: "إرسال والدفع",
     selectLocationError: "يرجى تحديد موقع الحجز على الخريطة",
+    searchLocation: "ابحث عن موقع...",
+    myCurrentLocation: "موقعي الحالي",
+    locatingPosition: "جاري تحديد الموقع...",
+    mapLoadError: "تعذر تحميل الخريطة",
+    selectedPosition: "موقع محدد",
+    streetLabel: "الشارع",
+    neighborhoodLabel: "الحي",
+    cityLabel: "المدينة",
 
     // Chat
     chatTitle: "محادثة",
@@ -550,6 +558,14 @@ const translations = {
     processing: "Processing...",
     submitAndPay: "Submit & Pay",
     selectLocationError: "Please select a booking location on the map",
+    searchLocation: "Search for a location...",
+    myCurrentLocation: "My Location",
+    locatingPosition: "Locating...",
+    mapLoadError: "Failed to load map",
+    selectedPosition: "Selected location",
+    streetLabel: "Street",
+    neighborhoodLabel: "Neighborhood",
+    cityLabel: "City",
 
     // Chat
     chatTitle: "Chat",
