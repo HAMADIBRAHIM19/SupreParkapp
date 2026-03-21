@@ -236,7 +236,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         }
       } catch (err) {
         console.error("Google Maps init error:", err);
-        setMapError("تعذر تحميل الخريطة");
+        setMapError(t("mapLoadError"));
       }
     };
 
