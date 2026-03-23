@@ -69,6 +69,9 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
   const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
 
+  // Broadcast crew location to seekers for active bookings
+  useCrewLocationBroadcast(activeBookingIds, activeJobs.length > 0);
+
   const fetchWallet = async () => {
     if (!user?.id) return;
     setWalletLoading(true);
