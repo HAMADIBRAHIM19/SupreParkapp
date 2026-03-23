@@ -29,6 +29,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const { t, lang } = useLanguage();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [chatBooking, setChatBooking] = useState<Booking | null>(null);
+  const [trackingBooking, setTrackingBooking] = useState<Booking | null>(null);
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
