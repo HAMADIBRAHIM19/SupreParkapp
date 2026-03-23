@@ -102,6 +102,16 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       {trackingBooking && (
         <LiveTrackingMap open={!!trackingBooking} onOpenChange={(open) => !open && setTrackingBooking(null)} bookingId={trackingBooking.id} bookingLocation={trackingBooking.location} />
       )}
+      {ratingBooking && ratingBooking.crew_id && (
+        <RatingDialog
+          open={!!ratingBooking}
+          onOpenChange={(open) => !open && setRatingBooking(null)}
+          bookingId={ratingBooking.id}
+          seekerId={ratingBooking.seeker_id}
+          crewId={ratingBooking.crew_id}
+          onRated={onBookingCreated}
+        />
+      )}
     </>
   );
 };
