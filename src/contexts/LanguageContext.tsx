@@ -586,6 +586,10 @@ const translations = {
     crewOnTheWay: "Crew on the way",
     waitingForCrewLocation: "Waiting for crew location...",
     trackCrew: "Track",
+    crewNearbyTitle: "Crew is nearby!",
+    crewNearbyDesc: "The crew member is less than 500 meters from the destination",
+    km: "km",
+    meter: "m",
 
     // Chat
     chatTitle: "Chat",
