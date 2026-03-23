@@ -255,6 +255,14 @@ const translations = {
     neighborhoodLabel: "الحي",
     cityLabel: "المدينة",
 
+    // Live Tracking
+    liveTracking: "تتبع مباشر",
+    destination: "الوجهة",
+    crewLocation: "موقع الحاجز",
+    crewOnTheWay: "الحاجز في الطريق",
+    waitingForCrewLocation: "بانتظار موقع الحاجز...",
+    trackCrew: "تتبع",
+
     // Chat
     chatTitle: "محادثة",
     noMessages: "لا توجد رسائل بعد. ابدأ المحادثة!",
