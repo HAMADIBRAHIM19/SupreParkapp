@@ -10,11 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle, Navigation } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
+import LiveTrackingMap from "@/components/LiveTrackingMap";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
@@ -29,6 +30,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const { t, lang } = useLanguage();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [chatBooking, setChatBooking] = useState<Booking | null>(null);
+  const [trackingBooking, setTrackingBooking] = useState<Booking | null>(null);
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
@@ -84,7 +86,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <TabsTrigger value="past">{t("pastTab")} ({pastBookings.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="active">
-          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} unreadCounts={unreadCounts} statusMap={statusMap} />
+          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} onTrack={setTrackingBooking} unreadCounts={unreadCounts} statusMap={statusMap} />
         </TabsContent>
         <TabsContent value="past">
           <BookingsTable bookings={pastBookings} loading={loading} statusMap={statusMap} />
@@ -95,13 +97,17 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       {chatBooking && (
         <BookingChat open={!!chatBooking} onOpenChange={(open) => !open && setChatBooking(null)} bookingId={chatBooking.id} bookingLocation={chatBooking.location} onMarkAsRead={() => markAsRead(chatBooking.id)} />
       )}
+      {trackingBooking && (
+        <LiveTrackingMap open={!!trackingBooking} onOpenChange={(open) => !open && setTrackingBooking(null)} bookingId={trackingBooking.id} bookingLocation={trackingBooking.location} />
+      )}
     </>
   );
 };
 
-const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCounts, statusMap }: {
+const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, unreadCounts, statusMap }: {
   bookings: Booking[]; loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void;
-  unreadCounts?: Record<string, number>; statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }>;
+  onTrack?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+  statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }>;
 }) => {
   const { t, dir, lang } = useLanguage();
   const { toast } = useToast();
@@ -167,7 +173,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
                 <TableCell><Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge></TableCell>
                 <TableCell>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 flex-wrap">
                     {booking.status === "approved" && onChat && (
                       <>
                         <Button variant="ghost" size="sm" className="gap-1 relative" onClick={() => onChat(booking)}>
@@ -176,6 +182,11 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, unreadCoun
                             <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">{unreadCounts[booking.id]}</span>
                           )}
                         </Button>
+                        {onTrack && (
+                          <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => onTrack(booking)}>
+                            <Navigation className="w-4 h-4" />{t("trackCrew")}
+                          </Button>
+                        )}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button variant="outline" size="sm" className="gap-1 rounded-xl font-bold" disabled={completingId === booking.id}>

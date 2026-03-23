@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCrewLocationBroadcast } from "@/hooks/useCrewLocationBroadcast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -68,6 +69,9 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
 
   const activeBookingIds = useMemo(() => activeJobs.map((b) => b.id), [activeJobs]);
   const { unreadCounts, markAsRead } = useUnreadMessages(activeBookingIds);
+
+  // Broadcast crew location to seekers for active bookings
+  useCrewLocationBroadcast(activeBookingIds, activeJobs.length > 0);
 
   const fetchWallet = async () => {
     if (!user?.id) return;
