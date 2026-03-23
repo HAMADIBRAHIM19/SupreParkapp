@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Navigation, Loader2 } from "lucide-react";
+import { MapPin, Navigation, Loader2, BellRing } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface LiveTrackingMapProps {
   open: boolean;
@@ -19,16 +20,33 @@ interface CrewPosition {
   timestamp: number;
 }
 
+const PROXIMITY_THRESHOLD_METERS = 500;
+
+/** Haversine distance in meters */
+function getDistanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371000;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: LiveTrackingMapProps) => {
   const { t, dir } = useLanguage();
+  const { toast } = useToast();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const crewMarkerRef = useRef<google.maps.Marker | null>(null);
   const destMarkerRef = useRef<google.maps.Marker | null>(null);
+  const destLatLngRef = useRef<{ lat: number; lng: number } | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const proximityNotifiedRef = useRef(false);
   const [crewPos, setCrewPos] = useState<CrewPosition | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapsApiReady, setMapsApiReady] = useState(false);
+  const [distanceMeters, setDistanceMeters] = useState<number | null>(null);
+  const [crewNearby, setCrewNearby] = useState(false);
 
   // Load Google Maps API
   useEffect(() => {
@@ -42,7 +60,6 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
       try {
         const { data } = await supabase.functions.invoke("get-maps-key");
         if (!data?.key) return;
-
         if (window.google?.maps) { setMapsApiReady(true); return; }
 
         const script = document.createElement("script");
@@ -65,17 +82,15 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
       disableDefaultUI: true,
       zoomControl: true,
       mapTypeControl: false,
-      styles: [
-        { featureType: "poi", stylers: [{ visibility: "off" }] },
-      ],
+      styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }],
     });
     mapRef.current = map;
 
-    // Geocode destination
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address: bookingLocation + ", Saudi Arabia" }, (results, status) => {
       if (status === "OK" && results?.[0]) {
         const pos = results[0].geometry.location;
+        destLatLngRef.current = { lat: pos.lat(), lng: pos.lng() };
         destMarkerRef.current = new google.maps.Marker({
           position: pos,
           map,
@@ -112,7 +127,7 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
     };
   }, [open, bookingId]);
 
-  // Update crew marker
+  // Update crew marker + check proximity
   useEffect(() => {
     if (!crewPos || !mapRef.current) return;
 
@@ -133,7 +148,32 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
       });
     }
 
-    // Fit bounds to show both markers
+    // Calculate distance & check proximity
+    if (destLatLngRef.current) {
+      const dist = getDistanceMeters(crewPos.lat, crewPos.lng, destLatLngRef.current.lat, destLatLngRef.current.lng);
+      setDistanceMeters(Math.round(dist));
+
+      if (dist <= PROXIMITY_THRESHOLD_METERS && !proximityNotifiedRef.current) {
+        proximityNotifiedRef.current = true;
+        setCrewNearby(true);
+        toast({
+          title: t("crewNearbyTitle"),
+          description: t("crewNearbyDesc"),
+        });
+        // Try browser notification
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(t("crewNearbyTitle"), { body: t("crewNearbyDesc") });
+        } else if ("Notification" in window && Notification.permission !== "denied") {
+          Notification.requestPermission().then((perm) => {
+            if (perm === "granted") {
+              new Notification(t("crewNearbyTitle"), { body: t("crewNearbyDesc") });
+            }
+          });
+        }
+      }
+    }
+
+    // Fit bounds
     if (destMarkerRef.current) {
       const bounds = new google.maps.LatLngBounds();
       bounds.extend(pos);
@@ -150,10 +190,19 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
       destMarkerRef.current?.setMap(null);
       destMarkerRef.current = null;
       mapRef.current = null;
+      destLatLngRef.current = null;
+      proximityNotifiedRef.current = false;
       setMapLoaded(false);
       setCrewPos(null);
+      setDistanceMeters(null);
+      setCrewNearby(false);
     }
   }, [open]);
+
+  const formatDistance = (meters: number) => {
+    if (meters >= 1000) return `${(meters / 1000).toFixed(1)} ${t("km")}`;
+    return `${meters} ${t("meter")}`;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -170,7 +219,12 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
             <MapPin className="w-3 h-3 text-destructive" />
             {t("destination")}: {bookingLocation}
           </Badge>
-          {crewPos ? (
+          {crewNearby ? (
+            <Badge className="gap-1 text-xs bg-green-600 hover:bg-green-700 text-white">
+              <BellRing className="w-3 h-3" />
+              {t("crewNearbyTitle")}
+            </Badge>
+          ) : crewPos ? (
             <Badge variant="default" className="gap-1 text-xs animate-pulse">
               <Navigation className="w-3 h-3" />
               {t("crewOnTheWay")}
@@ -179,6 +233,11 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
             <Badge variant="secondary" className="gap-1 text-xs">
               <Loader2 className="w-3 h-3 animate-spin" />
               {t("waitingForCrewLocation")}
+            </Badge>
+          )}
+          {distanceMeters !== null && (
+            <Badge variant="outline" className="gap-1 text-xs font-mono">
+              {formatDistance(distanceMeters)}
             </Badge>
           )}
         </div>
