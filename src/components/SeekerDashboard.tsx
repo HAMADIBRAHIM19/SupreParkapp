@@ -220,7 +220,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
                               <AlertDialogDescription>{t("confirmCompleteDesc")}</AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter className="flex-row-reverse gap-2">
-                              <AlertDialogAction onClick={() => handleComplete(booking.id)}>{t("yesComplete")}</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleComplete(booking)}>{t("yesComplete")}</AlertDialogAction>
                               <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                             </AlertDialogFooter>
                           </AlertDialogContent>
