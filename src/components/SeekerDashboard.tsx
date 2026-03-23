@@ -16,6 +16,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
 import LiveTrackingMap from "@/components/LiveTrackingMap";
+import RatingDialog from "@/components/RatingDialog";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
