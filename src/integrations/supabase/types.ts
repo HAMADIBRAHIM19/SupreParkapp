@@ -230,6 +230,41 @@ export type Database = {
         }
         Relationships: []
       }
+      ratings: {
+        Row: {
+          booking_id: string
+          created_at: string
+          crew_id: string
+          id: string
+          rating: number
+          seeker_id: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          crew_id: string
+          id?: string
+          rating: number
+          seeker_id: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          crew_id?: string
+          id?: string
+          rating?: number
+          seeker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
