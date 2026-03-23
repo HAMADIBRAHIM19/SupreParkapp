@@ -575,6 +575,14 @@ const translations = {
     neighborhoodLabel: "Neighborhood",
     cityLabel: "City",
 
+    // Live Tracking
+    liveTracking: "Live Tracking",
+    destination: "Destination",
+    crewLocation: "Crew Location",
+    crewOnTheWay: "Crew on the way",
+    waitingForCrewLocation: "Waiting for crew location...",
+    trackCrew: "Track",
+
     // Chat
     chatTitle: "Chat",
     noMessages: "No messages yet. Start the conversation!",
