@@ -30,7 +30,7 @@ const translations = {
     step1Title: "حدد وجهتك",
     step1Desc: "اكتب الموقع اللي تبي تروحه وحدد الوقت المتوقع لوصولك.",
     step2Title: "اختر الحاجز",
-    step2Desc: "تصفح قائمة الحاجزين القريبين واختر الأنسب.",
+    step2Desc: "تصفح قائمة الحاجزين القريبين واختر الأنسب حسب التقييم والسعر.",
     step3Title: "أوصل وتلقى أحد أفراد طاقمنا حاجز لك موقف",
     step3Desc: "الحاجز يحفظ لك الموقف حتى توصل. استلم موقفك بكل راحة!",
 
@@ -342,7 +342,7 @@ const translations = {
     step1Title: "Set your destination",
     step1Desc: "Enter the location you're heading to and set your expected arrival time.",
     step2Title: "Choose a crew member",
-    step2Desc: "Browse nearby crew members and choose the best one.",
+    step2Desc: "Browse nearby crew members and choose the best one based on rating and price.",
     step3Title: "Arrive and find your spot reserved",
     step3Desc: "The crew member holds the spot for you until you arrive. Park with ease!",
 
