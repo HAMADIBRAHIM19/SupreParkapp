@@ -116,9 +116,9 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   );
 };
 
-const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, unreadCounts, statusMap }: {
+const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, onRate, unreadCounts, statusMap }: {
   bookings: Booking[]; loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void;
-  onTrack?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+  onTrack?: (booking: Booking) => void; onRate?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
   statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }>;
 }) => {
   const { t, dir, lang } = useLanguage();
