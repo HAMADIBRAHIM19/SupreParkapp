@@ -129,11 +129,20 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
 
   const formatDate = (date: string) => new Date(date).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
-  const handleComplete = async (id: string) => {
-    setCompletingId(id);
-    const { error } = await supabase.from("bookings").update({ status: "completed" as const }).eq("id", id);
+  const handleComplete = async (booking: Booking) => {
+    setCompletingId(booking.id);
+    const { error } = await supabase.from("bookings").update({ status: "completed" as const }).eq("id", booking.id);
     setCompletingId(null);
-    if (error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); } else { toast({ title: t("success"), description: t("statusCompleted") }); onBookingUpdated?.(); }
+    if (error) {
+      toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
+    } else {
+      toast({ title: t("success"), description: t("statusCompleted") });
+      if (booking.crew_id && onRate) {
+        onRate(booking);
+      } else {
+        onBookingUpdated?.();
+      }
+    }
   };
 
   const handleCancel = async (id: string) => {
