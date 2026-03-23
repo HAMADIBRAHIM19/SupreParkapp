@@ -267,6 +267,13 @@ const translations = {
     km: "كم",
     meter: "متر",
 
+    // Rating
+    rateCrewTitle: "قيّم الحاجز",
+    rateCrewDesc: "كيف كانت تجربتك مع الحاجز؟",
+    submitRating: "إرسال التقييم",
+    skipRating: "تخطي",
+    ratingSubmitted: "تم إرسال التقييم بنجاح",
+
     // Chat
     chatTitle: "محادثة",
     noMessages: "لا توجد رسائل بعد. ابدأ المحادثة!",
