@@ -598,6 +598,13 @@ const translations = {
     km: "km",
     meter: "m",
 
+    // Rating
+    rateCrewTitle: "Rate the Crew",
+    rateCrewDesc: "How was your experience with the crew member?",
+    submitRating: "Submit Rating",
+    skipRating: "Skip",
+    ratingSubmitted: "Rating submitted successfully",
+
     // Chat
     chatTitle: "Chat",
     noMessages: "No messages yet. Start the conversation!",
