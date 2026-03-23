@@ -90,7 +90,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} onTrack={setTrackingBooking} unreadCounts={unreadCounts} statusMap={statusMap} />
         </TabsContent>
         <TabsContent value="past">
-          <BookingsTable bookings={pastBookings} loading={loading} statusMap={statusMap} />
+          <BookingsTable bookings={pastBookings} loading={loading} onBookingUpdated={onBookingCreated} statusMap={statusMap} />
         </TabsContent>
       </Tabs>
 
