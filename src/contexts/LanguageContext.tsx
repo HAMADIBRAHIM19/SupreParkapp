@@ -262,6 +262,10 @@ const translations = {
     crewOnTheWay: "الحاجز في الطريق",
     waitingForCrewLocation: "بانتظار موقع الحاجز...",
     trackCrew: "تتبع",
+    crewNearbyTitle: "الحاجز اقترب من الوجهة!",
+    crewNearbyDesc: "الحاجز أصبح على بعد أقل من 500 متر من الوجهة",
+    km: "كم",
+    meter: "متر",
 
     // Chat
     chatTitle: "محادثة",
