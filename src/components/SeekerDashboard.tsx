@@ -16,6 +16,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
 import LiveTrackingMap from "@/components/LiveTrackingMap";
+import RatingDialog from "@/components/RatingDialog";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import type { BookingStatus, Booking } from "@/types/booking";
 
@@ -31,6 +32,7 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const [dialogOpen, setDialogOpen] = useState(false);
   const [chatBooking, setChatBooking] = useState<Booking | null>(null);
   const [trackingBooking, setTrackingBooking] = useState<Booking | null>(null);
+  const [ratingBooking, setRatingBooking] = useState<Booking | null>(null);
 
   const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
@@ -86,10 +88,10 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           <TabsTrigger value="past">{t("pastTab")} ({pastBookings.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="active">
-          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} onTrack={setTrackingBooking} unreadCounts={unreadCounts} statusMap={statusMap} />
+          <BookingsTable bookings={activeBookings} loading={loading} onBookingUpdated={onBookingCreated} onChat={setChatBooking} onTrack={setTrackingBooking} onRate={setRatingBooking} unreadCounts={unreadCounts} statusMap={statusMap} />
         </TabsContent>
         <TabsContent value="past">
-          <BookingsTable bookings={pastBookings} loading={loading} statusMap={statusMap} />
+          <BookingsTable bookings={pastBookings} loading={loading} onBookingUpdated={onBookingCreated} statusMap={statusMap} />
         </TabsContent>
       </Tabs>
 
@@ -100,13 +102,23 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
       {trackingBooking && (
         <LiveTrackingMap open={!!trackingBooking} onOpenChange={(open) => !open && setTrackingBooking(null)} bookingId={trackingBooking.id} bookingLocation={trackingBooking.location} />
       )}
+      {ratingBooking && ratingBooking.crew_id && (
+        <RatingDialog
+          open={!!ratingBooking}
+          onOpenChange={(open) => !open && setRatingBooking(null)}
+          bookingId={ratingBooking.id}
+          seekerId={ratingBooking.seeker_id}
+          crewId={ratingBooking.crew_id}
+          onRated={onBookingCreated}
+        />
+      )}
     </>
   );
 };
 
-const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, unreadCounts, statusMap }: {
+const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, onRate, unreadCounts, statusMap }: {
   bookings: Booking[]; loading: boolean; onBookingUpdated?: () => void; onChat?: (booking: Booking) => void;
-  onTrack?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+  onTrack?: (booking: Booking) => void; onRate?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
   statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }>;
 }) => {
   const { t, dir, lang } = useLanguage();
@@ -117,11 +129,20 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, u
 
   const formatDate = (date: string) => new Date(date).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
-  const handleComplete = async (id: string) => {
-    setCompletingId(id);
-    const { error } = await supabase.from("bookings").update({ status: "completed" as const }).eq("id", id);
+  const handleComplete = async (booking: Booking) => {
+    setCompletingId(booking.id);
+    const { error } = await supabase.from("bookings").update({ status: "completed" as const }).eq("id", booking.id);
     setCompletingId(null);
-    if (error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); } else { toast({ title: t("success"), description: t("statusCompleted") }); onBookingUpdated?.(); }
+    if (error) {
+      toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
+    } else {
+      toast({ title: t("success"), description: t("statusCompleted") });
+      if (booking.crew_id && onRate) {
+        onRate(booking);
+      } else {
+        onBookingUpdated?.();
+      }
+    }
   };
 
   const handleCancel = async (id: string) => {
@@ -199,7 +220,7 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, u
                               <AlertDialogDescription>{t("confirmCompleteDesc")}</AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter className="flex-row-reverse gap-2">
-                              <AlertDialogAction onClick={() => handleComplete(booking.id)}>{t("yesComplete")}</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleComplete(booking)}>{t("yesComplete")}</AlertDialogAction>
                               <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                             </AlertDialogFooter>
                           </AlertDialogContent>

@@ -267,6 +267,13 @@ const translations = {
     km: "كم",
     meter: "متر",
 
+    // Rating
+    rateCrewTitle: "قيّم الحاجز",
+    rateCrewDesc: "كيف كانت تجربتك مع الحاجز؟",
+    submitRating: "إرسال التقييم",
+    skipRating: "تخطي",
+    ratingSubmitted: "تم إرسال التقييم بنجاح",
+
     // Chat
     chatTitle: "محادثة",
     noMessages: "لا توجد رسائل بعد. ابدأ المحادثة!",
@@ -590,6 +597,13 @@ const translations = {
     crewNearbyDesc: "The crew member is less than 500 meters from the destination",
     km: "km",
     meter: "m",
+
+    // Rating
+    rateCrewTitle: "Rate the Crew",
+    rateCrewDesc: "How was your experience with the crew member?",
+    submitRating: "Submit Rating",
+    skipRating: "Skip",
+    ratingSubmitted: "Rating submitted successfully",
 
     // Chat
     chatTitle: "Chat",
