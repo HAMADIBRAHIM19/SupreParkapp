@@ -1,0 +1,9 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'app.lovable.cf8d693116ff4872ada7e648b1fc9880',
+  appName: 'Parklet',
+  webDir: 'dist'
+};
+
+export default config;
