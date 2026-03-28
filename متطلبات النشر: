@@ -1,0 +1,9 @@
+git clone <YOUR_REPO_URL>
+cd parklet
+npm install
+npx cap add ios      # لـ App Store
+npx cap add android  # لـ Play Store
+npm run build
+npx cap sync
+npx cap run ios      # يتطلب Mac + Xcode
+npx cap run android  # يتطلب Android Studio
