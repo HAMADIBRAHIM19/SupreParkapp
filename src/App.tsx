@@ -15,6 +15,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
+import Support from "./pages/Support";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/install" element={<Install />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/support" element={<Support />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancel" element={<PaymentCancel />} />
