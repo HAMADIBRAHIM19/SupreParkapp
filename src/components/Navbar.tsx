@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, LogOut, Settings, ShieldCheck, Globe } from "lucide-react";
+import { Car, LogOut, Settings, ShieldCheck, Globe, HeadsetIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -60,6 +60,9 @@ const Navbar = () => {
               )}
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">{t("dashboard")}</Link>
+              </Button>
+              <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
+                <Link to="/support"><HeadsetIcon className="w-4 h-4" /> {t("support")}</Link>
               </Button>
               <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
                 <Link to="/settings">
