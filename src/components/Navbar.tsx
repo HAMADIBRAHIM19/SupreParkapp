@@ -61,11 +61,11 @@ const Navbar = () => {
             <>
               <NotificationsBell />
               {isAdmin && (
-                <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
+                <Button variant="ghost" size="sm" className="font-semibold gap-1 hidden sm:inline-flex" asChild>
                   <Link to="/admin"><ShieldCheck className="w-4 h-4" /> {t("admin")}</Link>
                 </Button>
               )}
-              <Button variant="ghost" size="sm" className="font-semibold" asChild>
+              <Button variant="ghost" size="sm" className="font-semibold hidden sm:inline-flex" asChild>
                 <Link to="/dashboard">{t("dashboard")}</Link>
               </Button>
               <DropdownMenu>
