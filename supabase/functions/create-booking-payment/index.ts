@@ -8,6 +8,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const json = (body: Record<string, unknown>, status: number) =>
+  new Response(JSON.stringify(body), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    status,
+  });
+
+const parseJwtPayload = (token: string) => {
+  const payload = token.split(".")[1];
+  if (!payload) {
+    throw new Error("Invalid token");
+  }
+
+  const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+  return JSON.parse(atob(padded)) as { sub?: string; email?: string };
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -16,18 +33,22 @@ serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "User not authenticated" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
-      });
+      return json({ error: "User not authenticated" }, 401);
     }
 
-    const { bookingId, amount } = await req.json();
-    if (!bookingId || !amount) {
-      return new Response(JSON.stringify({ error: "Missing bookingId or amount" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      });
+    const body = await req.json();
+    const bookingId = typeof body.bookingId === "string" ? body.bookingId : "";
+    const amount = typeof body.amount === "number" ? body.amount : Number(body.amount);
+
+    if (!bookingId || !Number.isFinite(amount)) {
+      return json({ error: "Missing bookingId or amount" }, 400);
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const tokenPayload = parseJwtPayload(token);
+
+    if (!tokenPayload.sub) {
+      return json({ error: "User not authenticated" }, 401);
     }
 
     const supabaseUserClient = createClient(
@@ -36,29 +57,28 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } },
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseUserClient.auth.getClaims(token);
-    const userId = claimsData?.claims?.sub;
-    const userEmail = claimsData?.claims?.email;
-
-    if (claimsError || !userId || !userEmail) {
-      return new Response(JSON.stringify({ error: "User not authenticated" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
-      });
-    }
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
     const { data: booking, error: bookingError } = await supabaseUserClient
       .from("bookings")
-      .select("id")
+      .select("id, seeker_id")
       .eq("id", bookingId)
       .single();
 
     if (bookingError || !booking) {
-      return new Response(JSON.stringify({ error: "Booking not found or access denied" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 404,
-      });
+      return json({ error: "Booking not found or access denied" }, 404);
+    }
+
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(
+      booking.seeker_id,
+    );
+
+    const userEmail = userData.user?.email ?? tokenPayload.email;
+    if (userError || !userEmail) {
+      return json({ error: "User not authenticated" }, 401);
     }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -70,6 +90,8 @@ serve(async (req) => {
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
+
+    const origin = req.headers.get("origin") ?? "https://idea-to-reality-pad.lovable.app";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -85,18 +107,13 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}&booking_id=${bookingId}`,
-      cancel_url: `${req.headers.get("origin")}/payment-cancel?booking_id=${bookingId}`,
+      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&booking_id=${bookingId}`,
+      cancel_url: `${origin}/payment-cancel?booking_id=${bookingId}`,
       metadata: {
         booking_id: bookingId,
-        user_id: userId,
+        user_id: booking.seeker_id,
       },
     });
-
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
 
     const { error: updateError } = await supabaseAdmin
       .from("bookings")
@@ -107,16 +124,10 @@ serve(async (req) => {
       throw new Error("Failed to save payment session");
     }
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    return json({ url: session.url }, 200);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-
-    return new Response(JSON.stringify({ error: message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("create-booking-payment error:", message);
+    return json({ error: message }, 500);
   }
 });
