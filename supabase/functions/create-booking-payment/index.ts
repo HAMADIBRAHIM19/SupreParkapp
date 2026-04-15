@@ -8,6 +8,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const json = (body: Record<string, unknown>, status: number) =>
+  new Response(JSON.stringify(body), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    status,
+  });
+
+const parseJwtPayload = (token: string) => {
+  const payload = token.split(".")[1];
+  if (!payload) {
+    throw new Error("Invalid token");
+  }
+
+  const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+  return JSON.parse(atob(padded)) as { sub?: string; email?: string };
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -15,71 +32,102 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("User not authenticated");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return json({ error: "User not authenticated" }, 401);
+    }
 
-    const supabaseClient = createClient(
+    const body = await req.json();
+    const bookingId = typeof body.bookingId === "string" ? body.bookingId : "";
+    const amount = typeof body.amount === "number" ? body.amount : Number(body.amount);
+
+    if (!bookingId || !Number.isFinite(amount)) {
+      return json({ error: "Missing bookingId or amount" }, 400);
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const tokenPayload = parseJwtPayload(token);
+
+    if (!tokenPayload.sub) {
+      return json({ error: "User not authenticated" }, 401);
+    }
+
+    const supabaseUserClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      { global: { headers: { Authorization: authHeader } } },
     );
 
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user?.email) throw new Error("User not authenticated");
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
-    const { bookingId, amount } = await req.json();
-    if (!bookingId || !amount) throw new Error("Missing bookingId or amount");
+    const { data: booking, error: bookingError } = await supabaseUserClient
+      .from("bookings")
+      .select("id, seeker_id")
+      .eq("id", bookingId)
+      .single();
+
+    if (bookingError || !booking) {
+      return json({ error: "Booking not found or access denied" }, 404);
+    }
+
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(
+      booking.seeker_id,
+    );
+
+    const userEmail = userData.user?.email ?? tokenPayload.email;
+    if (userError || !userEmail) {
+      return json({ error: "User not authenticated" }, 401);
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Find or create Stripe customer
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
     let customerId: string | undefined;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
 
-    // Create checkout session with fixed price of 50 SAR
+    const origin = req.headers.get("origin") ?? "https://idea-to-reality-pad.lovable.app";
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerId ? undefined : userEmail,
       line_items: [
         {
           price_data: {
             currency: "sar",
             product: "prod_U88zoBBALz1B3d",
-            unit_amount: 3900, // 39 SAR in halalas (fixed price)
+            unit_amount: 3900,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}&booking_id=${bookingId}`,
-      cancel_url: `${req.headers.get("origin")}/payment-cancel?booking_id=${bookingId}`,
+      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&booking_id=${bookingId}`,
+      cancel_url: `${origin}/payment-cancel?booking_id=${bookingId}`,
       metadata: {
         booking_id: bookingId,
+        user_id: booking.seeker_id,
       },
     });
 
-    // Update booking with stripe session id
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-    await supabaseAdmin
+    const { error: updateError } = await supabaseAdmin
       .from("bookings")
       .update({ stripe_session_id: session.id })
       .eq("id", bookingId);
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    if (updateError) {
+      throw new Error("Failed to save payment session");
+    }
+
+    return json({ url: session.url }, 200);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("create-booking-payment error:", message);
+    return json({ error: message }, 500);
   }
 });
