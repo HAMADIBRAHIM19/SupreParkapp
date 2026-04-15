@@ -77,7 +77,7 @@ const Navbar = () => {
                 <DropdownMenuContent align={dir === "rtl" ? "start" : "end"}>
                   <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
                     <Settings className="w-4 h-4" />
-                    {t("settings") || (lang === "ar" ? "الإعدادات" : "Settings")}
+                    {t("accountSettings")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/support")} className="gap-2 cursor-pointer">
                     <HeadsetIcon className="w-4 h-4" />
