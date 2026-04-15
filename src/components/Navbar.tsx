@@ -75,6 +75,16 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={dir === "rtl" ? "start" : "end"}>
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="gap-2 cursor-pointer sm:hidden">
+                    <LayoutDashboard className="w-4 h-4" />
+                    {t("dashboard")}
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")} className="gap-2 cursor-pointer sm:hidden">
+                      <ShieldCheck className="w-4 h-4" />
+                      {t("admin")}
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
                     <Settings className="w-4 h-4" />
                     {t("accountSettings")}
