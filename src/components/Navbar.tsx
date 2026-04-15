@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, LogOut, Settings, ShieldCheck, Globe, HeadsetIcon } from "lucide-react";
+import { Car, LogOut, Settings, ShieldCheck, Globe, HeadsetIcon, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
