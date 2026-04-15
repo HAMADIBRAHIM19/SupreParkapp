@@ -6,6 +6,13 @@ import { Link, useNavigate } from "react-router-dom";
 import NotificationsBell from "@/components/NotificationsBell";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -61,18 +68,28 @@ const Navbar = () => {
               <Button variant="ghost" size="sm" className="font-semibold" asChild>
                 <Link to="/dashboard">{t("dashboard")}</Link>
               </Button>
-              <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
-                <Link to="/support"><HeadsetIcon className="w-4 h-4" /> {t("support")}</Link>
-              </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
-                <Link to="/settings">
-                  <Settings className="w-4 h-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="font-semibold gap-2" onClick={handleSignOut}>
-                <LogOut className="w-4 h-4" />
-                {t("signOut")}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={dir === "rtl" ? "start" : "end"}>
+                  <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
+                    <Settings className="w-4 h-4" />
+                    {t("accountSettings")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/support")} className="gap-2 cursor-pointer">
+                    <HeadsetIcon className="w-4 h-4" />
+                    {t("support")}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="gap-2 cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4" />
+                    {t("signOut")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
