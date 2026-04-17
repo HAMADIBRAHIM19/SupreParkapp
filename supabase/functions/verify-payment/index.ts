@@ -32,6 +32,22 @@ serve(async (req) => {
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+    // Prevent session reuse: ensure the bookingId matches the one stored in metadata
+    if (session.metadata?.booking_id !== bookingId) {
+      return new Response(JSON.stringify({ error: "Session/booking mismatch" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    // Verify the authenticated user owns this booking
+    if (session.metadata?.user_id !== data.user.id) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 403,
+      });
+    }
+
     if (session.payment_status === "paid") {
       const supabaseAdmin = createClient(
         Deno.env.get("SUPABASE_URL") ?? "",
