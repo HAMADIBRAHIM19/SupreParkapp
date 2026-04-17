@@ -62,7 +62,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
 
   const formatDate = (date: string) => new Date(date).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
-  const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id);
+  const availableBookings = bookings.filter((b) => b.status === "pending" && !b.crew_id && (b as any).payment_status === "paid");
   const myBookings = bookings.filter((b) => b.crew_id === user?.id);
   const activeJobs = myBookings.filter((b) => b.status === "approved");
   const completedJobs = myBookings.filter((b) => b.status === "completed");
