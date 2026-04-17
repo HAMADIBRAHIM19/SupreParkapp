@@ -84,6 +84,8 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
         </Card>
       </div>
 
+      {unpaidBookings.length > 0 && <UnpaidBookingsList bookings={unpaidBookings} onUpdated={onBookingCreated} />}
+
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="active">{t("activeTab")} ({activeBookings.length})</TabsTrigger>
