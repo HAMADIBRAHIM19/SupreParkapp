@@ -34,7 +34,8 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const [trackingBooking, setTrackingBooking] = useState<Booking | null>(null);
   const [ratingBooking, setRatingBooking] = useState<Booking | null>(null);
 
-  const activeBookings = bookings.filter((b) => b.status === "pending" || b.status === "approved");
+  const isPaid = (b: Booking) => (b as any).payment_status === "paid";
+  const activeBookings = bookings.filter((b) => (b.status === "pending" || b.status === "approved") && isPaid(b));
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
 
   const approvedBookingIds = useMemo(() => bookings.filter((b) => b.status === "approved").map((b) => b.id), [bookings]);
