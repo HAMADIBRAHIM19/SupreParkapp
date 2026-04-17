@@ -251,4 +251,65 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
   );
 };
 
+const UnpaidBookingsList = ({ bookings, onUpdated }: { bookings: Booking[]; onUpdated: () => void }) => {
+  const { t, dir, lang } = useLanguage();
+  const { toast } = useToast();
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const formatDate = (date: string) => new Date(date).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  const handlePay = async (booking: Booking) => {
+    setPayingId(booking.id);
+    const { data, error } = await supabase.functions.invoke("create-booking-payment", { body: { bookingId: booking.id, amount: 39 } });
+    setPayingId(null);
+    if (error || !data?.url) {
+      toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
+      return;
+    }
+    window.open(data.url, "_blank");
+  };
+
+  const handleCancel = async (id: string) => {
+    setCancellingId(id);
+    const { error } = await supabase.from("bookings").update({ status: "cancelled" as const }).eq("id", id);
+    setCancellingId(null);
+    if (error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); return; }
+    toast({ title: t("success") });
+    onUpdated();
+  };
+
+  return (
+    <Card className="mb-6 border-amber-500/40 bg-amber-500/5" dir={dir}>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-amber-600" />
+          <p className="font-bold text-amber-700 dark:text-amber-400">{t("awaitingPayment")} ({bookings.length})</p>
+        </div>
+        {bookings.map((b) => (
+          <div key={b.id} className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-background border">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 font-medium text-sm truncate"><MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />{b.location}</div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                <span className="flex items-center gap-1"><Car className="w-3 h-3" />{b.vehicle_plate}</span>
+                <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(b.scheduled_at)}</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30">{t("awaitingPayment")}</Badge>
+              <Button size="sm" className="rounded-xl font-bold gap-1" onClick={() => handlePay(b)} disabled={payingId === b.id}>
+                {payingId === b.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                {t("payNow")}
+              </Button>
+              <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10" disabled={cancellingId === b.id} onClick={() => handleCancel(b.id)}>
+                <XCircle className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
 export default SeekerDashboard;
