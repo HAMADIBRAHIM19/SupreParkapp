@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle, Navigation } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle, Navigation, CreditCard, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NewBookingDialog from "@/components/NewBookingDialog";
@@ -34,8 +34,9 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const [trackingBooking, setTrackingBooking] = useState<Booking | null>(null);
   const [ratingBooking, setRatingBooking] = useState<Booking | null>(null);
 
-  const isPaid = (b: Booking) => (b as any).payment_status === "paid";
+  const isPaid = (b: Booking) => b.payment_status === "paid";
   const activeBookings = bookings.filter((b) => (b.status === "pending" || b.status === "approved") && isPaid(b));
+  const unpaidBookings = bookings.filter((b) => b.status === "pending" && !isPaid(b));
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
 
   const approvedBookingIds = useMemo(() => bookings.filter((b) => b.status === "approved").map((b) => b.id), [bookings]);
@@ -82,6 +83,8 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
           </CardContent>
         </Card>
       </div>
+
+      {unpaidBookings.length > 0 && <UnpaidBookingsList bookings={unpaidBookings} onUpdated={onBookingCreated} />}
 
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="mb-4">
@@ -243,6 +246,67 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
             ))}
           </TableBody>
         </Table>
+      </CardContent>
+    </Card>
+  );
+};
+
+const UnpaidBookingsList = ({ bookings, onUpdated }: { bookings: Booking[]; onUpdated: () => void }) => {
+  const { t, dir, lang } = useLanguage();
+  const { toast } = useToast();
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const formatDate = (date: string) => new Date(date).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  const handlePay = async (booking: Booking) => {
+    setPayingId(booking.id);
+    const { data, error } = await supabase.functions.invoke("create-booking-payment", { body: { bookingId: booking.id, amount: 39 } });
+    setPayingId(null);
+    if (error || !data?.url) {
+      toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
+      return;
+    }
+    window.open(data.url, "_blank");
+  };
+
+  const handleCancel = async (id: string) => {
+    setCancellingId(id);
+    const { error } = await supabase.from("bookings").update({ status: "cancelled" as const }).eq("id", id);
+    setCancellingId(null);
+    if (error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); return; }
+    toast({ title: t("success") });
+    onUpdated();
+  };
+
+  return (
+    <Card className="mb-6 border-amber-500/40 bg-amber-500/5" dir={dir}>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-amber-600" />
+          <p className="font-bold text-amber-700 dark:text-amber-400">{t("awaitingPayment")} ({bookings.length})</p>
+        </div>
+        {bookings.map((b) => (
+          <div key={b.id} className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-background border">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 font-medium text-sm truncate"><MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />{b.location}</div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                <span className="flex items-center gap-1"><Car className="w-3 h-3" />{b.vehicle_plate}</span>
+                <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(b.scheduled_at)}</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30">{t("awaitingPayment")}</Badge>
+              <Button size="sm" className="rounded-xl font-bold gap-1" onClick={() => handlePay(b)} disabled={payingId === b.id}>
+                {payingId === b.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                {t("payNow")}
+              </Button>
+              <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10" disabled={cancellingId === b.id} onClick={() => handleCancel(b.id)}>
+                <XCircle className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );
