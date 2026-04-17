@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle, Navigation } from "lucide-react";
+import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle, Navigation, CreditCard, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NewBookingDialog from "@/components/NewBookingDialog";
@@ -34,8 +34,9 @@ const SeekerDashboard = ({ bookings, loading, onBookingCreated, profileName }: S
   const [trackingBooking, setTrackingBooking] = useState<Booking | null>(null);
   const [ratingBooking, setRatingBooking] = useState<Booking | null>(null);
 
-  const isPaid = (b: Booking) => (b as any).payment_status === "paid";
+  const isPaid = (b: Booking) => b.payment_status === "paid";
   const activeBookings = bookings.filter((b) => (b.status === "pending" || b.status === "approved") && isPaid(b));
+  const unpaidBookings = bookings.filter((b) => b.status === "pending" && !isPaid(b));
   const pastBookings = bookings.filter((b) => b.status === "completed" || b.status === "rejected" || b.status === "cancelled");
 
   const approvedBookingIds = useMemo(() => bookings.filter((b) => b.status === "approved").map((b) => b.id), [bookings]);

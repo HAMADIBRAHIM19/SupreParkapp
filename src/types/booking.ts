@@ -15,4 +15,5 @@ export interface Booking {
   seeker_id: string;
   crew_vehicle_name: string | null;
   crew_vehicle_plate: string | null;
+  payment_status?: string;
 }
