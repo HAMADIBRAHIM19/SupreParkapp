@@ -33,6 +33,9 @@ const translations = {
     step2Desc: "تصفح قائمة الحاجزين القريبين واختر الأنسب حسب التقييم والسعر.",
     step3Title: "أوصل وتلقى أحد أفراد طاقمنا حاجز لك موقف",
     step3Desc: "الحاجز يحفظ لك الموقف حتى توصل. استلم موقفك بكل راحة!",
+    step1Tip: "اختر وجهتك ووقت الوصول",
+    step2Tip: "اختر الحاجز الأنسب لك",
+    step3Tip: "موقفك جاهز لما توصل",
 
     // Features
     whyParklet: "ليش Parklet؟",
@@ -49,6 +52,12 @@ const translations = {
     featChatDesc: "تواصل مع الحاجز مباشرة عبر الدردشة داخل التطبيق.",
     featTracking: "تتبع مباشر",
     featTrackingDesc: "تابع موقع الحاجز والموقف على الخريطة في الوقت الفعلي.",
+    featSaveTimeTip: "موقفك جاهز قبل الوصول",
+    featSafetyTip: "حاجزون موثقون ومقيّمون",
+    featPriceTip: "سعر ثابت 39 ر.س",
+    featRatingTip: "قيّم وشاهد التقييمات",
+    featChatTip: "دردشة فورية داخل التطبيق",
+    featTrackingTip: "تتبع الحاجز على الخريطة",
 
     // CTA
     ctaTitle: "جاهز تحجز موقفك؟",
@@ -406,6 +415,15 @@ const translations = {
     featChatDesc: "Communicate with your crew member directly through in-app chat.",
     featTracking: "Live Tracking",
     featTrackingDesc: "Track the crew member and spot location on the map in real-time.",
+    step1Tip: "Pick your destination and arrival time",
+    step2Tip: "Choose the right crew for you",
+    step3Tip: "Your spot is ready when you arrive",
+    featSaveTimeTip: "Spot ready before you arrive",
+    featSafetyTip: "Verified, rated crew members",
+    featPriceTip: "Flat fee of 39 SAR",
+    featRatingTip: "Rate and see top crew",
+    featChatTip: "Instant in-app chat",
+    featTrackingTip: "Track the crew on the map",
 
     // CTA
     ctaTitle: "Ready to reserve your spot?",

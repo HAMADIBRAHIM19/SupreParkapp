@@ -1,13 +1,14 @@
 import { MapPin, UserCheck, Car } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const HowItWorks = () => {
   const { t, dir } = useLanguage();
 
   const steps = [
-    { icon: MapPin, title: t("step1Title"), description: t("step1Desc"), color: "bg-primary/10 text-primary" },
-    { icon: UserCheck, title: t("step2Title"), description: t("step2Desc"), color: "bg-accent/15 text-accent-foreground" },
-    { icon: Car, title: t("step3Title"), description: t("step3Desc"), color: "bg-primary/10 text-primary" },
+    { icon: MapPin, title: t("step1Title"), description: t("step1Desc"), tip: t("step1Tip"), color: "bg-primary/10 text-primary" },
+    { icon: UserCheck, title: t("step2Title"), description: t("step2Desc"), tip: t("step2Tip"), color: "bg-accent/15 text-accent-foreground" },
+    { icon: Car, title: t("step3Title"), description: t("step3Desc"), tip: t("step3Tip"), color: "bg-primary/10 text-primary" },
   ];
 
   return (
@@ -19,20 +20,29 @@ const HowItWorks = () => {
           <p className="text-muted-foreground mt-4 max-w-lg mx-auto">{t("howDesc")}</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {steps.map((step, index) => (
-            <div key={step.title} className="relative bg-card rounded-2xl p-8 shadow-sm border hover:shadow-lg transition-shadow group">
-              <div className={`absolute -top-4 ${dir === "rtl" ? "-right-4" : "-left-4"} w-10 h-10 bg-primary text-primary-foreground rounded-xl flex items-center justify-center font-black text-lg shadow-md`}>
-                {index + 1}
+        <TooltipProvider delayDuration={150}>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {steps.map((step, index) => (
+              <div key={step.title} className="relative bg-card rounded-2xl p-8 shadow-sm border hover:shadow-lg transition-shadow group">
+                <div className={`absolute -top-4 ${dir === "rtl" ? "-right-4" : "-left-4"} w-10 h-10 bg-primary text-primary-foreground rounded-xl flex items-center justify-center font-black text-lg shadow-md`}>
+                  {index + 1}
+                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type="button" aria-label={step.tip} className={`w-16 h-16 rounded-2xl ${step.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-primary`}>
+                      <step.icon className="w-8 h-8" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-center">
+                    {step.tip}
+                  </TooltipContent>
+                </Tooltip>
+                <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
-              <div className={`w-16 h-16 rounded-2xl ${step.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                <step.icon className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{step.description}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </TooltipProvider>
       </div>
     </section>
   );
