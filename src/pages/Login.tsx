@@ -65,6 +65,11 @@ const Login = () => {
             <Button type="submit" className="w-full font-bold" disabled={loading}>
               {loading ? t("loggingIn") : (<><LogIn className="w-4 h-4" />{t("loginBtn")}</>)}
             </Button>
+            <div className="text-center">
+              <Link to="/forgot-password" className="text-sm text-primary font-semibold hover:underline">
+                {t("forgotPassword")}
+              </Link>
+            </div>
           </form>
           <p className="text-center text-sm text-muted-foreground mt-6">
             {t("noAccount")}{" "}
