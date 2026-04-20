@@ -73,6 +73,10 @@ const Navbar = () => {
             {lang === "ar" ? "EN" : "عربي"}
           </Button>
 
+          <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
+            <Link to="/support"><HeadsetIcon className="w-4 h-4" /> {t("support")}</Link>
+          </Button>
+
           {user ? (
             <>
               <NotificationsBell />
