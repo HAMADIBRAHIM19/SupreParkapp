@@ -98,11 +98,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [
         {
-          price_data: {
-            currency: "sar",
-            product: "prod_U88zoBBALz1B3d",
-            unit_amount: 3900,
-          },
+          price: "price_1TOJWzRekbKhmsSmgUmoNqqD",
           quantity: 1,
         },
       ],
