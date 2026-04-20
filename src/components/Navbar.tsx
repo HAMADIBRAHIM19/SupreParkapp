@@ -59,6 +59,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-8">
           <a href="#how" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t("howItWorks")}</a>
           <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t("features")}</a>
+          <Link to="/support" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t("support")}</Link>
         </div>
 
         {/* Desktop actions */}
