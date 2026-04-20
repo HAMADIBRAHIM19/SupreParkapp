@@ -73,6 +73,10 @@ const Navbar = () => {
             {lang === "ar" ? "EN" : "عربي"}
           </Button>
 
+          <Button variant="ghost" size="sm" className="font-semibold gap-1" asChild>
+            <Link to="/support"><HeadsetIcon className="w-4 h-4" /> {t("support")}</Link>
+          </Button>
+
           {user ? (
             <>
               <NotificationsBell />
@@ -209,6 +213,14 @@ const Navbar = () => {
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary font-bold hover:bg-accent transition-colors"
                     >
                       {t("signupFree")}
+                    </button>
+                    <div className="h-px bg-border mx-4 my-1" />
+                    <button
+                      onClick={() => mobileNav("/support")}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                    >
+                      <HeadsetIcon className="w-4 h-4" />
+                      {t("support")}
                     </button>
                   </>
                 )}
