@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Car className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-foreground">Parklet</span>
+            <span className="font-bold text-foreground">Parkplus</span>
           </div>
           <p className="text-sm text-muted-foreground">{t("allRightsReserved")}</p>
         </div>

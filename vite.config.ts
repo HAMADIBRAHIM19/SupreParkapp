@@ -19,10 +19,10 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         navigateFallbackDenylist: [/^\/~oauth/],
       },
-      manifest: {
-        name: "Parklet - احجز موقفك",
-        short_name: "Parklet",
-        description: "تطبيق Parklet يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل.",
+        manifest: {
+          name: "Parkplus - احجز موقفك",
+          short_name: "Parkplus",
+          description: "تطبيق Parkplus يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل.",
         theme_color: "#0f766e",
         background_color: "#ffffff",
         display: "standalone",
