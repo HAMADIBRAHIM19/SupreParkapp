@@ -54,7 +54,12 @@ const Login = () => {
               <Input id="email" type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className={dir === "rtl" ? "text-right" : ""} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t("password")}</Label>
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor="password">{t("password")}</Label>
+                <Link to="/forgot-password" className="text-sm font-semibold text-primary hover:underline">
+                  {t("forgotPassword")}
+                </Link>
+              </div>
               <div className="relative">
                 <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required dir="ltr" className={`${dir === "rtl" ? "text-right" : ""} pl-10`} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -65,11 +70,6 @@ const Login = () => {
             <Button type="submit" className="w-full font-bold" disabled={loading}>
               {loading ? t("loggingIn") : (<><LogIn className="w-4 h-4" />{t("loginBtn")}</>)}
             </Button>
-            <div className="text-center">
-              <Link to="/forgot-password" className="text-sm text-primary font-semibold hover:underline">
-                {t("forgotPassword")}
-              </Link>
-            </div>
           </form>
           <p className="text-center text-sm text-muted-foreground mt-6">
             {t("noAccount")}{" "}
