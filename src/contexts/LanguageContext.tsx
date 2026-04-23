@@ -18,7 +18,7 @@ const translations = {
     heroTitle1: "ما تدور على",
     heroSpot: "موقف",
     heroTitle2: "خلّ أحد يحجزه لك",
-    heroDesc: "تطبيق Parkplus يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل. وفّر وقتك وأعصابك!",
+    heroDesc: "تطبيق SuperPark يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل. وفّر وقتك وأعصابك!",
     statSpots: "موقف تم حجزه",
     statCrew: "حاجز نشط",
     statRating: "تقييم المستخدمين",
@@ -38,7 +38,7 @@ const translations = {
     step3Tip: "موقفك جاهز لما توصل",
 
     // Features
-    whyParklet: "ليش Parkplus؟",
+    whySuperPark: "ليش SuperPark؟",
     featuresTitle: "مميزات تخلّيك ترتاح",
     featSaveTime: "توفير الوقت",
     featSaveTimeDesc: "ما تحتاج تلف وتدور، موقفك جاهز قبل ما توصل.",
@@ -61,7 +61,7 @@ const translations = {
 
     // CTA
     ctaTitle: "جاهز تحجز موقفك؟",
-    ctaDesc: "انضم لآلاف المستخدمين اللي وفّروا وقتهم وأعصابهم مع Parkplus",
+    ctaDesc: "انضم لآلاف المستخدمين اللي وفّروا وقتهم وأعصابهم مع SuperPark",
     ctaStart: "ابدأ الآن",
     ctaSignupCrew: "سجّل كحاجز",
 
@@ -107,7 +107,7 @@ const translations = {
     crewFeatProtectionDesc: "نظام آمن يحفظ حقوقك كحاجز.",
 
     // Footer
-    allRightsReserved: "© 2026 Parkplus. جميع الحقوق محفوظة.",
+    allRightsReserved: "© 2026 SuperPark. جميع الحقوق محفوظة.",
 
     // Login
     backToHome: "العودة للرئيسية",
@@ -141,7 +141,7 @@ const translations = {
 
     // Signup
     signupTitle: "إنشاء حساب جديد",
-    signupDesc: "انضم إلى Parkplus واحجز موقفك بسهولة",
+    signupDesc: "انضم إلى SuperPark واحجز موقفك بسهولة",
     fullName: "الاسم الكامل",
     username: "اسم المستخدم",
     passwordMin: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
@@ -343,7 +343,7 @@ const translations = {
     english: "English",
 
     // Install
-    installTitle: "تثبيت Parkplus",
+    installTitle: "تثبيت SuperPark",
     installDesc: "ثبّت التطبيق على جهازك للوصول السريع وتجربة أفضل",
     installed: "تم التثبيت بنجاح!",
     iosSteps: "خطوات التثبيت على iPhone:",
@@ -401,7 +401,7 @@ const translations = {
     heroTitle1: "Don't search for a",
     heroSpot: "spot",
     heroTitle2: "Let someone reserve it for you",
-    heroDesc: "Parkplus connects you with nearby people who reserve a parking spot for you until you arrive. Save your time and nerves!",
+    heroDesc: "SuperPark connects you with nearby people who reserve a parking spot for you until you arrive. Save your time and nerves!",
     statSpots: "spots reserved",
     statCrew: "active crew",
     statRating: "user rating",
@@ -418,7 +418,7 @@ const translations = {
     step3Desc: "The crew member holds the spot for you until you arrive. Park with ease!",
 
     // Features
-    whyParklet: "Why Parkplus?",
+    whySuperPark: "Why SuperPark?",
     featuresTitle: "Features that give you peace of mind",
     featSaveTime: "Save Time",
     featSaveTimeDesc: "No need to drive around, your spot is ready before you arrive.",
@@ -444,7 +444,7 @@ const translations = {
 
     // CTA
     ctaTitle: "Ready to reserve your spot?",
-    ctaDesc: "Join thousands of users who saved their time and nerves with Parkplus",
+    ctaDesc: "Join thousands of users who saved their time and nerves with SuperPark",
     ctaStart: "Get Started",
     ctaSignupCrew: "Sign up as Crew",
 
@@ -490,7 +490,7 @@ const translations = {
     crewFeatProtectionDesc: "A secure system that protects your rights as crew.",
 
     // Footer
-    allRightsReserved: "© 2026 Parkplus. All rights reserved.",
+    allRightsReserved: "© 2026 SuperPark. All rights reserved.",
 
     // Login
     backToHome: "Back to Home",
@@ -524,7 +524,7 @@ const translations = {
 
     // Signup
     signupTitle: "Create New Account",
-    signupDesc: "Join Parkplus and reserve your spot easily",
+    signupDesc: "Join SuperPark and reserve your spot easily",
     fullName: "Full Name",
     username: "Username",
     passwordMin: "Password must be at least 6 characters",
@@ -726,7 +726,7 @@ const translations = {
     english: "English",
 
     // Install
-    installTitle: "Install Parkplus",
+    installTitle: "Install SuperPark",
     installDesc: "Install the app on your device for quick access and a better experience",
     installed: "Installed successfully!",
     iosSteps: "Installation steps on iPhone:",
@@ -791,13 +791,13 @@ export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [lang, setLangState] = useState<Lang>(() => {
-    const saved = localStorage.getItem("parklet-lang");
+    const saved = localStorage.getItem("superpark-lang");
     return (saved === "en" || saved === "ar") ? saved : "ar";
   });
 
   const setLang = (newLang: Lang) => {
     setLangState(newLang);
-    localStorage.setItem("parklet-lang", newLang);
+    localStorage.setItem("superpark-lang", newLang);
   };
 
   const t = (key: TranslationKey): string => {
