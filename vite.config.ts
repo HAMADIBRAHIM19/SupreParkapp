@@ -20,9 +20,9 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/~oauth/],
       },
         manifest: {
-          name: "Parkplus - احجز موقفك",
-          short_name: "Parkplus",
-          description: "تطبيق Parkplus يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل.",
+          name: "SuperPark - احجز موقفك",
+          short_name: "SuperPark",
+          description: "تطبيق SuperPark يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل.",
         theme_color: "#0f766e",
         background_color: "#ffffff",
         display: "standalone",

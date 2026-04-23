@@ -36,7 +36,7 @@ const Install = () => {
       <Card className="max-w-md w-full">
         <CardContent className="pt-8 pb-8 text-center space-y-6">
           <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-lg">
-            <img src="/pwa-icon-512.png" alt="Parkplus" className="w-full h-full object-cover" />
+            <img src="/pwa-icon-512.png" alt="SuperPark" className="w-full h-full object-cover" />
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-foreground">{t("installTitle")}</h1>
