@@ -791,13 +791,13 @@ export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [lang, setLangState] = useState<Lang>(() => {
-    const saved = localStorage.getItem("superpark-lang");
+    const saved = localStorage.getItem("parklet-lang");
     return (saved === "en" || saved === "ar") ? saved : "ar";
   });
 
   const setLang = (newLang: Lang) => {
     setLangState(newLang);
-    localStorage.setItem("superpark-lang", newLang);
+    localStorage.setItem("parklet-lang", newLang);
   };
 
   const t = (key: TranslationKey): string => {
