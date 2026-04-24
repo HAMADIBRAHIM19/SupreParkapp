@@ -65,7 +65,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   const defaultCenter = { lat: 24.7136, lng: 46.6753 };
 
-  // Find nearby POI using Places Service
+  // Find the closest POI to the clicked point
   const findNearbyPOI = useCallback((lat: number, lng: number): Promise<string | null> => {
     if (!mapRef.current) return Promise.resolve(null);
 
@@ -74,10 +74,26 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
     return new Promise((resolve) => {
       service.nearbySearch(
-        { location, radius: 50, type: "point_of_interest" },
+        { location, radius: 25, rankBy: google.maps.places.RankBy.PROMINENCE, type: "point_of_interest" },
         (results, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && results?.length) {
-            resolve(results[0].name || null);
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.length) {
+            resolve(null);
+            return;
+          }
+          // Pick the POI closest to the clicked point
+          let best: google.maps.places.PlaceResult | null = null;
+          let bestDist = Infinity;
+          for (const r of results) {
+            const loc = r.geometry?.location;
+            if (!loc) continue;
+            const dLat = loc.lat() - lat;
+            const dLng = loc.lng() - lng;
+            const d = dLat * dLat + dLng * dLng;
+            if (d < bestDist) { bestDist = d; best = r; }
+          }
+          // Only accept if very close (~30m). 30m ≈ 0.00027 deg → squared ≈ 7.3e-8
+          if (best && bestDist < 7.3e-8) {
+            resolve(best.name || null);
           } else {
             resolve(null);
           }
