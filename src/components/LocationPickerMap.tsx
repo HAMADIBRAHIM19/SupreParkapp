@@ -65,22 +65,38 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
 
   const defaultCenter = { lat: 24.7136, lng: 46.6753 };
 
-  // Find the closest POI to the clicked point
+  // Find the closest POI to the clicked point.
+  // Search radius scales with map zoom and device pixel ratio so high-zoom/high-DPR
+  // clicks are tight while low-zoom clicks still find nearby places.
   const findNearbyPOI = useCallback((lat: number, lng: number): Promise<string | null> => {
     if (!mapRef.current) return Promise.resolve(null);
 
-    const service = new google.maps.places.PlacesService(mapRef.current);
+    const map = mapRef.current;
+    const zoom = map.getZoom() ?? 16;
+    const dpr = typeof window !== "undefined" ? (window.devicePixelRatio || 1) : 1;
+
+    // Approx meters per pixel at given lat/zoom (Web Mercator).
+    const metersPerPixel = (156543.03392 * Math.cos((lat * Math.PI) / 180)) / Math.pow(2, zoom);
+    // Use a click tolerance of ~20 CSS pixels, adjusted by DPR (sharper screens → tighter).
+    const tolerancePx = 20 / Math.max(1, dpr);
+    const searchRadius = Math.min(120, Math.max(15, metersPerPixel * tolerancePx));
+    // Acceptance distance is a bit tighter than the search radius.
+    const acceptMeters = Math.min(80, Math.max(10, metersPerPixel * (tolerancePx * 0.75)));
+    // Convert acceptance meters → squared degrees for cheap comparison.
+    const degPerMeter = 1 / 111320;
+    const acceptDegSq = (acceptMeters * degPerMeter) ** 2;
+
+    const service = new google.maps.places.PlacesService(map);
     const location = new google.maps.LatLng(lat, lng);
 
     return new Promise((resolve) => {
       service.nearbySearch(
-        { location, radius: 25, rankBy: google.maps.places.RankBy.PROMINENCE, type: "point_of_interest" },
+        { location, radius: searchRadius, type: "point_of_interest" },
         (results, status) => {
           if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.length) {
             resolve(null);
             return;
           }
-          // Pick the POI closest to the clicked point
           let best: google.maps.places.PlaceResult | null = null;
           let bestDist = Infinity;
           for (const r of results) {
@@ -91,8 +107,7 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
             const d = dLat * dLat + dLng * dLng;
             if (d < bestDist) { bestDist = d; best = r; }
           }
-          // Only accept if very close (~30m). 30m ≈ 0.00027 deg → squared ≈ 7.3e-8
-          if (best && bestDist < 7.3e-8) {
+          if (best && bestDist < acceptDegSq) {
             resolve(best.name || null);
           } else {
             resolve(null);
