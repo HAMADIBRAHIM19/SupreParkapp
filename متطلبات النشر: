@@ -7,3 +7,22 @@ npm run build
 npx cap sync
 npx cap run ios      # يتطلب Mac + Xcode
 npx cap run android  # يتطلب Android Studio
+git clone <YOUR_GITHUB_REPO_URL>
+cd <project-folder>
+npm install
+# إضافة iOS (يحتاج Mac)
+npx cap add ios
+
+# إضافة Android
+npx cap add android
+
+# تحديث التبعيات الأصلية
+npx cap update ios
+npx cap update android
+npm run build
+npx cap sync
+# Android (يفتح Android Studio)
+npx cap run android
+
+# iOS (يفتح Xcode — يحتاج Mac)
+npx cap run ios
