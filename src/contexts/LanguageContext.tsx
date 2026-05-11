@@ -108,6 +108,7 @@ const translations = {
 
     // Footer
     allRightsReserved: "© 2026 SuperPark. جميع الحقوق محفوظة.",
+    privacyPolicy: "سياسة الخصوصية",
 
     // Login
     backToHome: "العودة للرئيسية",
