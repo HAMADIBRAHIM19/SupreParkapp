@@ -733,6 +733,15 @@ const translations = {
     languageDesc: "Change the app interface language",
     arabic: "العربية",
     english: "English",
+    deleteAccount: "Delete Account",
+    deleteAccountDesc: "Permanently delete your account and all your data. This action cannot be undone.",
+    deleteAccountBtn: "Delete My Account",
+    deleteAccountConfirmTitle: "Are you sure?",
+    deleteAccountConfirmDesc: "Your account and all related data (bookings, messages, ratings, wallet) will be permanently deleted. This cannot be reversed.",
+    deletingAccount: "Deleting account...",
+    confirmDeleteAccount: "Yes, delete my account",
+    accountDeleted: "Account deleted successfully",
+    deleteError: "An error occurred while deleting the account",
 
     // Install
     installTitle: "Install SuperPark",
