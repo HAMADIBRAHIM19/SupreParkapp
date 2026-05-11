@@ -346,9 +346,8 @@ const translations = {
     deleteAccountBtn: "حذف حسابي",
     deleteAccountConfirmTitle: "هل أنت متأكد؟",
     deleteAccountConfirmDesc: "سيتم حذف حسابك وجميع بياناتك (الحجوزات، الرسائل، التقييمات، المحفظة) نهائياً. لا يمكن استرجاعها.",
-    deleting: "جارٍ الحذف...",
-    cancel: "إلغاء",
-    confirmDelete: "نعم، احذف حسابي",
+    deletingAccount: "جارٍ حذف الحساب...",
+    confirmDeleteAccount: "نعم، احذف حسابي",
     accountDeleted: "تم حذف الحساب بنجاح",
     deleteError: "حدث خطأ أثناء حذف الحساب",
 
