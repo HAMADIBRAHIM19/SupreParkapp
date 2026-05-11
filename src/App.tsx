@@ -40,6 +40,7 @@ const App = () => (
               <Route path="/install" element={<Install />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/privacy" element={<Privacy />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancel" element={<PaymentCancel />} />
