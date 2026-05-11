@@ -26,6 +26,21 @@ const Settings = () => {
   const [savingName, setSavingName] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const { error } = await supabase.functions.invoke("delete-account");
+      if (error) throw error;
+      toast.success(t("accountDeleted"));
+      await signOut();
+      navigate("/");
+    } catch (err: any) {
+      toast.error(err?.message || t("deleteError"));
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
