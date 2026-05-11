@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, ArrowLeft, Eye, EyeOff, Save, User, Mail, Lock, Globe } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ArrowRight, ArrowLeft, Eye, EyeOff, Save, User, Mail, Lock, Globe, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 const Settings = () => {
-  const { user, loading: authLoading, profile, refreshProfile } = useAuth();
+  const { user, loading: authLoading, profile, refreshProfile, signOut } = useAuth();
   const { t, dir, lang, setLang } = useLanguage();
   const navigate = useNavigate();
   const BackArrow = lang === "ar" ? ArrowRight : ArrowLeft;
@@ -25,6 +26,21 @@ const Settings = () => {
   const [savingName, setSavingName] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const { error } = await supabase.functions.invoke("delete-account");
+      if (error) throw error;
+      toast.success(t("accountDeleted"));
+      await signOut();
+      navigate("/");
+    } catch (err: any) {
+      toast.error(err?.message || t("deleteError"));
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
@@ -175,6 +191,41 @@ const Settings = () => {
                 {savingPassword ? t("saving") : t("updatePassword")}
               </Button>
             </form>
+          </CardContent>
+        </Card>
+
+        <Separator />
+
+        {/* Delete Account */}
+        <Card className="border-destructive/50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-destructive" />
+              <CardTitle className="text-lg text-destructive">{t("deleteAccount")}</CardTitle>
+            </div>
+            <CardDescription>{t("deleteAccountDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="gap-2" disabled={deleting}>
+                  <Trash2 className="w-4 h-4" />
+                  {deleting ? t("deletingAccount") : t("deleteAccountBtn")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent dir={dir}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("deleteAccountConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("deleteAccountConfirmDesc")}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    {t("confirmDeleteAccount")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </div>

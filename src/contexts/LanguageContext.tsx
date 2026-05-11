@@ -341,6 +341,15 @@ const translations = {
     languageDesc: "تغيير لغة واجهة التطبيق",
     arabic: "العربية",
     english: "English",
+    deleteAccount: "حذف الحساب",
+    deleteAccountDesc: "حذف حسابك نهائياً مع جميع بياناتك. لا يمكن التراجع عن هذا الإجراء.",
+    deleteAccountBtn: "حذف حسابي",
+    deleteAccountConfirmTitle: "هل أنت متأكد؟",
+    deleteAccountConfirmDesc: "سيتم حذف حسابك وجميع بياناتك (الحجوزات، الرسائل، التقييمات، المحفظة) نهائياً. لا يمكن استرجاعها.",
+    deletingAccount: "جارٍ حذف الحساب...",
+    confirmDeleteAccount: "نعم، احذف حسابي",
+    accountDeleted: "تم حذف الحساب بنجاح",
+    deleteError: "حدث خطأ أثناء حذف الحساب",
 
     // Install
     installTitle: "تثبيت SuperPark",
@@ -724,6 +733,15 @@ const translations = {
     languageDesc: "Change the app interface language",
     arabic: "العربية",
     english: "English",
+    deleteAccount: "Delete Account",
+    deleteAccountDesc: "Permanently delete your account and all your data. This action cannot be undone.",
+    deleteAccountBtn: "Delete My Account",
+    deleteAccountConfirmTitle: "Are you sure?",
+    deleteAccountConfirmDesc: "Your account and all related data (bookings, messages, ratings, wallet) will be permanently deleted. This cannot be reversed.",
+    deletingAccount: "Deleting account...",
+    confirmDeleteAccount: "Yes, delete my account",
+    accountDeleted: "Account deleted successfully",
+    deleteError: "An error occurred while deleting the account",
 
     // Install
     installTitle: "Install SuperPark",
