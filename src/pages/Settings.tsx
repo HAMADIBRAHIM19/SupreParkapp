@@ -13,7 +13,7 @@ import { ArrowRight, ArrowLeft, Eye, EyeOff, Save, User, Mail, Lock, Globe, Tras
 import { toast } from "sonner";
 
 const Settings = () => {
-  const { user, loading: authLoading, profile, refreshProfile } = useAuth();
+  const { user, loading: authLoading, profile, refreshProfile, signOut } = useAuth();
   const { t, dir, lang, setLang } = useLanguage();
   const navigate = useNavigate();
   const BackArrow = lang === "ar" ? ArrowRight : ArrowLeft;
