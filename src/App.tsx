@@ -18,6 +18,7 @@ import PaymentCancel from "./pages/PaymentCancel";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Support from "./pages/Support";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/install" element={<Install />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/privacy" element={<Privacy />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancel" element={<PaymentCancel />} />

@@ -1,4 +1,5 @@
 import { Car } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
@@ -14,7 +15,12 @@ const Footer = () => {
             </div>
              <span className="font-bold text-foreground">SuperPark</span>
           </div>
-          <p className="text-sm text-muted-foreground">{t("allRightsReserved")}</p>
+          <div className="flex items-center gap-4 text-sm">
+            <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+              {t("privacyPolicy")}
+            </Link>
+            <span className="text-muted-foreground">{t("allRightsReserved")}</span>
+          </div>
         </div>
       </div>
     </footer>
