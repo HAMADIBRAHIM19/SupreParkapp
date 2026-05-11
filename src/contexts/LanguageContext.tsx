@@ -501,6 +501,7 @@ const translations = {
 
     // Footer
     allRightsReserved: "© 2026 SuperPark. All rights reserved.",
+    privacyPolicy: "Privacy Policy",
 
     // Login
     backToHome: "Back to Home",
