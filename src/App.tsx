@@ -18,6 +18,7 @@ import PaymentCancel from "./pages/PaymentCancel";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Support from "./pages/Support";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
