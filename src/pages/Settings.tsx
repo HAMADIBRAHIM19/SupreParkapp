@@ -193,6 +193,41 @@ const Settings = () => {
             </form>
           </CardContent>
         </Card>
+
+        <Separator />
+
+        {/* Delete Account */}
+        <Card className="border-destructive/50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-destructive" />
+              <CardTitle className="text-lg text-destructive">{t("deleteAccount")}</CardTitle>
+            </div>
+            <CardDescription>{t("deleteAccountDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="gap-2" disabled={deleting}>
+                  <Trash2 className="w-4 h-4" />
+                  {deleting ? t("deletingAccount") : t("deleteAccountBtn")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent dir={dir}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("deleteAccountConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("deleteAccountConfirmDesc")}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    {t("confirmDeleteAccount")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
