@@ -503,6 +503,7 @@ const translations = {
     // Footer
     allRightsReserved: "© 2026 SuperPark. All rights reserved.",
     privacyPolicy: "Privacy Policy",
+    contactUs: "Contact Us",
 
     // Login
     backToHome: "Back to Home",
