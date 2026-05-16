@@ -1,9 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.cf8d693116ff4872ada7e648b1fc9880',
+  appId: 'com.idealvisionapps.superpark',
   appName: 'SuperPark',
   webDir: 'dist',
-
+};
 
 export default config;
