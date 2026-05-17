@@ -8,7 +8,8 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup:android": "npm install && npm run build && (npx cap add android || npx cap sync android) && npx cap sync android && npx cap open android"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.0",
