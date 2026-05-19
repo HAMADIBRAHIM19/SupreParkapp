@@ -16,7 +16,6 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
-          contact_number: string | null
           created_at: string
           crew_id: string | null
           crew_vehicle_name: string | null
@@ -35,7 +34,6 @@ export type Database = {
           vehicle_plate: string
         }
         Insert: {
-          contact_number?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
@@ -54,7 +52,6 @@ export type Database = {
           vehicle_plate: string
         }
         Update: {
-          contact_number?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
