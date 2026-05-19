@@ -124,6 +124,6 @@ serve(async (req) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("create-booking-payment error:", message);
-    return json({ error: message }, 500);
+    return json({ error: "Internal server error" }, 500);
   }
 });
