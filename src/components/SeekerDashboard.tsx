@@ -267,7 +267,7 @@ const UnpaidBookingsList = ({ bookings, onUpdated }: { bookings: Booking[]; onUp
       toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
       return;
     }
-    window.open(data.url, "_blank");
+    await openCheckout(data.url);
   };
 
   const handleCancel = async (id: string) => {

@@ -59,7 +59,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
-    window.open(paymentData.url, "_blank");
+    await openCheckout(paymentData.url);
   };
 
   return (
