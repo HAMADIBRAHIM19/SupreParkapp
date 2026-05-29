@@ -39,8 +39,10 @@ serve(async (req) => {
     const body = await req.json();
     const bookingId = typeof body.bookingId === "string" ? body.bookingId : "";
     const amount = typeof body.amount === "number" ? body.amount : Number(body.amount);
+    const currency = (typeof body.currency === "string" ? body.currency : "sar").toLowerCase();
+    const amountMinor = typeof body.amountMinor === "number" ? Math.round(body.amountMinor) : Math.round(amount * 100);
 
-    if (!bookingId || !Number.isFinite(amount)) {
+    if (!bookingId || !Number.isFinite(amount) || !Number.isFinite(amountMinor) || amountMinor <= 0) {
       return json({ error: "Missing bookingId or amount" }, 400);
     }
 
