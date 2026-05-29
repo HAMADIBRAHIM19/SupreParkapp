@@ -232,7 +232,6 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
         // Initialize Places Autocomplete
         if (searchInputRef.current) {
           const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
-            componentRestrictions: { country: "sa" },
             fields: ["geometry", "formatted_address", "address_components", "name", "types"],
           });
           autocomplete.bindTo("bounds", map);
