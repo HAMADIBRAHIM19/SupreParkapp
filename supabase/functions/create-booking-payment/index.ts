@@ -100,7 +100,14 @@ serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [
         {
-          price: "price_1TOJWzRekbKhmsSmgUmoNqqD",
+          price_data: {
+            currency,
+            unit_amount: amountMinor,
+            product_data: {
+              name: "Parklet Booking",
+              description: `Booking #${bookingId}`,
+            },
+          },
           quantity: 1,
         },
       ],
@@ -110,6 +117,8 @@ serve(async (req) => {
       metadata: {
         booking_id: bookingId,
         user_id: booking.seeker_id,
+        currency,
+        amount: String(amount),
       },
     });
 
