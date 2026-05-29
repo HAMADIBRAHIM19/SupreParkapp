@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, CheckCircle, Navigation, CreditCard, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { openCheckout } from "@/lib/openCheckout";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
 import LiveTrackingMap from "@/components/LiveTrackingMap";
