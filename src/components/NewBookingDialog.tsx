@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Car, Clock, FileText, Send, Loader2 } from "lucide-react";
 import LocationPickerMap, { LocationInfo } from "@/components/LocationPickerMap";
+import { openCheckout } from "@/lib/openCheckout";
 
 interface NewBookingDialogProps {
   open: boolean;
@@ -59,7 +60,7 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
-    window.open(paymentData.url, "_blank");
+    await openCheckout(paymentData.url);
   };
 
   return (
