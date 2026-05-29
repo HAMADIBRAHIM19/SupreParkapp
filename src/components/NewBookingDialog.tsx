@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,15 @@ interface NewBookingDialogProps {
   onBookingCreated: () => void;
 }
 
+interface LocalPrice {
+  currency: string;
+  amount: number;
+  amountMinor: number;
+}
+
+const BASE_PRICE = 39;
+const BASE_CURRENCY = "SAR";
+
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
   const { user } = useAuth();
   const { t, dir, lang } = useLanguage();
@@ -25,7 +34,39 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
   const [loading, setLoading] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<LocationInfo | null>(null);
   const [form, setForm] = useState({ vehicle_name: "", vehicle_plate: "", scheduled_at: "", notes: "" });
-  const price = 39;
+  const [localPrice, setLocalPrice] = useState<LocalPrice>({ currency: BASE_CURRENCY, amount: BASE_PRICE, amountMinor: BASE_PRICE * 100 });
+  const [priceLoading, setPriceLoading] = useState(false);
+
+  // Detect user location once dialog opens and convert price
+  useEffect(() => {
+    if (!open) return;
+    if (!navigator.geolocation) return;
+    setPriceLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { data, error } = await supabase.functions.invoke("convert-price", {
+            body: { lat: pos.coords.latitude, lng: pos.coords.longitude, amount: BASE_PRICE, baseCurrency: BASE_CURRENCY },
+          });
+          if (!error && data?.currency) {
+            setLocalPrice({ currency: data.currency, amount: data.amount, amountMinor: data.amountMinor });
+          }
+        } catch (e) {
+          console.error("convert-price failed", e);
+        } finally {
+          setPriceLoading(false);
+        }
+      },
+      () => setPriceLoading(false),
+      { timeout: 8000, maximumAge: 60_000 },
+    );
+  }, [open]);
+
+  const priceLabel = new Intl.NumberFormat(lang === "ar" ? "ar" : "en", {
+    style: "currency",
+    currency: localPrice.currency,
+    maximumFractionDigits: localPrice.amount >= 1000 ? 0 : 2,
+  }).format(localPrice.amount);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +91,14 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
       return;
     }
 
-    const { data: paymentData, error: paymentError } = await supabase.functions.invoke("create-booking-payment", { body: { bookingId: booking.id, amount: 39 } });
+    const { data: paymentData, error: paymentError } = await supabase.functions.invoke("create-booking-payment", {
+      body: {
+        bookingId: booking.id,
+        amount: localPrice.amount,
+        amountMinor: localPrice.amountMinor,
+        currency: localPrice.currency.toLowerCase(),
+      },
+    });
     setLoading(false);
     if (paymentError || !paymentData?.url) {
       toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
@@ -88,16 +136,23 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
           </div>
           <div className="bg-primary/10 rounded-xl p-4 text-center">
             <p className="text-sm text-muted-foreground mb-1">{t("bookingCost")}</p>
-            <p className="text-2xl font-black text-primary">39 {t("sar")}</p>
+            <p className="text-2xl font-black text-primary">
+              {priceLoading ? <Loader2 className="w-5 h-5 animate-spin inline" /> : priceLabel}
+            </p>
+            {localPrice.currency !== BASE_CURRENCY && (
+              <p className="text-xs text-muted-foreground mt-1">
+                ≈ {BASE_PRICE} {t("sar")}
+              </p>
+            )}
             <p className="text-xs text-muted-foreground mt-1">{t("fixedPrice")}</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="notes" className="flex items-center gap-2"><FileText className="w-4 h-4 text-primary" />{t("notes")}</Label>
             <Textarea id="notes" placeholder={lang === "ar" ? "أي ملاحظات إضافية..." : "Any additional notes..."} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
-          <Button type="submit" className="w-full rounded-xl font-bold gap-2 text-base" disabled={loading}>
+          <Button type="submit" className="w-full rounded-xl font-bold gap-2 text-base" disabled={loading || priceLoading}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            {loading ? t("processing") : `${t("submitAndPay")} (${price} ${t("sar")})`}
+            {loading ? t("processing") : `${t("submitAndPay")} (${priceLabel})`}
           </Button>
         </form>
       </DialogContent>
