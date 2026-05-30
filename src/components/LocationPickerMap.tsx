@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2, LocateFixed, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useToast } from "@/hooks/use-toast";
+import { getCurrentCoordinates, isLocationPermissionDenied } from "@/lib/geolocation";
 
 declare global {
   interface Window {
@@ -53,6 +55,7 @@ const loadGoogleMaps = async (): Promise<void> => {
 
 const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPickerMapProps) => {
   const { t, dir, lang } = useLanguage();
+  const { toast } = useToast();
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
@@ -164,28 +167,30 @@ const LocationPickerMap = ({ onLocationSelect, selectedLocation }: LocationPicke
     }
   }, [onLocationSelect, findNearbyPOI]);
 
-  const handleLocateMe = () => {
-    if (!navigator.geolocation) return;
+  const handleLocateMe = async () => {
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude: lat, longitude: lng } = pos.coords;
-        const position = { lat, lng };
-        if (mapRef.current) {
-          mapRef.current.setCenter(position);
-          mapRef.current.setZoom(17);
-        }
-        if (markerRef.current) {
-          markerRef.current.setPosition(position);
-        } else if (mapRef.current) {
-          markerRef.current = new google.maps.Marker({ position, map: mapRef.current, animation: google.maps.Animation.DROP });
-        }
-        setLocating(false);
-        reverseGeocode(lat, lng);
-      },
-      () => setLocating(false),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+    try {
+      const coords = await getCurrentCoordinates({ timeout: 15000 });
+      const position = { lat: coords.latitude, lng: coords.longitude };
+      if (mapRef.current) {
+        mapRef.current.setCenter(position);
+        mapRef.current.setZoom(17);
+      }
+      if (markerRef.current) {
+        markerRef.current.setPosition(position);
+      } else if (mapRef.current) {
+        markerRef.current = new google.maps.Marker({ position, map: mapRef.current, animation: google.maps.Animation.DROP });
+      }
+      reverseGeocode(coords.latitude, coords.longitude);
+    } catch (error) {
+      toast({
+        title: t("error"),
+        description: isLocationPermissionDenied(error) ? t("locationPermissionDenied") : t("locationUnavailable"),
+        variant: "destructive",
+      });
+    } finally {
+      setLocating(false);
+    }
   };
 
   useEffect(() => {
