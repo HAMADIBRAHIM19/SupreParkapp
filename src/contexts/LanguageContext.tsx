@@ -448,7 +448,7 @@ const translations = {
     step3Tip: "Your spot is ready when you arrive",
     featSaveTimeTip: "Spot ready before you arrive",
     featSafetyTip: "Verified, rated crew members",
-    featPriceTip: "Flat fee of 39 SAR",
+    featPriceTip: "Flat fee of 29 SAR",
     featRatingTip: "Rate and see top crew",
     featChatTip: "Instant in-app chat",
     featTrackingTip: "Track the crew on the map",
