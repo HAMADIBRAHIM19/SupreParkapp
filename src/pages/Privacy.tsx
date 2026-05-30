@@ -37,7 +37,7 @@ const Privacy = () => {
           <li>مطابقة الباحث مع الطاقم القريب وإتمام عملية الحجز.</li>
           <li>تتبّع موقع الطاقم لحظيًا لإظهار اقترابه من الباحث.</li>
           <li>تمكين الدردشة داخل التطبيق وإرسال الإشعارات الفورية.</li>
-          <li>معالجة المدفوعات (39 ريال للطلب) وصرف عمولة الطاقم (25%).</li>
+          <li>معالجة المدفوعات (29 ريال للطلب) وصرف عمولة الطاقم (25%).</li>
           <li>تحسين الخدمة، منع الاحتيال، والامتثال للأنظمة.</li>
         </ul>
       </section>
@@ -139,7 +139,7 @@ const Privacy = () => {
           <li>Match Seekers with nearby Crew and complete bookings.</li>
           <li>Track Crew location in real time to show proximity to the Seeker.</li>
           <li>Enable in-app chat and real-time notifications.</li>
-          <li>Process payments (39 SAR per booking) and pay Crew commission (25%).</li>
+          <li>Process payments (29 SAR per booking) and pay Crew commission (25%).</li>
           <li>Improve the service, prevent fraud, and comply with regulations.</li>
         </ul>
       </section>
