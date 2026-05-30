@@ -43,7 +43,7 @@ serve(async (req) => {
     const body = await req.json();
     const lat = Number(body.lat);
     const lng = Number(body.lng);
-    const baseAmount = Number(body.amount ?? 39);
+    const baseAmount = Number(body.amount ?? 29);
     const baseCurrency = String(body.baseCurrency ?? "SAR").toUpperCase();
 
     if (!Number.isFinite(lat) || !Number.isFinite(lng) || !Number.isFinite(baseAmount)) {

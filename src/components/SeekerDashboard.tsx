@@ -262,7 +262,7 @@ const UnpaidBookingsList = ({ bookings, onUpdated }: { bookings: Booking[]; onUp
 
   const handlePay = async (booking: Booking) => {
     setPayingId(booking.id);
-    const { data, error } = await supabase.functions.invoke("create-booking-payment", { body: { bookingId: booking.id, amount: 39 } });
+    const { data, error } = await supabase.functions.invoke("create-booking-payment", { body: { bookingId: booking.id, amount: 29 } });
     setPayingId(null);
     if (error || !data?.url) {
       toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
