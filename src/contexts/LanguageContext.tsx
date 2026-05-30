@@ -54,7 +54,7 @@ const translations = {
     featTrackingDesc: "تابع موقع الحاجز والموقف على الخريطة في الوقت الفعلي.",
     featSaveTimeTip: "موقفك جاهز قبل الوصول",
     featSafetyTip: "حاجزون موثقون ومقيّمون",
-    featPriceTip: "سعر ثابت 39 ر.س",
+    featPriceTip: "سعر ثابت 29 ر.س",
     featRatingTip: "قيّم وشاهد التقييمات",
     featChatTip: "دردشة فورية داخل التطبيق",
     featTrackingTip: "تتبع الحاجز على الخريطة",
