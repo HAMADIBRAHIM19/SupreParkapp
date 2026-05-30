@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MapPin, Car, Clock, FileText, Send, Loader2 } from "lucide-react";
 import LocationPickerMap, { LocationInfo } from "@/components/LocationPickerMap";
 import { openCheckout } from "@/lib/openCheckout";
+import { getCurrentCoordinates } from "@/lib/geolocation";
 
 interface NewBookingDialogProps {
   open: boolean;
@@ -40,26 +41,29 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
   // Detect user location once dialog opens and convert price
   useEffect(() => {
     if (!open) return;
-    if (!navigator.geolocation) return;
+    let cancelled = false;
     setPriceLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
+
+    getCurrentCoordinates({ timeout: 8000, maximumAge: 60_000 })
+      .then(async (coords) => {
         try {
           const { data, error } = await supabase.functions.invoke("convert-price", {
-            body: { lat: pos.coords.latitude, lng: pos.coords.longitude, amount: BASE_PRICE, baseCurrency: BASE_CURRENCY },
+            body: { lat: coords.latitude, lng: coords.longitude, amount: BASE_PRICE, baseCurrency: BASE_CURRENCY },
           });
-          if (!error && data?.currency) {
+          if (!cancelled && !error && data?.currency) {
             setLocalPrice({ currency: data.currency, amount: data.amount, amountMinor: data.amountMinor });
           }
         } catch (e) {
           console.error("convert-price failed", e);
         } finally {
-          setPriceLoading(false);
+          if (!cancelled) setPriceLoading(false);
         }
-      },
-      () => setPriceLoading(false),
-      { timeout: 8000, maximumAge: 60_000 },
-    );
+      })
+      .catch(() => {
+        if (!cancelled) setPriceLoading(false);
+      });
+
+    return () => { cancelled = true; };
   }, [open]);
 
   const priceLabel = new Intl.NumberFormat(lang === "ar" ? "ar" : "en", {
