@@ -104,7 +104,7 @@ serve(async (req) => {
             currency,
             unit_amount: amountMinor,
             product_data: {
-              name: "حجز موقف باركلت",
+              name: "SuperPark Booking",
             },
           },
           quantity: 1,
