@@ -24,7 +24,7 @@ interface LocalPrice {
   amountMinor: number;
 }
 
-const BASE_PRICE = 39;
+const BASE_PRICE = 29;
 const BASE_CURRENCY = "SAR";
 
 const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDialogProps) => {
