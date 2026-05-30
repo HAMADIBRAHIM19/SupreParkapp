@@ -141,10 +141,9 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
             </p>
             {localPrice.currency !== BASE_CURRENCY && (
               <p className="text-xs text-muted-foreground mt-1">
-                ≈ {BASE_PRICE} {t("sar")}
+                {BASE_PRICE} {t("sar")}
               </p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">{t("fixedPrice")}</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="notes" className="flex items-center gap-2"><FileText className="w-4 h-4 text-primary" />{t("notes")}</Label>
