@@ -104,8 +104,7 @@ serve(async (req) => {
             currency,
             unit_amount: amountMinor,
             product_data: {
-              name: "Parklet Booking",
-              description: `Booking #${bookingId}`,
+              name: "حجز موقف باركلت",
             },
           },
           quantity: 1,
