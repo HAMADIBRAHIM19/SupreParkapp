@@ -34,18 +34,6 @@ const HeroSection = () => {
           {t("heroDesc")}
         </p>
 
-        <div className="flex items-center justify-center gap-8 md:gap-16 mt-14">
-          {[
-            { value: "+5,000", label: t("statSpots") },
-            { value: "+1,200", label: t("statCrew") },
-            { value: "4.9⭐", label: t("statRating") },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-2xl md:text-3xl font-black text-foreground">{stat.value}</div>
-              <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
