@@ -61,7 +61,7 @@ const translations = {
 
     // CTA
     ctaTitle: "جاهز تحجز موقفك؟",
-    ctaDesc: "انضم لآلاف المستخدمين اللي وفّروا وقتهم وأعصابهم مع SuperPark",
+    ctaDesc: "سجّل في SuperPark واحجز موقفك بكل سهولة",
     ctaStart: "ابدأ الآن",
     ctaSignupCrew: "سجّل كحاجز",
 
@@ -457,7 +457,7 @@ const translations = {
 
     // CTA
     ctaTitle: "Ready to reserve your spot?",
-    ctaDesc: "Join thousands of users who saved their time and nerves with SuperPark",
+    ctaDesc: "Sign up to SuperPark and book your parking spot easily",
     ctaStart: "Get Started",
     ctaSignupCrew: "Sign up as Crew",
 
