@@ -1,4 +1,4 @@
-# SuperPark - Android setup & open script (Windows PowerShell)
+# SuperParking - Android setup & open script (Windows PowerShell)
 # Usage: powershell -ExecutionPolicy Bypass -File scripts/setup-android.ps1
 $ErrorActionPreference = "Stop"
 

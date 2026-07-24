@@ -148,12 +148,12 @@ Deno.serve(async (req) => {
     await admin.from("notifications").insert([
       {
         user_id: seekerId,
-        title: "Welcome to SuperPark",
+        title: "Welcome to SuperParking",
         message: "This is a demo Seeker account for App Review.",
       },
       {
         user_id: crewId,
-        title: "Welcome to SuperPark",
+        title: "Welcome to SuperParking",
         message: "This is a demo Crew account for App Review.",
       },
     ]);

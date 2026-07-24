@@ -18,7 +18,7 @@ const translations = {
     heroTitle1: "ما تدور على",
     heroSpot: "موقف",
     heroTitle2: "خلّ أحد يحجزه لك",
-    heroDesc: "تطبيق SuperPark يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل. وفّر وقتك وأعصابك!",
+    heroDesc: "تطبيق SuperParking يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل. وفّر وقتك وأعصابك!",
     statSpots: "موقف تم حجزه",
     statCrew: "حاجز نشط",
     statRating: "تقييم المستخدمين",
@@ -38,7 +38,7 @@ const translations = {
     step3Tip: "موقفك جاهز لما توصل",
 
     // Features
-    whySuperPark: "ليش SuperPark؟",
+    whySuperParking: "ليش SuperParking؟",
     featuresTitle: "مميزات تخلّيك ترتاح",
     featSaveTime: "توفير الوقت",
     featSaveTimeDesc: "ما تحتاج تلف وتدور، موقفك جاهز قبل ما توصل.",
@@ -61,7 +61,7 @@ const translations = {
 
     // CTA
     ctaTitle: "جاهز تحجز موقفك؟",
-    ctaDesc: "سجّل في SuperPark واحجز موقفك بكل سهولة",
+    ctaDesc: "سجّل في SuperParking واحجز موقفك بكل سهولة",
     ctaStart: "ابدأ الآن",
     ctaSignupCrew: "سجّل كحاجز",
 
@@ -107,7 +107,7 @@ const translations = {
     crewFeatProtectionDesc: "نظام آمن يحفظ حقوقك كحاجز.",
 
     // Footer
-    allRightsReserved: "© 2026 SuperPark. جميع الحقوق محفوظة.",
+    allRightsReserved: "© 2026 SuperParking. جميع الحقوق محفوظة.",
     privacyPolicy: "سياسة الخصوصية",
     contactUs: "اتصل بنا",
 
@@ -143,7 +143,7 @@ const translations = {
 
     // Signup
     signupTitle: "إنشاء حساب جديد",
-    signupDesc: "انضم إلى SuperPark واحجز موقفك بسهولة",
+    signupDesc: "انضم إلى SuperParking واحجز موقفك بسهولة",
     fullName: "الاسم الكامل",
     username: "اسم المستخدم",
     passwordMin: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
@@ -356,7 +356,7 @@ const translations = {
     deleteError: "حدث خطأ أثناء حذف الحساب",
 
     // Install
-    installTitle: "تثبيت SuperPark",
+    installTitle: "تثبيت SuperParking",
     installDesc: "ثبّت التطبيق على جهازك للوصول السريع وتجربة أفضل",
     installed: "تم التثبيت بنجاح!",
     iosSteps: "خطوات التثبيت على iPhone:",
@@ -414,7 +414,7 @@ const translations = {
     heroTitle1: "Don't search for a",
     heroSpot: "spot",
     heroTitle2: "Let someone reserve it for you",
-    heroDesc: "SuperPark connects you with nearby people who reserve a parking spot for you until you arrive. Save your time and nerves!",
+    heroDesc: "SuperParking connects you with nearby people who reserve a parking spot for you until you arrive. Save your time and nerves!",
     statSpots: "spots reserved",
     statCrew: "active crew",
     statRating: "user rating",
@@ -431,7 +431,7 @@ const translations = {
     step3Desc: "The crew member holds the spot for you until you arrive. Park with ease!",
 
     // Features
-    whySuperPark: "Why SuperPark?",
+    whySuperParking: "Why SuperParking?",
     featuresTitle: "Features that give you peace of mind",
     featSaveTime: "Save Time",
     featSaveTimeDesc: "No need to drive around, your spot is ready before you arrive.",
@@ -457,7 +457,7 @@ const translations = {
 
     // CTA
     ctaTitle: "Ready to reserve your spot?",
-    ctaDesc: "Sign up to SuperPark and book your parking spot easily",
+    ctaDesc: "Sign up to SuperParking and book your parking spot easily",
     ctaStart: "Get Started",
     ctaSignupCrew: "Sign up as Crew",
 
@@ -503,7 +503,7 @@ const translations = {
     crewFeatProtectionDesc: "A secure system that protects your rights as crew.",
 
     // Footer
-    allRightsReserved: "© 2026 SuperPark. All rights reserved.",
+    allRightsReserved: "© 2026 SuperParking. All rights reserved.",
     privacyPolicy: "Privacy Policy",
     contactUs: "Contact Us",
 
@@ -539,7 +539,7 @@ const translations = {
 
     // Signup
     signupTitle: "Create New Account",
-    signupDesc: "Join SuperPark and reserve your spot easily",
+    signupDesc: "Join SuperParking and reserve your spot easily",
     fullName: "Full Name",
     username: "Username",
     passwordMin: "Password must be at least 6 characters",
@@ -752,7 +752,7 @@ const translations = {
     deleteError: "An error occurred while deleting the account",
 
     // Install
-    installTitle: "Install SuperPark",
+    installTitle: "Install SuperParking",
     installDesc: "Install the app on your device for quick access and a better experience",
     installed: "Installed successfully!",
     iosSteps: "Installation steps on iPhone:",

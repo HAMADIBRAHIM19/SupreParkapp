@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SuperPark - Android setup & open script
+# SuperParking - Android setup & open script
 # Usage: bash scripts/setup-android.sh
 set -e
 
