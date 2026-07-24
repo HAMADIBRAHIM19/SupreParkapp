@@ -18,7 +18,7 @@ const FeaturesSection = () => {
     <section className="py-24" dir={dir}>
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <span className="text-primary font-bold text-sm">{t("whySuperPark")}</span>
+          <span className="text-primary font-bold text-sm">{t("whySuperParking")}</span>
           <h2 className="text-3xl md:text-5xl font-black text-foreground mt-3">{t("featuresTitle")}</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">

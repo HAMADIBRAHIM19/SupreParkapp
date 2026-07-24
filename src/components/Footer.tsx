@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Car className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-foreground">SuperPark</span>
+            <span className="font-bold text-foreground">SuperParking</span>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 text-sm">
             <a

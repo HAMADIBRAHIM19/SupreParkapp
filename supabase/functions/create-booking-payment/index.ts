@@ -104,7 +104,7 @@ serve(async (req) => {
             currency,
             unit_amount: amountMinor,
             product_data: {
-              name: "SuperPark Booking",
+              name: "SuperParking Booking",
             },
           },
           quantity: 1,

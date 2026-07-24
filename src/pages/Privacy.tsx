@@ -14,7 +14,7 @@ const Privacy = () => {
     <div className="space-y-6 leading-relaxed text-foreground">
       <p className="text-muted-foreground">آخر تحديث: 11 مايو 2026</p>
       <p>
-        نحن في <strong>SuperPark</strong> نهتم بخصوصيتك. توضح هذه السياسة كيف نجمع ونستخدم ونحمي بياناتك
+        نحن في <strong>SuperParking</strong> نهتم بخصوصيتك. توضح هذه السياسة كيف نجمع ونستخدم ونحمي بياناتك
         عند استخدامك لتطبيقنا الذي يربط <strong>الباحث</strong> عن موقف سيارة بـ<strong>الطاقم</strong> الذي يحجز
         الموقف نيابةً عنه مقابل رسوم ثابتة.
       </p>
@@ -115,7 +115,7 @@ const Privacy = () => {
     <div className="space-y-6 leading-relaxed text-foreground">
       <p className="text-muted-foreground">Last updated: May 11, 2026</p>
       <p>
-        At <strong>SuperPark</strong>, we value your privacy. This Policy explains how we collect, use,
+        At <strong>SuperParking</strong>, we value your privacy. This Policy explains how we collect, use,
         and protect your data when you use our app, which connects a <strong>Seeker</strong> looking for
         a parking spot with a <strong>Crew</strong> member who reserves the spot on their behalf for a
         fixed fee.
