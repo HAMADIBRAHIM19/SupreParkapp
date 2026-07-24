@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">SuperPark</string>
-    <string name="title_activity_main">SuperPark</string>
+    <string name="app_name">SuperParking</string>
+    <string name="title_activity_main">SuperParking</string>
     <string name="package_name">com.idealvisionapps.superpark</string>
     <string name="custom_url_scheme">com.idealvisionapps.superpark</string>
 </resources>
