@@ -15,14 +15,14 @@ const Privacy = () => {
       <p className="text-muted-foreground">آخر تحديث: 11 مايو 2026</p>
       <p>
         نحن في <strong>SuperParking</strong> نهتم بخصوصيتك. توضح هذه السياسة كيف نجمع ونستخدم ونحمي بياناتك
-        عند استخدامك لتطبيقنا الذي يربط <strong>الباحث</strong> عن موقف سيارة بـ<strong>الطاقم</strong> الذي يحجز
+        عند استخدامك لتطبيقنا الذي يربط <strong>طالب الموقف</strong> بـ<strong>الطاقم</strong> الذي يحجز
         الموقف نيابةً عنه مقابل رسوم ثابتة.
       </p>
 
       <section>
         <h2 className="text-xl font-bold mb-2">1. البيانات التي نجمعها</h2>
         <ul className="list-disc pr-6 space-y-1">
-          <li>بيانات الحساب: الاسم الكامل، البريد الإلكتروني، نوع الحساب (باحث / طاقم).</li>
+          <li>بيانات الحساب: الاسم الكامل، البريد الإلكتروني، نوع الحساب (طالب موقف / طاقم).</li>
           <li>بيانات الموقع: إحداثيات GPS والعنوان الذي تختاره لإنشاء أو قبول طلب حجز.</li>
           <li>بيانات الحجز: وقت الطلب، الحالة، تقييمات الخدمة، وملاحظات الدردشة داخل التطبيق.</li>
           <li>بيانات المركبة (للطاقم): اسم السيارة ورقم اللوحة عند قبول الطلب.</li>
@@ -34,8 +34,8 @@ const Privacy = () => {
       <section>
         <h2 className="text-xl font-bold mb-2">2. كيف نستخدم بياناتك</h2>
         <ul className="list-disc pr-6 space-y-1">
-          <li>مطابقة الباحث مع الطاقم القريب وإتمام عملية الحجز.</li>
-          <li>تتبّع موقع الطاقم لحظيًا لإظهار اقترابه من الباحث.</li>
+          <li>مطابقة طالب الموقف مع الطاقم القريب وإتمام عملية الحجز.</li>
+          <li>تتبّع موقع الطاقم لحظيًا لإظهار اقترابه من طالب الموقف.</li>
           <li>تمكين الدردشة داخل التطبيق وإرسال الإشعارات الفورية.</li>
           <li>معالجة المدفوعات (29 ريال للطلب) وصرف عمولة الطاقم (25%).</li>
           <li>تحسين الخدمة، منع الاحتيال، والامتثال للأنظمة.</li>
@@ -48,7 +48,7 @@ const Privacy = () => {
           لا نبيع بياناتك. نشارك الحد الأدنى الضروري فقط مع:
         </p>
         <ul className="list-disc pr-6 space-y-1">
-          <li>الطرف الآخر للحجز (الاسم وبيانات السيارة للطاقم، والموقع المختار للباحث).</li>
+          <li>الطرف الآخر للحجز (الاسم وبيانات السيارة للطاقم، والموقع المختار لطالب الموقف).</li>
           <li>مزوّدي الخدمة: Supabase (قواعد البيانات والمصادقة)، Stripe (الدفع)، Google Maps (الخرائط والمواقع).</li>
           <li>الجهات الرسمية عند الطلب القانوني فقط.</li>
         </ul>
@@ -57,7 +57,7 @@ const Privacy = () => {
       <section>
         <h2 className="text-xl font-bold mb-2">4. التواصل داخل التطبيق</h2>
         <p>
-          يتم التواصل بين الباحث والطاقم <strong>حصريًا عبر الدردشة المدمجة</strong>. لا نطلب ولا نعرض
+          يتم التواصل بين طالب الموقف والطاقم <strong>حصريًا عبر الدردشة المدمجة</strong>. لا نطلب ولا نعرض
           أرقام الهواتف الشخصية حمايةً لخصوصية المستخدمين.
         </p>
       </section>
@@ -116,7 +116,7 @@ const Privacy = () => {
       <p className="text-muted-foreground">Last updated: May 11, 2026</p>
       <p>
         At <strong>SuperParking</strong>, we value your privacy. This Policy explains how we collect, use,
-        and protect your data when you use our app, which connects a <strong>Seeker</strong> looking for
+        and protect your data when you use our app, which connects a <strong>spot requester</strong> looking for
         a parking spot with a <strong>Crew</strong> member who reserves the spot on their behalf for a
         fixed fee.
       </p>
@@ -124,7 +124,7 @@ const Privacy = () => {
       <section>
         <h2 className="text-xl font-bold mb-2">1. Data We Collect</h2>
         <ul className="list-disc pl-6 space-y-1">
-          <li>Account data: full name, email, account type (Seeker / Crew).</li>
+          <li>Account data: full name, email, account type (Spot requester / Crew).</li>
           <li>Location data: GPS coordinates and selected address used to create or accept a booking.</li>
           <li>Booking data: request time, status, ratings, and in-app chat messages.</li>
           <li>Vehicle data (Crew): car name and plate number provided on acceptance.</li>
@@ -136,8 +136,8 @@ const Privacy = () => {
       <section>
         <h2 className="text-xl font-bold mb-2">2. How We Use Your Data</h2>
         <ul className="list-disc pl-6 space-y-1">
-          <li>Match Seekers with nearby Crew and complete bookings.</li>
-          <li>Track Crew location in real time to show proximity to the Seeker.</li>
+          <li>Match spot requesters with nearby Crew and complete bookings.</li>
+          <li>Track Crew location in real time to show proximity to the spot requester.</li>
           <li>Enable in-app chat and real-time notifications.</li>
           <li>Process payments (29 SAR per booking) and pay Crew commission (25%).</li>
           <li>Improve the service, prevent fraud, and comply with regulations.</li>
@@ -148,7 +148,7 @@ const Privacy = () => {
         <h2 className="text-xl font-bold mb-2">3. Data Sharing</h2>
         <p>We do not sell your data. We share only what is strictly necessary with:</p>
         <ul className="list-disc pl-6 space-y-1">
-          <li>The other party in a booking (Crew name and vehicle for the Seeker; selected location for the Crew).</li>
+          <li>The other party in a booking (Crew name and vehicle for the spot requester; selected location for the Crew).</li>
           <li>Service providers: Supabase (database & auth), Stripe (payments), Google Maps (maps & places).</li>
           <li>Authorities, only when legally required.</li>
         </ul>
@@ -157,7 +157,7 @@ const Privacy = () => {
       <section>
         <h2 className="text-xl font-bold mb-2">4. In-App Communication</h2>
         <p>
-          Communication between Seeker and Crew happens <strong>exclusively through in-app chat</strong>.
+          Communication between spot requester and Crew happens <strong>exclusively through in-app chat</strong>.
           We do not request or display personal phone numbers to protect user privacy.
         </p>
       </section>
@@ -165,7 +165,7 @@ const Privacy = () => {
       <section>
         <h2 className="text-xl font-bold mb-2">5. Location</h2>
         <p>
-          We use your location only while you use the app: to set your destination (Seeker) or to show
+          We use your location only while you use the app: to set your destination (Spot requester) or to show
           your proximity to the spot (Crew). You can disable location permissions in your device
           settings at any time.
         </p>
