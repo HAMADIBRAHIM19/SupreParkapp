@@ -466,7 +466,7 @@ const translations = {
     crewHeroTitle1: "Be the",
     crewHeroSpot: "Crew",
     crewHeroTitle2: "and earn from your time",
-    crewHeroDesc: "Receive parking reservation requests from nearby seekers, communicate with them, and reserve the spot. Earn extra income easily!",
+    crewHeroDesc: "Receive parking reservation requests from nearby spot requesters, communicate with them, and reserve the spot. Earn extra income easily!",
     crewAvailable: "requests available to accept",
     openDashboard: "Open Dashboard",
     statCrewActive: "active crew",
@@ -478,19 +478,19 @@ const translations = {
     crewHowTitle: "Four simple steps",
     crewHowDesc: "A clear and easy process to start earning from your time",
     crewStep1Title: "Receive the request",
-    crewStep1Desc: "You'll receive parking reservation requests from seekers based on the chosen destination. Pick the suitable request and accept it.",
-    crewStep2Title: "Contact the seeker",
-    crewStep2Desc: "After accepting the request, communicate with the seeker to coordinate details and confirm the location and expected arrival time.",
+    crewStep1Desc: "You'll receive parking reservation requests from spot requesters based on the chosen destination. Pick the suitable request and accept it.",
+    crewStep2Title: "Contact the spot requester",
+    crewStep2Desc: "After accepting the request, communicate with the spot requester to coordinate details and confirm the location and expected arrival time.",
     crewStep3Title: "Head to the location",
-    crewStep3Desc: "Go to the specified destination before the seeker arrives and find a suitable parking spot in the area.",
+    crewStep3Desc: "Go to the specified destination before the spot requester arrives and find a suitable parking spot in the area.",
     crewStep4Title: "Reserve the spot",
-    crewStep4Desc: "Reserve the spot and wait for the seeker to arrive. Once they arrive and take the spot, complete the request and get your reward!",
+    crewStep4Desc: "Reserve the spot and wait for the spot requester to arrive. Once they arrive and take the spot, complete the request and get your reward!",
 
     // Crew Features
     crewWhyJoin: "Why join as crew?",
     crewFeatTitle: "Benefits to start today",
     crewFeatIncome: "Extra Income",
-    crewFeatIncomeDesc: "Earn money for every spot you reserve for seekers.",
+    crewFeatIncomeDesc: "Earn money for every spot you reserve for spot requesters.",
     crewFeatFlex: "Flexible Time",
     crewFeatFlexDesc: "Work at times that suit you with no commitment.",
     crewFeatNearby: "Nearby Requests",
@@ -544,7 +544,7 @@ const translations = {
     username: "Username",
     passwordMin: "Password must be at least 6 characters",
     accountType: "Account Type",
-    seekerLabel: "Looking for a spot",
+    seekerLabel: "Spot requester",
     crewLabel: "Crew member",
     creatingAccount: "Creating account...",
     createAccount: "Create Account",
@@ -554,7 +554,7 @@ const translations = {
 
     // Dashboard
     welcome: "Welcome",
-    seekerDashLabel: "Seeker Dashboard",
+    seekerDashLabel: "Spot Requester Dashboard",
     crewDashLabel: "Crew Dashboard",
 
     // Seeker Dashboard
