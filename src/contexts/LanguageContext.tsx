@@ -70,7 +70,7 @@ const translations = {
     crewHeroTitle1: "كن",
     crewHeroSpot: "الحاجز",
     crewHeroTitle2: "واكسب من وقتك",
-    crewHeroDesc: "استقبل طلبات حجز المواقف من الباحثين القريبين منك، تواصل معهم، واحجز لهم الموقف. اكسب دخل إضافي بكل سهولة!",
+    crewHeroDesc: "استقبل طلبات حجز المواقف من طالبي الموقف القريبين منك، تواصل معهم، واحجز لهم الموقف. اكسب دخل إضافي بكل سهولة!",
     crewAvailable: "طلب متاح للقبول",
     openDashboard: "افتح لوحة التحكم",
     statCrewActive: "حاجز نشط",
@@ -82,19 +82,19 @@ const translations = {
     crewHowTitle: "أربع خطوات بسيطة",
     crewHowDesc: "عملية واضحة وسهلة تخلّيك تبدأ تكسب من وقتك",
     crewStep1Title: "استقبل الطلب",
-    crewStep1Desc: "تصلك طلبات حجز المواقف من الباحثين حسب الوجهة المختارة. اختر الطلب المناسب لك واقبله.",
-    crewStep2Title: "تواصل مع الباحث",
-    crewStep2Desc: "بعد قبول الطلب، تواصل مع الباحث لتنسيق التفاصيل وتأكيد الموقع والوقت المتوقع للوصول.",
+    crewStep1Desc: "تصلك طلبات حجز المواقف من طالبي الموقف حسب الوجهة المختارة. اختر الطلب المناسب لك واقبله.",
+    crewStep2Title: "تواصل مع طالب الموقف",
+    crewStep2Desc: "بعد قبول الطلب، تواصل مع طالب الموقف لتنسيق التفاصيل وتأكيد الموقع والوقت المتوقع للوصول.",
     crewStep3Title: "توجّه للموقع",
-    crewStep3Desc: "انطلق إلى الوجهة المحددة قبل وصول الباحث وابحث عن موقف مناسب في المنطقة.",
+    crewStep3Desc: "انطلق إلى الوجهة المحددة قبل وصول طالب الموقف وابحث عن موقف مناسب في المنطقة.",
     crewStep4Title: "احجز الموقف",
-    crewStep4Desc: "احجز الموقف وانتظر وصول الباحث. بمجرد وصوله واستلامه للموقف، أكمل الطلب واحصل على مكافأتك!",
+    crewStep4Desc: "احجز الموقف وانتظر وصول طالب الموقف. بمجرد وصوله واستلامه للموقف، أكمل الطلب واحصل على مكافأتك!",
 
     // Crew Features
     crewWhyJoin: "ليش تنضم كحاجز؟",
     crewFeatTitle: "مميزات تخلّيك تبدأ اليوم",
     crewFeatIncome: "دخل إضافي",
-    crewFeatIncomeDesc: "اكسب مبلغ مقابل كل موقف تحجزه للباحثين.",
+    crewFeatIncomeDesc: "اكسب مبلغ مقابل كل موقف تحجزه لطالبي الموقف.",
     crewFeatFlex: "مرونة الوقت",
     crewFeatFlexDesc: "اشتغل بالوقت اللي يناسبك بدون التزام.",
     crewFeatNearby: "طلبات قريبة",
@@ -148,7 +148,7 @@ const translations = {
     username: "اسم المستخدم",
     passwordMin: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
     accountType: "نوع الحساب",
-    seekerLabel: "أبحث عن موقف",
+    seekerLabel: "طالب الموقف",
     crewLabel: "أحد أفراد الطاقم",
     creatingAccount: "جارٍ إنشاء الحساب...",
     createAccount: "إنشاء حساب",
@@ -158,10 +158,10 @@ const translations = {
 
     // Dashboard
     welcome: "مرحباً",
-    seekerDashLabel: "لوحة تحكم الباحث عن موقف",
+    seekerDashLabel: "لوحة تحكم طالب الموقف",
     crewDashLabel: "لوحة تحكم الطاقم",
 
-    // Seeker Dashboard
+    // Spot Requester Dashboard
     newBooking: "طلب حجز جديد",
     activeRequests: "طلبات نشطة",
     totalRequests: "إجمالي الطلبات",
@@ -466,7 +466,7 @@ const translations = {
     crewHeroTitle1: "Be the",
     crewHeroSpot: "Crew",
     crewHeroTitle2: "and earn from your time",
-    crewHeroDesc: "Receive parking reservation requests from nearby seekers, communicate with them, and reserve the spot. Earn extra income easily!",
+    crewHeroDesc: "Receive parking reservation requests from nearby spot requesters, communicate with them, and reserve the spot. Earn extra income easily!",
     crewAvailable: "requests available to accept",
     openDashboard: "Open Dashboard",
     statCrewActive: "active crew",
@@ -478,19 +478,19 @@ const translations = {
     crewHowTitle: "Four simple steps",
     crewHowDesc: "A clear and easy process to start earning from your time",
     crewStep1Title: "Receive the request",
-    crewStep1Desc: "You'll receive parking reservation requests from seekers based on the chosen destination. Pick the suitable request and accept it.",
-    crewStep2Title: "Contact the seeker",
-    crewStep2Desc: "After accepting the request, communicate with the seeker to coordinate details and confirm the location and expected arrival time.",
+    crewStep1Desc: "You'll receive parking reservation requests from spot requesters based on the chosen destination. Pick the suitable request and accept it.",
+    crewStep2Title: "Contact the spot requester",
+    crewStep2Desc: "After accepting the request, communicate with the spot requester to coordinate details and confirm the location and expected arrival time.",
     crewStep3Title: "Head to the location",
-    crewStep3Desc: "Go to the specified destination before the seeker arrives and find a suitable parking spot in the area.",
+    crewStep3Desc: "Go to the specified destination before the spot requester arrives and find a suitable parking spot in the area.",
     crewStep4Title: "Reserve the spot",
-    crewStep4Desc: "Reserve the spot and wait for the seeker to arrive. Once they arrive and take the spot, complete the request and get your reward!",
+    crewStep4Desc: "Reserve the spot and wait for the spot requester to arrive. Once they arrive and take the spot, complete the request and get your reward!",
 
     // Crew Features
     crewWhyJoin: "Why join as crew?",
     crewFeatTitle: "Benefits to start today",
     crewFeatIncome: "Extra Income",
-    crewFeatIncomeDesc: "Earn money for every spot you reserve for seekers.",
+    crewFeatIncomeDesc: "Earn money for every spot you reserve for spot requesters.",
     crewFeatFlex: "Flexible Time",
     crewFeatFlexDesc: "Work at times that suit you with no commitment.",
     crewFeatNearby: "Nearby Requests",
@@ -544,7 +544,7 @@ const translations = {
     username: "Username",
     passwordMin: "Password must be at least 6 characters",
     accountType: "Account Type",
-    seekerLabel: "Looking for a spot",
+    seekerLabel: "Spot requester",
     crewLabel: "Crew member",
     creatingAccount: "Creating account...",
     createAccount: "Create Account",
@@ -554,10 +554,10 @@ const translations = {
 
     // Dashboard
     welcome: "Welcome",
-    seekerDashLabel: "Seeker Dashboard",
+    seekerDashLabel: "Spot Requester Dashboard",
     crewDashLabel: "Crew Dashboard",
 
-    // Seeker Dashboard
+    // Spot Requester Dashboard
     newBooking: "New Booking",
     activeRequests: "Active Requests",
     totalRequests: "Total Requests",

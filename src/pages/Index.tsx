@@ -60,7 +60,7 @@ const Index = () => {
       </main>
       <Footer />
 
-      {/* Floating New Booking Button for Seeker */}
+      {/* Floating New Booking Button for Spot Requester */}
       {isSeeker && (
         <Button
           onClick={() => setDialogOpen(true)}

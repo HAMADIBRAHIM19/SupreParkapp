@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { watchCoordinates } from "@/lib/geolocation";
 
 /**
- * Crew broadcasts their GPS location to seekers via Supabase Realtime.
+ * Crew broadcasts their GPS location to spot requesters via Supabase Realtime.
  * Only runs when `active` is true (i.e., crew has approved bookings).
  */
 export const useCrewLocationBroadcast = (bookingIds: string[], active: boolean) => {
