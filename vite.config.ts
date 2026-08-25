@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
         manifest: {
           name: "SuperParking - احجز موقفك",
           short_name: "SuperParking",
-          description: "تطبيق SuperParking يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة حتى توصل.",
+          description: "تطبيق SuperParking يربطك بأشخاص قريبين من وجهتك يحجزون لك موقف سيارة بمركبتهم حتى توصل.",
         theme_color: "#0f766e",
         background_color: "#ffffff",
         display: "standalone",
