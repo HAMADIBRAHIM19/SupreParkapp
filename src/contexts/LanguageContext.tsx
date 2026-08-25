@@ -161,7 +161,7 @@ const translations = {
     seekerDashLabel: "لوحة تحكم طالب الموقف",
     crewDashLabel: "لوحة تحكم الطاقم",
 
-    // Seeker Dashboard
+    // Spot Requester Dashboard
     newBooking: "طلب حجز جديد",
     activeRequests: "طلبات نشطة",
     totalRequests: "إجمالي الطلبات",
@@ -557,7 +557,7 @@ const translations = {
     seekerDashLabel: "Spot Requester Dashboard",
     crewDashLabel: "Crew Dashboard",
 
-    // Seeker Dashboard
+    // Spot Requester Dashboard
     newBooking: "New Booking",
     activeRequests: "Active Requests",
     totalRequests: "Total Requests",
