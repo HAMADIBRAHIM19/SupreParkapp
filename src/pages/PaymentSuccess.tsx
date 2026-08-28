@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { verifyBookingPayment } from "@/lib/verifyBookingPayment";
+
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -15,18 +17,21 @@ const PaymentSuccess = () => {
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
     const bookingId = searchParams.get("booking_id");
-    if (!sessionId || !bookingId) { setVerifying(false); return; }
-    let timer: ReturnType<typeof setTimeout>;
-    supabase.functions.invoke("verify-payment", { body: { sessionId, bookingId } })
-      .then(({ data }) => {
-        const ok = data?.paid ?? false;
-        setPaid(ok);
-        setVerifying(false);
-        if (ok) timer = setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
-      })
-      .catch(() => setVerifying(false));
-    return () => clearTimeout(timer);
+    if (!bookingId) { setVerifying(false); return; }
+    let cancelled = false;
+    (async () => {
+      if (sessionId) {
+        try { await supabase.functions.invoke("verify-payment", { body: { sessionId, bookingId } }); } catch (e) { console.error(e); }
+      }
+      const ok = await verifyBookingPayment(bookingId);
+      if (cancelled) return;
+      setPaid(ok);
+      setVerifying(false);
+      if (ok) navigate("/dashboard", { replace: true, state: { paidBookingId: bookingId } });
+    })();
+    return () => { cancelled = true; };
   }, [searchParams, navigate]);
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6" dir={dir}>
