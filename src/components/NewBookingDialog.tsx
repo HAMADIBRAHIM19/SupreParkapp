@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MapPin, Car, Clock, FileText, Send, Loader2 } from "lucide-react";
 import LocationPickerMap, { LocationInfo } from "@/components/LocationPickerMap";
 import { openCheckout } from "@/lib/openCheckout";
+import { verifyBookingPayment } from "@/lib/verifyBookingPayment";
 import { getCurrentCoordinates } from "@/lib/geolocation";
 
 interface NewBookingDialogProps {
