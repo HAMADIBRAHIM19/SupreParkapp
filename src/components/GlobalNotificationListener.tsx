@@ -16,6 +16,14 @@ import { useNavigate } from "react-router-dom";
 const GlobalNotificationListener = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
+
+  // Register the device with APNs (iOS) / FCM (Android) so alerts arrive
+  // even when the app is completely closed.
+  useEffect(() => {
+    if (!user) return;
+    void initPushNotifications((path) => navigate(path));
+  }, [user, navigate]);
 
   useEffect(() => {
     if (!user) return;
