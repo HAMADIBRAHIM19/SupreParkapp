@@ -120,6 +120,32 @@ const Settings = () => {
           </CardContent>
         </Card>
 
+        {/* Notifications */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Bell className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg">{t("notificationsSection")}</CardTitle>
+            </div>
+            <CardDescription>{t("notificationsPromptDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {notifPerm === "granted" ? (
+              <p className="text-sm text-muted-foreground">{t("notificationsAlreadyEnabled")}</p>
+            ) : notifPerm === "denied" ? (
+              <p className="text-sm text-muted-foreground">{t("notificationsDenied")}</p>
+            ) : notifPerm === "unsupported" ? (
+              <p className="text-sm text-muted-foreground">{t("notificationsUnsupported")}</p>
+            ) : (
+              <Button size="sm" onClick={handleEnableNotifications} className="gap-2">
+                <Bell className="w-4 h-4" />
+                {t("enableNotifications")}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+
         {/* Full Name */}
         <Card>
           <CardHeader className="pb-3">
