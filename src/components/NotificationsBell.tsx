@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { showAppNotification } from "@/lib/appNotifications";
 import { playNotificationSound } from "@/lib/notificationSound";
 
 interface Notification {
@@ -58,7 +57,6 @@ const NotificationsBell = () => {
       const n = payload.new as Notification;
       setNotifications((prev) => [n, ...prev]);
       playNotificationSound();
-      showAppNotification(n.title, n.message);
     }).subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user]);

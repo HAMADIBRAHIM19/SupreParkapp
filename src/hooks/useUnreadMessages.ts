@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { playNotificationSound } from "@/lib/notificationSound";
-import { showAppNotification } from "@/lib/appNotifications";
+
 
 export const useUnreadMessages = (bookingIds: string[]) => {
   const { user } = useAuth();
@@ -63,7 +63,6 @@ export const useUnreadMessages = (bookingIds: string[]) => {
               [msg.booking_id]: (prev[msg.booking_id] || 0) + 1,
             }));
             playNotificationSound();
-            showAppNotification("SuperParking", msg.content?.slice(0, 120) || "");
           }
         }
       )
