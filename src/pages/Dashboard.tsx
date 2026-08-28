@@ -16,6 +16,8 @@ const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { t, dir } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ account_type: string; full_name: string } | null>(null);
