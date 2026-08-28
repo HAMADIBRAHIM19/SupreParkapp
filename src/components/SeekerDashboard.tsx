@@ -14,6 +14,7 @@ import { CalendarDays, MapPin, Car, Clock, Plus, XCircle, Trash, MessageCircle, 
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { openCheckout } from "@/lib/openCheckout";
+import { verifyBookingPayment } from "@/lib/verifyBookingPayment";
 import NewBookingDialog from "@/components/NewBookingDialog";
 import BookingChat from "@/components/BookingChat";
 import LiveTrackingMap from "@/components/LiveTrackingMap";
@@ -268,7 +269,12 @@ const UnpaidBookingsList = ({ bookings, onUpdated }: { bookings: Booking[]; onUp
       toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
       return;
     }
-    await openCheckout(data.url);
+    await openCheckout(data.url, {
+      onClosed: async () => {
+        await verifyBookingPayment(booking.id);
+        onUpdated();
+      },
+    });
   };
 
   const handleCancel = async (id: string) => {

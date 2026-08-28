@@ -38,6 +38,18 @@ const Dashboard = () => {
     init();
   }, [user]);
 
+  // Refresh whenever the app/tab regains focus (e.g. returning from Stripe checkout)
+  useEffect(() => {
+    if (!user) return;
+    const refresh = () => { if (document.visibilityState === "visible") fetchBookings(); };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [user]);
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background">

@@ -16,10 +16,17 @@ const PaymentSuccess = () => {
     const sessionId = searchParams.get("session_id");
     const bookingId = searchParams.get("booking_id");
     if (!sessionId || !bookingId) { setVerifying(false); return; }
+    let timer: ReturnType<typeof setTimeout>;
     supabase.functions.invoke("verify-payment", { body: { sessionId, bookingId } })
-      .then(({ data }) => { setPaid(data?.paid ?? false); setVerifying(false); })
+      .then(({ data }) => {
+        const ok = data?.paid ?? false;
+        setPaid(ok);
+        setVerifying(false);
+        if (ok) timer = setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
+      })
       .catch(() => setVerifying(false));
-  }, [searchParams]);
+    return () => clearTimeout(timer);
+  }, [searchParams, navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6" dir={dir}>
