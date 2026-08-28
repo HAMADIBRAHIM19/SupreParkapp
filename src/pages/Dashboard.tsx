@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { verifyBookingPayment } from "@/lib/verifyBookingPayment";
+
 import Navbar from "@/components/Navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutDashboard } from "lucide-react";
@@ -14,6 +16,8 @@ const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { t, dir } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ account_type: string; full_name: string } | null>(null);
@@ -49,6 +53,28 @@ const Dashboard = () => {
       document.removeEventListener("visibilitychange", refresh);
     };
   }, [user]);
+
+  // Live updates: any booking change (e.g. payment confirmed) refreshes the list
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("dashboard-bookings")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => fetchBookings())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
+
+  // Coming back from a successful payment: verify + refresh right away
+  useEffect(() => {
+    const paidBookingId = (location.state as { paidBookingId?: string } | null)?.paidBookingId;
+    if (!user || !paidBookingId) return;
+    navigate("/dashboard", { replace: true, state: null });
+    (async () => {
+      await verifyBookingPayment(paidBookingId, 4);
+      await fetchBookings();
+    })();
+  }, [user, location.state]);
+
 
   if (authLoading) {
     return (
