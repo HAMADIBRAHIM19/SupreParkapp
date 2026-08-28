@@ -253,6 +253,15 @@ const translations = {
     rejected: "تم الرفض",
 
     // Notifications
+    enableNotifications: "تفعيل إشعارات التطبيق",
+    notificationsPromptDesc: "اسمح بالإشعارات لتصلك تحديثات الطلبات والرسائل فورًا.",
+    allowNotifications: "السماح",
+    notNow: "ليس الآن",
+    notificationsEnabled: "تم تفعيل الإشعارات",
+    notificationsDenied: "تم رفض الإشعارات. يمكنك تفعيلها من إعدادات الجهاز.",
+    notificationsAlreadyEnabled: "الإشعارات مفعّلة بالفعل",
+    notificationsUnsupported: "الإشعارات غير مدعومة على هذا الجهاز",
+    notificationsSection: "الإشعارات",
     notifications: "الإشعارات",
     markAllRead: "تحديد الكل كمقروء",
     noNotifications: "لا توجد إشعارات",
@@ -649,6 +658,15 @@ const translations = {
     rejected: "Rejected",
 
     // Notifications
+    enableNotifications: "Enable app notifications",
+    notificationsPromptDesc: "Allow notifications to get instant booking and message updates.",
+    allowNotifications: "Allow",
+    notNow: "Not now",
+    notificationsEnabled: "Notifications enabled",
+    notificationsDenied: "Notifications were denied. You can enable them in device settings.",
+    notificationsAlreadyEnabled: "Notifications are already enabled",
+    notificationsUnsupported: "Notifications are not supported on this device",
+    notificationsSection: "Notifications",
     notifications: "Notifications",
     markAllRead: "Mark all as read",
     noNotifications: "No notifications",
