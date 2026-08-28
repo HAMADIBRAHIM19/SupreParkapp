@@ -112,7 +112,12 @@ const NewBookingDialog = ({ open, onOpenChange, onBookingCreated }: NewBookingDi
     setSelectedLocation(null);
     onOpenChange(false);
     onBookingCreated();
-    await openCheckout(paymentData.url);
+    await openCheckout(paymentData.url, {
+      onClosed: async () => {
+        await verifyBookingPayment(booking.id);
+        onBookingCreated();
+      },
+    });
   };
 
   return (
