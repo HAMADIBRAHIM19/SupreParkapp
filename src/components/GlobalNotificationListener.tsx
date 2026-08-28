@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { showAppNotificationOnce, isNativeApp } from "@/lib/appNotifications";
+import { initPushNotifications } from "@/lib/pushNotifications";
 import { playNotificationSound } from "@/lib/notificationSound";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Delivers real alerts app-wide (any page) once the user granted permission:
