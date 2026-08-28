@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutDashboard } from "lucide-react";
 import SeekerDashboard from "@/components/SeekerDashboard";
 import CrewDashboard from "@/components/CrewDashboard";
+import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
 import type { Booking } from "@/types/booking";
 
 const Dashboard = () => {
@@ -100,6 +101,7 @@ const Dashboard = () => {
             {t("welcome")}{profile ? `, ${profile.full_name}` : ""}
           </h1>
         </div>
+        <NotificationPermissionPrompt />
         {profile?.account_type === "crew" ? (
           <CrewDashboard bookings={bookings} loading={loading} onRefresh={fetchBookings} profileName={profile?.full_name} />
         ) : (

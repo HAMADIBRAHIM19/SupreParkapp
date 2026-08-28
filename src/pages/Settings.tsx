@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { ArrowRight, ArrowLeft, Eye, EyeOff, Save, User, Mail, Lock, Globe, Trash2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Eye, EyeOff, Save, User, Mail, Lock, Globe, Trash2, Bell } from "lucide-react";
 import { toast } from "sonner";
+import { getNotificationPermission, requestNotificationPermission, type NotifPermission } from "@/lib/appNotifications";
 
 const Settings = () => {
   const { user, loading: authLoading, profile, refreshProfile, signOut } = useAuth();
@@ -27,6 +28,18 @@ const Settings = () => {
   const [savingEmail, setSavingEmail] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [notifPerm, setNotifPerm] = useState<NotifPermission>("default");
+
+  useEffect(() => {
+    getNotificationPermission().then(setNotifPerm);
+  }, []);
+
+  const handleEnableNotifications = async () => {
+    const perm = await requestNotificationPermission();
+    setNotifPerm(perm);
+    if (perm === "granted") toast.success(t("notificationsEnabled"));
+    else if (perm === "denied") toast.error(t("notificationsDenied"));
+  };
 
   const handleDeleteAccount = async () => {
     setDeleting(true);
@@ -119,6 +132,32 @@ const Settings = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Notifications */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Bell className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg">{t("notificationsSection")}</CardTitle>
+            </div>
+            <CardDescription>{t("notificationsPromptDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {notifPerm === "granted" ? (
+              <p className="text-sm text-muted-foreground">{t("notificationsAlreadyEnabled")}</p>
+            ) : notifPerm === "denied" ? (
+              <p className="text-sm text-muted-foreground">{t("notificationsDenied")}</p>
+            ) : notifPerm === "unsupported" ? (
+              <p className="text-sm text-muted-foreground">{t("notificationsUnsupported")}</p>
+            ) : (
+              <Button size="sm" onClick={handleEnableNotifications} className="gap-2">
+                <Bell className="w-4 h-4" />
+                {t("enableNotifications")}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
 
         {/* Full Name */}
         <Card>
