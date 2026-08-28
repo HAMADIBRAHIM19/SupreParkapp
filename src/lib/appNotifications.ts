@@ -5,6 +5,8 @@ export type NotifPermission = "granted" | "denied" | "default" | "unsupported";
 
 const isNative = () => Capacitor.isNativePlatform();
 
+export const isNativeApp = isNative;
+
 export const getNotificationPermission = async (): Promise<NotifPermission> => {
   try {
     if (isNative()) {
@@ -36,17 +38,53 @@ export const requestNotificationPermission = async (): Promise<NotifPermission> 
 
 let nativeId = 1;
 
-export const showAppNotification = async (title: string, body: string) => {
+export const showAppNotification = async (title: string, body: string, url?: string) => {
   try {
     if ((await getNotificationPermission()) !== "granted") return;
     if (isNative()) {
       await LocalNotifications.schedule({
-        notifications: [{ id: nativeId++, title, body, smallIcon: "ic_launcher" }],
+        notifications: [
+          {
+            id: nativeId++,
+            title,
+            body,
+            smallIcon: "ic_launcher",
+            extra: url ? { url } : undefined,
+          },
+        ],
       });
       return;
     }
-    new Notification(title, { body, icon: "/pwa-icon-192.png", badge: "/pwa-icon-192.png" });
+    const n = new Notification(title, {
+      body,
+      icon: "/pwa-icon-192.png",
+      badge: "/pwa-icon-192.png",
+      tag: url ?? title,
+    });
+    n.onclick = () => {
+      window.focus();
+      if (url) window.location.assign(url);
+      n.close();
+    };
   } catch {
     // ignore
   }
+};
+
+// Prevents the same event (same row id) from producing two system alerts,
+// e.g. when several screens subscribe to the same realtime stream.
+const delivered = new Set<string>();
+
+export const showAppNotificationOnce = async (
+  key: string,
+  title: string,
+  body: string,
+  url?: string,
+) => {
+  if (delivered.has(key)) return;
+  delivered.add(key);
+  if (delivered.size > 300) {
+    delivered.delete(delivered.values().next().value as string);
+  }
+  await showAppNotification(title, body, url);
 };
