@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { showAppNotification } from "@/lib/appNotifications";
+import { playNotificationSound } from "@/lib/notificationSound";
 
 interface Notification {
   id: string;
@@ -53,7 +55,10 @@ const NotificationsBell = () => {
   useEffect(() => {
     if (!user) return;
     const channel = supabase.channel(`notifications-${user.id}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, (payload) => {
-      setNotifications((prev) => [payload.new as Notification, ...prev]);
+      const n = payload.new as Notification;
+      setNotifications((prev) => [n, ...prev]);
+      playNotificationSound();
+      showAppNotification(n.title, n.message);
     }).subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user]);
