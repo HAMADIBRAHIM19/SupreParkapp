@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { showAppNotificationOnce, isNativeApp } from "@/lib/appNotifications";
+import { initPushNotifications } from "@/lib/pushNotifications";
 import { playNotificationSound } from "@/lib/notificationSound";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Delivers real alerts app-wide (any page) once the user granted permission:
@@ -14,6 +16,14 @@ import { toast } from "sonner";
 const GlobalNotificationListener = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
+
+  // Register the device with APNs (iOS) / FCM (Android) so alerts arrive
+  // even when the app is completely closed.
+  useEffect(() => {
+    if (!user) return;
+    void initPushNotifications((path) => navigate(path));
+  }, [user, navigate]);
 
   useEffect(() => {
     if (!user) return;
