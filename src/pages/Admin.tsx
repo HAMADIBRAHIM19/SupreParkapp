@@ -115,6 +115,20 @@ const Admin = () => {
     setLoadingBookings(false);
   };
 
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-list-users", { method: "GET" });
+      if (error) throw error;
+      setUsers((data?.users || []) as AdminUser[]);
+    } catch (err: any) {
+      toast({ title: t("error"), description: err?.message || t("errorOccurred"), variant: "destructive" });
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+
 
   const fetchCancellations = async () => {
     setLoadingCancellations(true);
