@@ -623,6 +623,29 @@ const translations = {
     statusCancelled: "Cancelled",
     statusCrewApproved: "Accepted",
 
+    // Crew cancellation (unable to provide a spot)
+    crewUnableTitle: "Unable to provide a spot",
+    crewUnableBtn: "Can't provide spot",
+    crewUnableDesc: "You will be unassigned from this order and the spot requester will be fully refunded. Please select a reason.",
+    cancelReasonLabel: "Reason",
+    cancelReasonPlaceholder: "Select a reason",
+    cancelReasonNote: "Additional note",
+    cancelReasonNoteRequired: "A note is required when selecting \"Other\"",
+    reason_no_spots: "No parking available at the location",
+    reason_vehicle_issue: "Vehicle breakdown",
+    reason_emergency: "Emergency",
+    reason_cannot_arrive: "Unable to arrive on time",
+    reason_other: "Other",
+    confirmUnable: "Confirm cancellation",
+    submittingUnable: "Cancelling...",
+    cancelledByCrew: "Cancelled by crew",
+    refundRefunded: "Refunded",
+    refundPending: "Refund in progress",
+    cancellationsLog: "Crew cancellations log",
+    noCancellations: "No cancellations",
+    reasonLabel: "Reason",
+
+
     // Crew Dashboard
     walletBalance: "Wallet Balance",
     withdraw: "Withdraw",
