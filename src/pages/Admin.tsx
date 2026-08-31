@@ -65,7 +65,27 @@ const Admin = () => {
     if (!isAdmin) return;
     fetchRequests();
     fetchTickets();
+    fetchCancellations();
   }, [isAdmin]);
+
+  const fetchCancellations = async () => {
+    setLoadingCancellations(true);
+    const { data } = await (supabase as any)
+      .from("booking_cancellations")
+      .select("id, booking_id, crew_id, seeker_id, reason_code, reason_note, refund_status, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data) {
+      setCancellations(data as BookingCancellation[]);
+      const userIds = [...new Set((data as BookingCancellation[]).map((c) => c.crew_id))];
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+        if (profiles) { const map: Record<string, string> = {}; profiles.forEach(p => { map[p.user_id] = p.full_name; }); setProfilesMap(prev => ({ ...prev, ...map })); }
+      }
+    }
+    setLoadingCancellations(false);
+  };
+
 
   const fetchRequests = async () => {
     setLoadingRequests(true);
