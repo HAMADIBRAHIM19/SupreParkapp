@@ -93,7 +93,9 @@ const Admin = () => {
     fetchTickets();
     fetchCancellations();
     fetchBookings();
+    fetchUsers();
   }, [isAdmin]);
+
 
   const fetchBookings = async () => {
     setLoadingBookings(true);
