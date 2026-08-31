@@ -20,6 +20,7 @@ const CrewHeroSection = () => {
       .select("id", { count: "exact", head: true })
       .is("crew_id", null)
       .eq("status", "pending")
+      .eq("payment_status", "paid")
       .then(({ count }) => {
         if (count !== null) setPendingCount(count);
       });
