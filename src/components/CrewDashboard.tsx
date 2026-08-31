@@ -183,7 +183,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           <TabsTrigger value="wallet" className="gap-1"><History className="w-3.5 h-3.5" />{t("walletTab")}</TabsTrigger>
         </TabsList>
         <TabsContent value="available"><CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={openAcceptDialog} statusMap={statusMap} formatDate={formatDate} /></TabsContent>
-        <TabsContent value="active"><CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} unreadCounts={unreadCounts} statusMap={statusMap} formatDate={formatDate} /></TabsContent>
+        <TabsContent value="active"><CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} onUnable={openUnableDialog} unreadCounts={unreadCounts} statusMap={statusMap} formatDate={formatDate} /></TabsContent>
         <TabsContent value="completed"><CrewBookingsTable bookings={completedJobs} loading={loading} type="completed" statusMap={statusMap} formatDate={formatDate} /></TabsContent>
         <TabsContent value="wallet"><WalletHistoryTab transactions={transactions} withdrawals={withdrawals} loading={walletHistoryLoading} withdrawalStatusMap={withdrawalStatusMap} formatDate={formatDate} /></TabsContent>
       </Tabs>
