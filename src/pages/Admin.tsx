@@ -223,11 +223,66 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="withdrawals" className="w-full">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex-wrap h-auto">
             <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
             <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
+            <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="bookings">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("bookingsLog")}</CardTitle></CardHeader>
+              <CardContent>
+                {loadingBookings ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : bookings.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noBookingsAdmin")}</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("seekerLabel")}</TableHead>
+                          <TableHead>{t("crewLabel")}</TableHead>
+                          <TableHead>{t("location")}</TableHead>
+                          <TableHead>{t("amountPaidLabel")}</TableHead>
+                          <TableHead>{t("paymentStatusLabel")}</TableHead>
+                          <TableHead>{t("paymentDateLabel")}</TableHead>
+                          <TableHead>{t("status")}</TableHead>
+                          <TableHead>{t("refundReasonLabel")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {bookings.map((b) => (
+                          <TableRow key={b.id}>
+                            <TableCell className="font-medium">{profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}</TableCell>
+                            <TableCell>{b.crew_id ? (profilesMap[b.crew_id] || b.crew_id.slice(0, 8)) : "—"}</TableCell>
+                            <TableCell className="max-w-[220px] truncate" title={b.location}>{b.location}</TableCell>
+                            <TableCell className="whitespace-nowrap">
+                              {b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : (b.payment_status === "paid" ? `29 ${t("sar")}` : "—")}
+                            </TableCell>
+                            <TableCell>{paymentBadge(b.payment_status)}</TableCell>
+                            <TableCell className="text-xs whitespace-nowrap">{b.paid_at ? fmtDateTime(b.paid_at) : (b.payment_status === "paid" ? fmtDateTime(b.created_at) : <span className="text-muted-foreground">{t("notPaidYet")}</span>)}</TableCell>
+                            <TableCell>{bookingStatusBadge(b.status)}</TableCell>
+                            <TableCell className="text-xs max-w-[240px]">
+                              {b.cancellation_reason ? (
+                                <span>
+                                  {t(`reason_${b.cancellation_reason}` as any)}
+                                  {b.cancellation_reason_note ? ` — ${b.cancellation_reason_note}` : ""}
+                                </span>
+                              ) : <span className="text-muted-foreground">—</span>}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           <TabsContent value="cancellations">
             <Card>
