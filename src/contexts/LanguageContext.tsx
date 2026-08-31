@@ -215,6 +215,20 @@ const translations = {
     cancellationsLog: "سجل اعتذارات الطاقم",
     noCancellations: "لا توجد اعتذارات",
     reasonLabel: "السبب",
+    bookingsLog: "تفاصيل الطلبات",
+    noBookingsAdmin: "لا توجد طلبات",
+    amountPaidLabel: "المبلغ المدفوع",
+    paymentDateLabel: "تاريخ الدفع",
+    refundReasonLabel: "سبب الاسترداد",
+    paymentStatusLabel: "حالة الدفع",
+    seekerLabel: "طالب الموقف",
+    crewLabel: "الطاقم",
+    payUnpaid: "غير مدفوع",
+    payPaid: "مدفوع",
+    payRefunded: "مسترد",
+    payRefundPending: "استرداد قيد التنفيذ",
+    notPaidYet: "لم يتم الدفع",
+
 
 
     // Crew Dashboard
