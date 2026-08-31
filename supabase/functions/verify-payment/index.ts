@@ -61,8 +61,14 @@ serve(async (req) => {
       );
       await supabaseAdmin
         .from("bookings")
-        .update({ payment_status: "paid" })
+        .update({
+          payment_status: "paid",
+          amount_paid: typeof session.amount_total === "number" ? session.amount_total / 100 : null,
+          currency: session.currency ? session.currency.toUpperCase() : null,
+          paid_at: new Date().toISOString(),
+        })
         .eq("id", bookingId);
+
 
       return new Response(JSON.stringify({ paid: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

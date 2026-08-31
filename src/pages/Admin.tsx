@@ -26,6 +26,14 @@ interface BookingCancellation {
   id: string; booking_id: string; crew_id: string; seeker_id: string; reason_code: string; reason_note: string | null; refund_status: string; created_at: string;
 }
 
+interface AdminBooking {
+  id: string; seeker_id: string; crew_id: string | null; location: string; status: string;
+  payment_status: string; amount_paid: number | null; currency: string | null; paid_at: string | null;
+  cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string;
+  vehicle_plate: string | null;
+}
+
+
 
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
@@ -49,6 +57,10 @@ const Admin = () => {
   const [cancellations, setCancellations] = useState<BookingCancellation[]>([]);
   const [loadingCancellations, setLoadingCancellations] = useState(true);
 
+  // All bookings (detailed)
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
 
   useEffect(() => {
     if (authLoading) return;
@@ -66,7 +78,27 @@ const Admin = () => {
     fetchRequests();
     fetchTickets();
     fetchCancellations();
+    fetchBookings();
   }, [isAdmin]);
+
+  const fetchBookings = async () => {
+    setLoadingBookings(true);
+    const { data } = await (supabase as any)
+      .from("bookings")
+      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, vehicle_plate")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (data) {
+      setBookings(data as AdminBooking[]);
+      const userIds = [...new Set((data as AdminBooking[]).flatMap((b) => [b.seeker_id, b.crew_id]).filter(Boolean) as string[])];
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+        if (profiles) { const map: Record<string, string> = {}; profiles.forEach(p => { map[p.user_id] = p.full_name; }); setProfilesMap(prev => ({ ...prev, ...map })); }
+      }
+    }
+    setLoadingBookings(false);
+  };
+
 
   const fetchCancellations = async () => {
     setLoadingCancellations(true);
@@ -151,6 +183,32 @@ const Admin = () => {
     }
   };
 
+  const bookingStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending": return <Badge variant="outline">{t("statusPending")}</Badge>;
+      case "approved": return <Badge variant="default">{t("approved")}</Badge>;
+      case "rejected": return <Badge variant="destructive">{t("statusRejected")}</Badge>;
+      case "completed": return <Badge variant="default">{t("statusCompleted")}</Badge>;
+      case "cancelled": return <Badge variant="destructive">{t("statusCancelled")}</Badge>;
+      default: return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const paymentBadge = (payment: string) => {
+    switch (payment) {
+      case "paid": return <Badge variant="default">{t("payPaid")}</Badge>;
+      case "refunded": return <Badge variant="secondary">{t("payRefunded")}</Badge>;
+      case "refund_pending": return <Badge variant="outline">{t("payRefundPending")}</Badge>;
+      default: return <Badge variant="outline">{t("payUnpaid")}</Badge>;
+    }
+  };
+
+  const fmtDateTime = (value: string) =>
+    new Date(value).toLocaleString(lang === "ar" ? "ar-SA" : "en-US", {
+      year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+
+
   if (authLoading || checking) {
     return (<div className="min-h-screen bg-background"><Navbar /><div className="container mx-auto px-4 pt-24"><Skeleton className="h-10 w-64 mb-6" /><Skeleton className="h-64 w-full" /></div></div>);
   }
@@ -165,11 +223,66 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="withdrawals" className="w-full">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex-wrap h-auto">
             <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
             <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
+            <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="bookings">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("bookingsLog")}</CardTitle></CardHeader>
+              <CardContent>
+                {loadingBookings ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : bookings.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noBookingsAdmin")}</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("seekerLabel")}</TableHead>
+                          <TableHead>{t("crewLabel")}</TableHead>
+                          <TableHead>{t("location")}</TableHead>
+                          <TableHead>{t("amountPaidLabel")}</TableHead>
+                          <TableHead>{t("paymentStatusLabel")}</TableHead>
+                          <TableHead>{t("paymentDateLabel")}</TableHead>
+                          <TableHead>{t("status")}</TableHead>
+                          <TableHead>{t("refundReasonLabel")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {bookings.map((b) => (
+                          <TableRow key={b.id}>
+                            <TableCell className="font-medium">{profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}</TableCell>
+                            <TableCell>{b.crew_id ? (profilesMap[b.crew_id] || b.crew_id.slice(0, 8)) : "—"}</TableCell>
+                            <TableCell className="max-w-[220px] truncate" title={b.location}>{b.location}</TableCell>
+                            <TableCell className="whitespace-nowrap">
+                              {b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : (b.payment_status === "paid" ? `29 ${t("sar")}` : "—")}
+                            </TableCell>
+                            <TableCell>{paymentBadge(b.payment_status)}</TableCell>
+                            <TableCell className="text-xs whitespace-nowrap">{b.paid_at ? fmtDateTime(b.paid_at) : (b.payment_status === "paid" ? fmtDateTime(b.created_at) : <span className="text-muted-foreground">{t("notPaidYet")}</span>)}</TableCell>
+                            <TableCell>{bookingStatusBadge(b.status)}</TableCell>
+                            <TableCell className="text-xs max-w-[240px]">
+                              {b.cancellation_reason ? (
+                                <span>
+                                  {t(`reason_${b.cancellation_reason}` as any)}
+                                  {b.cancellation_reason_note ? ` — ${b.cancellation_reason_note}` : ""}
+                                </span>
+                              ) : <span className="text-muted-foreground">—</span>}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           <TabsContent value="cancellations">
             <Card>

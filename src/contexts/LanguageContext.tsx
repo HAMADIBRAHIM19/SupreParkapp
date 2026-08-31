@@ -215,6 +215,18 @@ const translations = {
     cancellationsLog: "سجل اعتذارات الطاقم",
     noCancellations: "لا توجد اعتذارات",
     reasonLabel: "السبب",
+    bookingsLog: "تفاصيل الطلبات",
+    noBookingsAdmin: "لا توجد طلبات",
+    amountPaidLabel: "المبلغ المدفوع",
+    paymentDateLabel: "تاريخ الدفع",
+    refundReasonLabel: "سبب الاسترداد",
+    paymentStatusLabel: "حالة الدفع",
+    payUnpaid: "غير مدفوع",
+    payPaid: "مدفوع",
+    payRefunded: "مسترد",
+    payRefundPending: "استرداد قيد التنفيذ",
+    notPaidYet: "لم يتم الدفع",
+
 
 
     // Crew Dashboard
@@ -644,6 +656,18 @@ const translations = {
     cancellationsLog: "Crew cancellations log",
     noCancellations: "No cancellations",
     reasonLabel: "Reason",
+    bookingsLog: "Booking details",
+    noBookingsAdmin: "No bookings",
+    amountPaidLabel: "Amount paid",
+    paymentDateLabel: "Payment date",
+    refundReasonLabel: "Refund reason",
+    paymentStatusLabel: "Payment status",
+    payUnpaid: "Unpaid",
+    payPaid: "Paid",
+    payRefunded: "Refunded",
+    payRefundPending: "Refund in progress",
+    notPaidYet: "Not paid",
+
 
 
     // Crew Dashboard

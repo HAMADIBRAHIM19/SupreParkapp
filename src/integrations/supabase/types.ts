@@ -35,16 +35,68 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_cancellations: {
+        Row: {
+          booking_id: string
+          created_at: string
+          crew_id: string
+          id: string
+          reason_code: string
+          reason_note: string | null
+          refund_id: string | null
+          refund_status: string
+          seeker_id: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          crew_id: string
+          id?: string
+          reason_code: string
+          reason_note?: string | null
+          refund_id?: string | null
+          refund_status?: string
+          seeker_id: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          crew_id?: string
+          id?: string
+          reason_code?: string
+          reason_note?: string | null
+          refund_id?: string | null
+          refund_status?: string
+          seeker_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_cancellations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
+          amount_paid: number | null
+          cancellation_reason: string | null
+          cancellation_reason_note: string | null
           created_at: string
           crew_id: string | null
           crew_vehicle_name: string | null
           crew_vehicle_plate: string | null
+          currency: string | null
           expected_arrival: string | null
           id: string
           location: string
           notes: string | null
+          paid_at: string | null
           payment_status: string
           scheduled_at: string
           seeker_id: string
@@ -55,14 +107,19 @@ export type Database = {
           vehicle_plate: string
         }
         Insert: {
+          amount_paid?: number | null
+          cancellation_reason?: string | null
+          cancellation_reason_note?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
           crew_vehicle_plate?: string | null
+          currency?: string | null
           expected_arrival?: string | null
           id?: string
           location: string
           notes?: string | null
+          paid_at?: string | null
           payment_status?: string
           scheduled_at: string
           seeker_id: string
@@ -73,14 +130,19 @@ export type Database = {
           vehicle_plate: string
         }
         Update: {
+          amount_paid?: number | null
+          cancellation_reason?: string | null
+          cancellation_reason_note?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
           crew_vehicle_plate?: string | null
+          currency?: string | null
           expected_arrival?: string | null
           id?: string
           location?: string
           notes?: string | null
+          paid_at?: string | null
           payment_status?: string
           scheduled_at?: string
           seeker_id?: string
