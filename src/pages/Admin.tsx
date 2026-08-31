@@ -168,7 +168,39 @@ const Admin = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
+            <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="cancellations">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("cancellationsLog")}</CardTitle></CardHeader>
+              <CardContent>
+                {loadingCancellations ? (
+                  <p className="text-muted-foreground text-sm">...</p>
+                ) : cancellations.length === 0 ? (
+                  <p className="text-muted-foreground text-sm text-center py-8">{t("noCancellations")}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {cancellations.map((c) => (
+                      <div key={c.id} className="p-3 rounded-lg border flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="font-medium text-sm">{profilesMap[c.crew_id] || c.crew_id.slice(0, 8)}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {t("reasonLabel")}: {t(`reason_${c.reason_code}` as any)}{c.reason_note ? ` — ${c.reason_note}` : ""}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString(lang === "ar" ? "ar-SA" : "en-US")}</p>
+                        </div>
+                        <Badge variant={c.refund_status === "refunded" ? "default" : "secondary"}>
+                          {c.refund_status === "refunded" ? t("refundRefunded") : t("refundPending")}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           <TabsContent value="withdrawals">
             <Card>
