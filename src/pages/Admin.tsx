@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,11 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Loader2, ShieldCheck, Send } from "lucide-react";
+import { Check, X, Loader2, ShieldCheck, Send, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+
 
 interface WithdrawalRequest {
   id: string; amount: number; status: string; bank_name: string | null; iban: string | null; holder_name: string | null; created_at: string; user_id: string;
@@ -32,6 +34,11 @@ interface AdminBooking {
   cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string;
   vehicle_plate: string | null;
 }
+
+interface AdminUser {
+  id: string; email: string; created_at: string; full_name: string; username: string; account_type: string;
+}
+
 
 
 
@@ -61,6 +68,13 @@ const Admin = () => {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
 
+  // Users list
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [userFilter, setUserFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "seeker" | "crew">("all");
+
+
 
   useEffect(() => {
     if (authLoading) return;
@@ -79,7 +93,9 @@ const Admin = () => {
     fetchTickets();
     fetchCancellations();
     fetchBookings();
+    fetchUsers();
   }, [isAdmin]);
+
 
   const fetchBookings = async () => {
     setLoadingBookings(true);
@@ -98,6 +114,34 @@ const Admin = () => {
     }
     setLoadingBookings(false);
   };
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-list-users", { method: "GET" });
+      if (error) throw error;
+      setUsers((data?.users || []) as AdminUser[]);
+    } catch (err: any) {
+      toast({ title: t("error"), description: err?.message || t("errorOccurred"), variant: "destructive" });
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const filteredUsers = useMemo(() => {
+    const term = userFilter.trim().toLowerCase();
+    return users.filter((u) => {
+      if (typeFilter !== "all" && u.account_type !== typeFilter) return false;
+      if (!term) return true;
+      return (
+        u.email.toLowerCase().includes(term) ||
+        u.full_name.toLowerCase().includes(term) ||
+        u.username.toLowerCase().includes(term)
+      );
+    });
+  }, [users, userFilter, typeFilter]);
+
+
 
 
   const fetchCancellations = async () => {
@@ -228,7 +272,9 @@ const Admin = () => {
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
             <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
             <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
+            <TabsTrigger value="users"><Users className="w-3.5 h-3.5 me-1" />{t("usersTab")} ({users.length})</TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="bookings">
             <Card>
@@ -430,7 +476,64 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="users">
+            <Card>
+              <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Users className="w-4 h-4" />{t("usersTitle")}</CardTitle></CardHeader>
+              <CardContent>
+                <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                  <Input
+                    placeholder={t("usersSearchPlaceholder")}
+                    value={userFilter}
+                    onChange={(e) => setUserFilter(e.target.value)}
+                    className="sm:flex-1"
+                  />
+                  <select
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value as any)}
+                    className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  >
+                    <option value="all">{t("usersFilterTypeAll")}</option>
+                    <option value="seeker">{t("usersFilterSeeker")}</option>
+                    <option value="crew">{t("usersFilterCrew")}</option>
+                  </select>
+                </div>
+                {loadingUsers ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : filteredUsers.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noUsers")}</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("userEmail")}</TableHead>
+                          <TableHead>{t("userFullName")}</TableHead>
+                          <TableHead>{t("userUsername")}</TableHead>
+                          <TableHead>{t("userAccountType")}</TableHead>
+                          <TableHead>{t("userCreatedAt")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredUsers.map((u) => (
+                          <TableRow key={u.id}>
+                            <TableCell className="font-medium text-xs">{u.email || <span className="text-muted-foreground">—</span>}</TableCell>
+                            <TableCell>{u.full_name || "—"}</TableCell>
+                            <TableCell className="text-muted-foreground text-xs">{u.username || "—"}</TableCell>
+                            <TableCell>{u.account_type === "crew" ? <Badge variant="default">{t("crewLabel")}</Badge> : <Badge variant="outline">{t("seekerLabel")}</Badge>}</TableCell>
+                            <TableCell className="text-xs whitespace-nowrap">{fmtDateTime(u.created_at)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
+
       </div>
     </div>
   );

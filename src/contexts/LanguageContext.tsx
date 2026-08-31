@@ -286,6 +286,19 @@ const translations = {
     noWithdrawalRequests: "لا توجد طلبات سحب",
     approved: "تمت الموافقة",
     rejected: "تم الرفض",
+    usersTab: "المستخدمين",
+    usersTitle: "قائمة المستخدمين",
+    usersSearchPlaceholder: "ابحث بالبريد أو الاسم أو اسم المستخدم",
+    usersFilterTypeAll: "كل الأنواع",
+    usersFilterSeeker: "طالب الموقف",
+    usersFilterCrew: "أحد أفراد الطاقم",
+    noUsers: "لا يوجد مستخدمون مطابقون",
+    userEmail: "البريد الإلكتروني",
+    userFullName: "الاسم الكامل",
+    userUsername: "اسم المستخدم",
+    userAccountType: "نوع الحساب",
+    userCreatedAt: "تاريخ التسجيل",
+
 
     // Notifications
     enableNotifications: "تفعيل إشعارات التطبيق",
@@ -727,6 +740,19 @@ const translations = {
     noWithdrawalRequests: "No withdrawal requests",
     approved: "Approved",
     rejected: "Rejected",
+    usersTab: "Users",
+    usersTitle: "Users List",
+    usersSearchPlaceholder: "Search by email, name or username",
+    usersFilterTypeAll: "All types",
+    usersFilterSeeker: "Spot requester",
+    usersFilterCrew: "Crew member",
+    noUsers: "No matching users",
+    userEmail: "Email",
+    userFullName: "Full name",
+    userUsername: "Username",
+    userAccountType: "Account type",
+    userCreatedAt: "Registered at",
+
 
     // Notifications
     enableNotifications: "Enable app notifications",
