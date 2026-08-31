@@ -198,7 +198,23 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
                   ) : <span className="text-muted-foreground">—</span>}
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">{formatDate(booking.scheduled_at)}</TableCell>
-                <TableCell><Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge></TableCell>
+                <TableCell>
+                  <Badge variant={statusMap[booking.status].variant}>{statusMap[booking.status].label}</Badge>
+                  {booking.status === "cancelled" && booking.cancellation_reason && (
+                    <div className="mt-1 space-y-0.5">
+                      <p className="text-xs text-muted-foreground">
+                        {t("cancelledByCrew")}: {t(`reason_${booking.cancellation_reason}` as any)}
+                        {booking.cancellation_reason_note ? ` — ${booking.cancellation_reason_note}` : ""}
+                      </p>
+                      {(booking.payment_status === "refunded" || booking.payment_status === "refund_pending") && (
+                        <p className="text-xs font-medium text-primary">
+                          {booking.payment_status === "refunded" ? t("refundRefunded") : t("refundPending")}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </TableCell>
+
                 <TableCell>
                   <div className="flex gap-1 flex-wrap">
                     {booking.status === "approved" && onChat && (

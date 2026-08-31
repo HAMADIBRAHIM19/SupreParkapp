@@ -16,4 +16,7 @@ export interface Booking {
   crew_vehicle_name: string | null;
   crew_vehicle_plate: string | null;
   payment_status?: string;
+  cancellation_reason?: string | null;
+  cancellation_reason_note?: string | null;
+
 }

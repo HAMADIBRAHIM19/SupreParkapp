@@ -194,6 +194,29 @@ const translations = {
     statusCancelled: "ملغي",
     statusCrewApproved: "تم القبول",
 
+    // Crew cancellation (unable to provide a spot)
+    crewUnableTitle: "تعذّر توفير موقف",
+    crewUnableBtn: "تعذّر توفير موقف",
+    crewUnableDesc: "سيتم إلغاء إسنادك للطلب واسترداد المبلغ كاملًا لطالب الموقف. اختر السبب.",
+    cancelReasonLabel: "سبب الاعتذار",
+    cancelReasonPlaceholder: "اختر السبب",
+    cancelReasonNote: "ملاحظة إضافية",
+    cancelReasonNoteRequired: "الملاحظة إلزامية عند اختيار «سبب آخر»",
+    reason_no_spots: "لا تتوفر مواقف في الموقع",
+    reason_vehicle_issue: "عطل في المركبة",
+    reason_emergency: "ظرف طارئ",
+    reason_cannot_arrive: "تعذّر الوصول في الوقت المطلوب",
+    reason_other: "سبب آخر",
+    confirmUnable: "تأكيد الاعتذار",
+    submittingUnable: "جاري الإلغاء...",
+    cancelledByCrew: "اعتذر الطاقم",
+    refundRefunded: "تم الاسترداد",
+    refundPending: "جاري الاسترداد",
+    cancellationsLog: "سجل اعتذارات الطاقم",
+    noCancellations: "لا توجد اعتذارات",
+    reasonLabel: "السبب",
+
+
     // Crew Dashboard
     walletBalance: "رصيد المحفظة",
     withdraw: "سحب",
@@ -599,6 +622,29 @@ const translations = {
     statusCompleted: "Completed",
     statusCancelled: "Cancelled",
     statusCrewApproved: "Accepted",
+
+    // Crew cancellation (unable to provide a spot)
+    crewUnableTitle: "Unable to provide a spot",
+    crewUnableBtn: "Can't provide spot",
+    crewUnableDesc: "You will be unassigned from this order and the spot requester will be fully refunded. Please select a reason.",
+    cancelReasonLabel: "Reason",
+    cancelReasonPlaceholder: "Select a reason",
+    cancelReasonNote: "Additional note",
+    cancelReasonNoteRequired: "A note is required when selecting \"Other\"",
+    reason_no_spots: "No parking available at the location",
+    reason_vehicle_issue: "Vehicle breakdown",
+    reason_emergency: "Emergency",
+    reason_cannot_arrive: "Unable to arrive on time",
+    reason_other: "Other",
+    confirmUnable: "Confirm cancellation",
+    submittingUnable: "Cancelling...",
+    cancelledByCrew: "Cancelled by crew",
+    refundRefunded: "Refunded",
+    refundPending: "Refund in progress",
+    cancellationsLog: "Crew cancellations log",
+    noCancellations: "No cancellations",
+    reasonLabel: "Reason",
+
 
     // Crew Dashboard
     walletBalance: "Wallet Balance",

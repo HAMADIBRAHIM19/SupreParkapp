@@ -22,6 +22,11 @@ interface SupportTicket {
   id: string; user_id: string; subject: string; message: string; status: string; admin_reply: string | null; created_at: string;
 }
 
+interface BookingCancellation {
+  id: string; booking_id: string; crew_id: string; seeker_id: string; reason_code: string; reason_note: string | null; refund_status: string; created_at: string;
+}
+
+
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { t, dir, lang } = useLanguage();
@@ -40,6 +45,11 @@ const Admin = () => {
   const [replyText, setReplyText] = useState<Record<string, string>>({});
   const [replying, setReplying] = useState<string | null>(null);
 
+  // Crew cancellations log
+  const [cancellations, setCancellations] = useState<BookingCancellation[]>([]);
+  const [loadingCancellations, setLoadingCancellations] = useState(true);
+
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/login"); return; }
@@ -55,7 +65,27 @@ const Admin = () => {
     if (!isAdmin) return;
     fetchRequests();
     fetchTickets();
+    fetchCancellations();
   }, [isAdmin]);
+
+  const fetchCancellations = async () => {
+    setLoadingCancellations(true);
+    const { data } = await (supabase as any)
+      .from("booking_cancellations")
+      .select("id, booking_id, crew_id, seeker_id, reason_code, reason_note, refund_status, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data) {
+      setCancellations(data as BookingCancellation[]);
+      const userIds = [...new Set((data as BookingCancellation[]).map((c) => c.crew_id))];
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+        if (profiles) { const map: Record<string, string> = {}; profiles.forEach(p => { map[p.user_id] = p.full_name; }); setProfilesMap(prev => ({ ...prev, ...map })); }
+      }
+    }
+    setLoadingCancellations(false);
+  };
+
 
   const fetchRequests = async () => {
     setLoadingRequests(true);
@@ -138,7 +168,39 @@ const Admin = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
+            <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="cancellations">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("cancellationsLog")}</CardTitle></CardHeader>
+              <CardContent>
+                {loadingCancellations ? (
+                  <p className="text-muted-foreground text-sm">...</p>
+                ) : cancellations.length === 0 ? (
+                  <p className="text-muted-foreground text-sm text-center py-8">{t("noCancellations")}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {cancellations.map((c) => (
+                      <div key={c.id} className="p-3 rounded-lg border flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="font-medium text-sm">{profilesMap[c.crew_id] || c.crew_id.slice(0, 8)}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {t("reasonLabel")}: {t(`reason_${c.reason_code}` as any)}{c.reason_note ? ` — ${c.reason_note}` : ""}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString(lang === "ar" ? "ar-SA" : "en-US")}</p>
+                        </div>
+                        <Badge variant={c.refund_status === "refunded" ? "default" : "secondary"}>
+                          {c.refund_status === "refunded" ? t("refundRefunded") : t("refundPending")}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           <TabsContent value="withdrawals">
             <Card>

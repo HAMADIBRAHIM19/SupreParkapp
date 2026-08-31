@@ -12,7 +12,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet, ArrowDownToLine, History } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { MapPin, Car, Clock, CheckCircle, HandHelping, Inbox, MessageCircle, Wallet, ArrowDownToLine, History, XCircle } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import BookingChat from "@/components/BookingChat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -33,6 +36,11 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const [crewVehicleName, setCrewVehicleName] = useState("");
   const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
   const [accepting, setAccepting] = useState(false);
+  const [unableBooking, setUnableBooking] = useState<Booking | null>(null);
+  const [unableReason, setUnableReason] = useState<string>("");
+  const [unableNote, setUnableNote] = useState("");
+  const [unableSubmitting, setUnableSubmitting] = useState(false);
+
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [walletId, setWalletId] = useState<string | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
@@ -123,6 +131,23 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
     onRefresh();
   };
 
+  const openUnableDialog = (booking: Booking) => { setUnableBooking(booking); setUnableReason(""); setUnableNote(""); };
+
+  const handleUnable = async () => {
+    if (!unableBooking || !unableReason) return;
+    if (unableReason === "other" && !unableNote.trim()) { toast({ title: t("error"), description: t("cancelReasonNoteRequired"), variant: "destructive" }); return; }
+    setUnableSubmitting(true);
+    const { data, error } = await supabase.functions.invoke("crew-cancel-booking", {
+      body: { bookingId: unableBooking.id, reasonCode: unableReason, reasonNote: unableNote.trim() || undefined },
+    });
+    setUnableSubmitting(false);
+    if (error || (data as any)?.error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); return; }
+    toast({ title: t("success") });
+    setUnableBooking(null);
+    onRefresh();
+  };
+
+
   return (
     <>
       <div className="mb-6">
@@ -158,7 +183,7 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           <TabsTrigger value="wallet" className="gap-1"><History className="w-3.5 h-3.5" />{t("walletTab")}</TabsTrigger>
         </TabsList>
         <TabsContent value="available"><CrewBookingsTable bookings={availableBookings} loading={loading} type="available" onAccept={openAcceptDialog} statusMap={statusMap} formatDate={formatDate} /></TabsContent>
-        <TabsContent value="active"><CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} unreadCounts={unreadCounts} statusMap={statusMap} formatDate={formatDate} /></TabsContent>
+        <TabsContent value="active"><CrewBookingsTable bookings={activeJobs} loading={loading} type="active" onChat={setChatBooking} onUnable={openUnableDialog} unreadCounts={unreadCounts} statusMap={statusMap} formatDate={formatDate} /></TabsContent>
         <TabsContent value="completed"><CrewBookingsTable bookings={completedJobs} loading={loading} type="completed" statusMap={statusMap} formatDate={formatDate} /></TabsContent>
         <TabsContent value="wallet"><WalletHistoryTab transactions={transactions} withdrawals={withdrawals} loading={walletHistoryLoading} withdrawalStatusMap={withdrawalStatusMap} formatDate={formatDate} /></TabsContent>
       </Tabs>
@@ -178,6 +203,39 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!unableBooking} onOpenChange={(open) => !open && setUnableBooking(null)}>
+        <DialogContent dir={dir} className="sm:max-w-md">
+          <DialogHeader><DialogTitle>{t("crewUnableTitle")}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">{t("crewUnableDesc")}</p>
+            <div className="space-y-2">
+              <Label>{t("cancelReasonLabel")}</Label>
+              <Select value={unableReason} onValueChange={setUnableReason}>
+                <SelectTrigger><SelectValue placeholder={t("cancelReasonPlaceholder")} /></SelectTrigger>
+                <SelectContent>
+                  {["no_spots", "vehicle_issue", "emergency", "cannot_arrive", "other"].map((r) => (
+                    <SelectItem key={r} value={r}>{t(`reason_${r}` as any)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("cancelReasonNote")}</Label>
+              <Textarea rows={3} value={unableNote} onChange={(e) => setUnableNote(e.target.value)} />
+              {unableReason === "other" && <p className="text-xs text-destructive">{t("cancelReasonNoteRequired")}</p>}
+            </div>
+          </div>
+          <DialogFooter className="flex-row-reverse gap-2">
+            <Button variant="destructive" onClick={handleUnable} disabled={unableSubmitting || !unableReason || (unableReason === "other" && !unableNote.trim())}>
+              {unableSubmitting ? t("submittingUnable") : t("confirmUnable")}
+            </Button>
+            <Button variant="outline" onClick={() => setUnableBooking(null)}>{t("cancel")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
 
       <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
         <DialogContent dir={dir} className="sm:max-w-md">
@@ -252,9 +310,10 @@ const WalletHistoryTab = ({ transactions, withdrawals, loading, withdrawalStatus
   );
 };
 
-const CrewBookingsTable = ({ bookings, loading, type, onAccept, onChat, unreadCounts, statusMap, formatDate }: {
+const CrewBookingsTable = ({ bookings, loading, type, onAccept, onChat, onUnable, unreadCounts, statusMap, formatDate }: {
   bookings: Booking[]; loading: boolean; type: "available" | "active" | "completed";
-  onAccept?: (id: string) => void; onChat?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+  onAccept?: (id: string) => void; onChat?: (booking: Booking) => void; onUnable?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+
   statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }>;
   formatDate: (date: string) => string;
 }) => {
@@ -295,7 +354,11 @@ const CrewBookingsTable = ({ bookings, loading, type, onAccept, onChat, unreadCo
                     <MessageCircle className="w-3.5 h-3.5" />{t("chat")}
                     {unreadCounts && unreadCounts[booking.id] > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">{unreadCounts[booking.id]}</span>}
                   </Button>}
+                  {onUnable && <Button size="sm" variant="ghost" className="rounded-xl gap-1 text-destructive hover:bg-destructive/10" onClick={() => onUnable(booking)}>
+                    <XCircle className="w-3.5 h-3.5" />{t("crewUnableBtn")}
+                  </Button>}
                 </div></TableCell>
+
               )}
             </TableRow>
           ))}
