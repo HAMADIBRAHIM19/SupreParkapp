@@ -128,6 +128,20 @@ const Admin = () => {
     }
   };
 
+  const filteredUsers = useMemo(() => {
+    const term = userFilter.trim().toLowerCase();
+    return users.filter((u) => {
+      if (typeFilter !== "all" && u.account_type !== typeFilter) return false;
+      if (!term) return true;
+      return (
+        u.email.toLowerCase().includes(term) ||
+        u.full_name.toLowerCase().includes(term) ||
+        u.username.toLowerCase().includes(term)
+      );
+    });
+  }, [users, userFilter, typeFilter]);
+
+
 
 
   const fetchCancellations = async () => {
