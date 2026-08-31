@@ -22,6 +22,11 @@ interface SupportTicket {
   id: string; user_id: string; subject: string; message: string; status: string; admin_reply: string | null; created_at: string;
 }
 
+interface BookingCancellation {
+  id: string; booking_id: string; crew_id: string; seeker_id: string; reason_code: string; reason_note: string | null; refund_status: string; created_at: string;
+}
+
+
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { t, dir, lang } = useLanguage();
