@@ -310,9 +310,10 @@ const WalletHistoryTab = ({ transactions, withdrawals, loading, withdrawalStatus
   );
 };
 
-const CrewBookingsTable = ({ bookings, loading, type, onAccept, onChat, unreadCounts, statusMap, formatDate }: {
+const CrewBookingsTable = ({ bookings, loading, type, onAccept, onChat, onUnable, unreadCounts, statusMap, formatDate }: {
   bookings: Booking[]; loading: boolean; type: "available" | "active" | "completed";
-  onAccept?: (id: string) => void; onChat?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+  onAccept?: (id: string) => void; onChat?: (booking: Booking) => void; onUnable?: (booking: Booking) => void; unreadCounts?: Record<string, number>;
+
   statusMap: Record<BookingStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }>;
   formatDate: (date: string) => string;
 }) => {
