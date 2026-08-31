@@ -416,67 +416,62 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="support">
+          <TabsContent value="users">
             <Card>
-              <CardHeader><CardTitle className="text-lg">{t("supportTickets")}</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Users className="w-4 h-4" />{t("usersTitle")}</CardTitle></CardHeader>
               <CardContent>
-                {loadingTickets ? (
-                  <div className="space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-20 w-full" />)}</div>
-                ) : tickets.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">{t("supportNoTicketsAdmin")}</p>
+                <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                  <Input
+                    placeholder={t("usersSearchPlaceholder")}
+                    value={userFilter}
+                    onChange={(e) => setUserFilter(e.target.value)}
+                    className="sm:flex-1"
+                  />
+                  <select
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value as any)}
+                    className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  >
+                    <option value="all">{t("usersFilterTypeAll")}</option>
+                    <option value="seeker">{t("usersFilterSeeker")}</option>
+                    <option value="crew">{t("usersFilterCrew")}</option>
+                  </select>
+                </div>
+                {loadingUsers ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : filteredUsers.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noUsers")}</p>
                 ) : (
-                  <div className="space-y-4">
-                    {tickets.map((ticket) => (
-                      <div key={ticket.id} className="border rounded-lg p-4">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">{t("supportUser")}: <span className="font-medium text-foreground">{profilesMap[ticket.user_id] || "—"}</span></p>
-                            <h3 className="font-semibold text-sm">{ticket.subject}</h3>
-                          </div>
-                          <Badge variant={ticket.status === "open" ? "default" : "secondary"}>
-                            {ticket.status === "open" ? t("supportOpen") : t("supportClosed")}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">{ticket.message}</p>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          {new Date(ticket.created_at).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", {
-                            year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-                          })}
-                        </p>
-                        {ticket.admin_reply && (
-                          <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 mb-3">
-                            <p className="text-xs font-semibold text-primary mb-1">{t("supportAdminReply")}</p>
-                            <p className="text-sm">{ticket.admin_reply}</p>
-                          </div>
-                        )}
-                        {ticket.status === "open" && (
-                          <div className="flex gap-2 items-end">
-                            <Textarea
-                              value={replyText[ticket.id] || ""}
-                              onChange={(e) => setReplyText(prev => ({ ...prev, [ticket.id]: e.target.value }))}
-                              placeholder={t("supportReplyPlaceholder")}
-                              rows={2}
-                              className="flex-1"
-                            />
-                            <div className="flex flex-col gap-1">
-                              <Button size="sm" className="gap-1" disabled={replying === ticket.id || !replyText[ticket.id]?.trim()} onClick={() => handleReply(ticket.id)}>
-                                {replying === ticket.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-                                {t("supportSendReply")}
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={() => handleCloseTicket(ticket.id)}>
-                                {t("supportClose")}
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("userEmail")}</TableHead>
+                          <TableHead>{t("userFullName")}</TableHead>
+                          <TableHead>{t("userUsername")}</TableHead>
+                          <TableHead>{t("userAccountType")}</TableHead>
+                          <TableHead>{t("userCreatedAt")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredUsers.map((u) => (
+                          <TableRow key={u.id}>
+                            <TableCell className="font-medium text-xs">{u.email || <span className="text-muted-foreground">—</span>}</TableCell>
+                            <TableCell>{u.full_name || "—"}</TableCell>
+                            <TableCell className="text-muted-foreground text-xs">{u.username || "—"}</TableCell>
+                            <TableCell>{u.account_type === "crew" ? <Badge variant="default">{t("crewLabel")}</Badge> : <Badge variant="outline">{t("seekerLabel")}</Badge>}</TableCell>
+                            <TableCell className="text-xs whitespace-nowrap">{fmtDateTime(u.created_at)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
+
       </div>
     </div>
   );
