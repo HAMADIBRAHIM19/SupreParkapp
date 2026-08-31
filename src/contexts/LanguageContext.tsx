@@ -658,6 +658,20 @@ const translations = {
     cancellationsLog: "Crew cancellations log",
     noCancellations: "No cancellations",
     reasonLabel: "Reason",
+    bookingsLog: "Booking details",
+    noBookingsAdmin: "No bookings",
+    amountPaidLabel: "Amount paid",
+    paymentDateLabel: "Payment date",
+    refundReasonLabel: "Refund reason",
+    paymentStatusLabel: "Payment status",
+    seekerLabel: "Spot requester",
+    crewLabel: "Crew",
+    payUnpaid: "Unpaid",
+    payPaid: "Paid",
+    payRefunded: "Refunded",
+    payRefundPending: "Refund in progress",
+    notPaidYet: "Not paid",
+
 
 
     // Crew Dashboard
