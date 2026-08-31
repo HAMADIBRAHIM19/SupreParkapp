@@ -68,6 +68,13 @@ const Admin = () => {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
 
+  // Users list
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [userFilter, setUserFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "seeker" | "crew">("all");
+
+
 
   useEffect(() => {
     if (authLoading) return;
