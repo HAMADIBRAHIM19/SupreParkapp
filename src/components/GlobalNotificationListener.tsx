@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { showAppNotificationOnce, isNativeApp } from "@/lib/appNotifications";
+import { showAppNotificationOnce } from "@/lib/appNotifications";
 import { initPushNotifications } from "@/lib/pushNotifications";
 import { playNotificationSound } from "@/lib/notificationSound";
 import { toast } from "sonner";
