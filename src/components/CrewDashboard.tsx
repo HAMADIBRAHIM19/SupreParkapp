@@ -131,6 +131,23 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
     onRefresh();
   };
 
+  const openUnableDialog = (booking: Booking) => { setUnableBooking(booking); setUnableReason(""); setUnableNote(""); };
+
+  const handleUnable = async () => {
+    if (!unableBooking || !unableReason) return;
+    if (unableReason === "other" && !unableNote.trim()) { toast({ title: t("error"), description: t("cancelReasonNoteRequired"), variant: "destructive" }); return; }
+    setUnableSubmitting(true);
+    const { data, error } = await supabase.functions.invoke("crew-cancel-booking", {
+      body: { bookingId: unableBooking.id, reasonCode: unableReason, reasonNote: unableNote.trim() || undefined },
+    });
+    setUnableSubmitting(false);
+    if (error || (data as any)?.error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); return; }
+    toast({ title: t("success") });
+    setUnableBooking(null);
+    onRefresh();
+  };
+
+
   return (
     <>
       <div className="mb-6">
