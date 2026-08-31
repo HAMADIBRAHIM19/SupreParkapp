@@ -45,6 +45,11 @@ const Admin = () => {
   const [replyText, setReplyText] = useState<Record<string, string>>({});
   const [replying, setReplying] = useState<string | null>(null);
 
+  // Crew cancellations log
+  const [cancellations, setCancellations] = useState<BookingCancellation[]>([]);
+  const [loadingCancellations, setLoadingCancellations] = useState(true);
+
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/login"); return; }
