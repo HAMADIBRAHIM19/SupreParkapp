@@ -36,6 +36,11 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const [crewVehicleName, setCrewVehicleName] = useState("");
   const [crewVehiclePlate, setCrewVehiclePlate] = useState("");
   const [accepting, setAccepting] = useState(false);
+  const [unableBooking, setUnableBooking] = useState<Booking | null>(null);
+  const [unableReason, setUnableReason] = useState<string>("");
+  const [unableNote, setUnableNote] = useState("");
+  const [unableSubmitting, setUnableSubmitting] = useState(false);
+
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [walletId, setWalletId] = useState<string | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
