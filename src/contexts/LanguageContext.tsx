@@ -194,6 +194,29 @@ const translations = {
     statusCancelled: "ملغي",
     statusCrewApproved: "تم القبول",
 
+    // Crew cancellation (unable to provide a spot)
+    crewUnableTitle: "تعذّر توفير موقف",
+    crewUnableBtn: "تعذّر توفير موقف",
+    crewUnableDesc: "سيتم إلغاء إسنادك للطلب واسترداد المبلغ كاملًا لطالب الموقف. اختر السبب.",
+    cancelReasonLabel: "سبب الاعتذار",
+    cancelReasonPlaceholder: "اختر السبب",
+    cancelReasonNote: "ملاحظة إضافية",
+    cancelReasonNoteRequired: "الملاحظة إلزامية عند اختيار «سبب آخر»",
+    reason_no_spots: "لا تتوفر مواقف في الموقع",
+    reason_vehicle_issue: "عطل في المركبة",
+    reason_emergency: "ظرف طارئ",
+    reason_cannot_arrive: "تعذّر الوصول في الوقت المطلوب",
+    reason_other: "سبب آخر",
+    confirmUnable: "تأكيد الاعتذار",
+    submittingUnable: "جاري الإلغاء...",
+    cancelledByCrew: "اعتذر الطاقم",
+    refundRefunded: "تم الاسترداد",
+    refundPending: "جاري الاسترداد",
+    cancellationsLog: "سجل اعتذارات الطاقم",
+    noCancellations: "لا توجد اعتذارات",
+    reasonLabel: "السبب",
+
+
     // Crew Dashboard
     walletBalance: "رصيد المحفظة",
     withdraw: "سحب",
