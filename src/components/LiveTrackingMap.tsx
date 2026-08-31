@@ -87,7 +87,7 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
     mapRef.current = map;
 
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: bookingLocation + ", Saudi Arabia" }, (results, status) => {
+    geocoder.geocode({ address: bookingLocation }, (results, status) => {
       if (status === "OK" && results?.[0]) {
         const pos = results[0].geometry.location;
         destLatLngRef.current = { lat: pos.lat(), lng: pos.lng() };
@@ -117,7 +117,12 @@ const LiveTrackingMap = ({ open, onOpenChange, bookingId, bookingLocation }: Liv
       .on("broadcast", { event: "crew-location" }, ({ payload }) => {
         setCrewPos(payload as CrewPosition);
       })
-      .subscribe();
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          // Ask the crew device to re-send its latest position right away.
+          channel.send({ type: "broadcast", event: "request-location", payload: {} });
+        }
+      });
 
     channelRef.current = channel;
 
