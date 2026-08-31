@@ -272,7 +272,9 @@ const Admin = () => {
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
             <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
             <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
+            <TabsTrigger value="users"><Users className="w-3.5 h-3.5 me-1" />{t("usersTab")} ({users.length})</TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="bookings">
             <Card>
