@@ -740,6 +740,19 @@ const translations = {
     noWithdrawalRequests: "No withdrawal requests",
     approved: "Approved",
     rejected: "Rejected",
+    usersTab: "Users",
+    usersTitle: "Users List",
+    usersSearchPlaceholder: "Search by email, name or username",
+    usersFilterTypeAll: "All types",
+    usersFilterSeeker: "Spot requester",
+    usersFilterCrew: "Crew member",
+    noUsers: "No matching users",
+    userEmail: "Email",
+    userFullName: "Full name",
+    userUsername: "Username",
+    userAccountType: "Account type",
+    userCreatedAt: "Registered at",
+
 
     // Notifications
     enableNotifications: "Enable app notifications",
