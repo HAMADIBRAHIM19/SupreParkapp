@@ -416,6 +416,67 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="support">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("supportTickets")}</CardTitle></CardHeader>
+              <CardContent>
+                {loadingTickets ? (
+                  <div className="space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-20 w-full" />)}</div>
+                ) : tickets.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("supportNoTicketsAdmin")}</p>
+                ) : (
+                  <div className="space-y-4">
+                    {tickets.map((ticket) => (
+                      <div key={ticket.id} className="border rounded-lg p-4">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">{t("supportUser")}: <span className="font-medium text-foreground">{profilesMap[ticket.user_id] || "—"}</span></p>
+                            <h3 className="font-semibold text-sm">{ticket.subject}</h3>
+                          </div>
+                          <Badge variant={ticket.status === "open" ? "default" : "secondary"}>
+                            {ticket.status === "open" ? t("supportOpen") : t("supportClosed")}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{ticket.message}</p>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          {new Date(ticket.created_at).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", {
+                            year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                          })}
+                        </p>
+                        {ticket.admin_reply && (
+                          <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 mb-3">
+                            <p className="text-xs font-semibold text-primary mb-1">{t("supportAdminReply")}</p>
+                            <p className="text-sm">{ticket.admin_reply}</p>
+                          </div>
+                        )}
+                        {ticket.status === "open" && (
+                          <div className="flex gap-2 items-end">
+                            <Textarea
+                              value={replyText[ticket.id] || ""}
+                              onChange={(e) => setReplyText(prev => ({ ...prev, [ticket.id]: e.target.value }))}
+                              placeholder={t("supportReplyPlaceholder")}
+                              rows={2}
+                              className="flex-1"
+                            />
+                            <div className="flex flex-col gap-1">
+                              <Button size="sm" className="gap-1" disabled={replying === ticket.id || !replyText[ticket.id]?.trim()} onClick={() => handleReply(ticket.id)}>
+                                {replying === ticket.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                                {t("supportSendReply")}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => handleCloseTicket(ticket.id)}>
+                                {t("supportClose")}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="users">
             <Card>
               <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Users className="w-4 h-4" />{t("usersTitle")}</CardTitle></CardHeader>
@@ -470,6 +531,7 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
         </Tabs>
 
       </div>
