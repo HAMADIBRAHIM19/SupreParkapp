@@ -204,6 +204,39 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!unableBooking} onOpenChange={(open) => !open && setUnableBooking(null)}>
+        <DialogContent dir={dir} className="sm:max-w-md">
+          <DialogHeader><DialogTitle>{t("crewUnableTitle")}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">{t("crewUnableDesc")}</p>
+            <div className="space-y-2">
+              <Label>{t("cancelReasonLabel")}</Label>
+              <Select value={unableReason} onValueChange={setUnableReason}>
+                <SelectTrigger><SelectValue placeholder={t("cancelReasonPlaceholder")} /></SelectTrigger>
+                <SelectContent>
+                  {["no_spots", "vehicle_issue", "emergency", "cannot_arrive", "other"].map((r) => (
+                    <SelectItem key={r} value={r}>{t(`reason_${r}` as any)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("cancelReasonNote")}</Label>
+              <Textarea rows={3} value={unableNote} onChange={(e) => setUnableNote(e.target.value)} />
+              {unableReason === "other" && <p className="text-xs text-destructive">{t("cancelReasonNoteRequired")}</p>}
+            </div>
+          </div>
+          <DialogFooter className="flex-row-reverse gap-2">
+            <Button variant="destructive" onClick={handleUnable} disabled={unableSubmitting || !unableReason || (unableReason === "other" && !unableNote.trim())}>
+              {unableSubmitting ? t("submittingUnable") : t("confirmUnable")}
+            </Button>
+            <Button variant="outline" onClick={() => setUnableBooking(null)}>{t("cancel")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+
       <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
         <DialogContent dir={dir} className="sm:max-w-md">
           <DialogHeader><DialogTitle>{t("withdrawRequest")}</DialogTitle></DialogHeader>
