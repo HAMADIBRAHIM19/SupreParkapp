@@ -84,16 +84,19 @@ export type Database = {
       }
       bookings: {
         Row: {
+          amount_paid: number | null
           cancellation_reason: string | null
           cancellation_reason_note: string | null
           created_at: string
           crew_id: string | null
           crew_vehicle_name: string | null
           crew_vehicle_plate: string | null
+          currency: string | null
           expected_arrival: string | null
           id: string
           location: string
           notes: string | null
+          paid_at: string | null
           payment_status: string
           scheduled_at: string
           seeker_id: string
@@ -104,16 +107,19 @@ export type Database = {
           vehicle_plate: string
         }
         Insert: {
+          amount_paid?: number | null
           cancellation_reason?: string | null
           cancellation_reason_note?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
           crew_vehicle_plate?: string | null
+          currency?: string | null
           expected_arrival?: string | null
           id?: string
           location: string
           notes?: string | null
+          paid_at?: string | null
           payment_status?: string
           scheduled_at: string
           seeker_id: string
@@ -124,16 +130,19 @@ export type Database = {
           vehicle_plate: string
         }
         Update: {
+          amount_paid?: number | null
           cancellation_reason?: string | null
           cancellation_reason_note?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
           crew_vehicle_plate?: string | null
+          currency?: string | null
           expected_arrival?: string | null
           id?: string
           location?: string
           notes?: string | null
+          paid_at?: string | null
           payment_status?: string
           scheduled_at?: string
           seeker_id?: string
