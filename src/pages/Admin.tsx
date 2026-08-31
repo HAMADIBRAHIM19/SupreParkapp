@@ -35,6 +35,11 @@ interface AdminBooking {
   vehicle_plate: string | null;
 }
 
+interface AdminUser {
+  id: string; email: string; created_at: string; full_name: string; username: string; account_type: string;
+}
+
+
 
 
 const Admin = () => {
