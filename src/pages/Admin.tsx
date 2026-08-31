@@ -183,6 +183,32 @@ const Admin = () => {
     }
   };
 
+  const bookingStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending": return <Badge variant="outline">{t("statusPending")}</Badge>;
+      case "approved": return <Badge variant="default">{t("approved")}</Badge>;
+      case "rejected": return <Badge variant="destructive">{t("statusRejected")}</Badge>;
+      case "completed": return <Badge variant="default">{t("statusCompleted")}</Badge>;
+      case "cancelled": return <Badge variant="destructive">{t("statusCancelled")}</Badge>;
+      default: return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const paymentBadge = (payment: string) => {
+    switch (payment) {
+      case "paid": return <Badge variant="default">{t("payPaid")}</Badge>;
+      case "refunded": return <Badge variant="secondary">{t("payRefunded")}</Badge>;
+      case "refund_pending": return <Badge variant="outline">{t("payRefundPending")}</Badge>;
+      default: return <Badge variant="outline">{t("payUnpaid")}</Badge>;
+    }
+  };
+
+  const fmtDateTime = (value: string) =>
+    new Date(value).toLocaleString(lang === "ar" ? "ar-SA" : "en-US", {
+      year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+
+
   if (authLoading || checking) {
     return (<div className="min-h-screen bg-background"><Navbar /><div className="container mx-auto px-4 pt-24"><Skeleton className="h-10 w-64 mb-6" /><Skeleton className="h-64 w-full" /></div></div>);
   }
