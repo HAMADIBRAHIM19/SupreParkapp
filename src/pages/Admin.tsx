@@ -57,6 +57,10 @@ const Admin = () => {
   const [cancellations, setCancellations] = useState<BookingCancellation[]>([]);
   const [loadingCancellations, setLoadingCancellations] = useState(true);
 
+  // All bookings (detailed)
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
 
   useEffect(() => {
     if (authLoading) return;
@@ -74,7 +78,27 @@ const Admin = () => {
     fetchRequests();
     fetchTickets();
     fetchCancellations();
+    fetchBookings();
   }, [isAdmin]);
+
+  const fetchBookings = async () => {
+    setLoadingBookings(true);
+    const { data } = await (supabase as any)
+      .from("bookings")
+      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, vehicle_plate")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (data) {
+      setBookings(data as AdminBooking[]);
+      const userIds = [...new Set((data as AdminBooking[]).flatMap((b) => [b.seeker_id, b.crew_id]).filter(Boolean) as string[])];
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+        if (profiles) { const map: Record<string, string> = {}; profiles.forEach(p => { map[p.user_id] = p.full_name; }); setProfilesMap(prev => ({ ...prev, ...map })); }
+      }
+    }
+    setLoadingBookings(false);
+  };
+
 
   const fetchCancellations = async () => {
     setLoadingCancellations(true);
