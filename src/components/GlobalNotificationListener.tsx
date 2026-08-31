@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { showAppNotificationOnce, isNativeApp } from "@/lib/appNotifications";
+import { showAppNotificationOnce } from "@/lib/appNotifications";
 import { initPushNotifications } from "@/lib/pushNotifications";
 import { playNotificationSound } from "@/lib/notificationSound";
 import { toast } from "sonner";
@@ -45,22 +45,9 @@ const GlobalNotificationListener = () => {
           showAppNotificationOnce(`notif-${n.id}`, n.title, n.message, "/dashboard");
         },
       )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          const m = payload.new as { id: string; sender_id: string; content: string };
-          if (m.sender_id === user.id) return;
-          // Chat is already visible in-app; alert the OS only when the app is in background.
-          if (!isNativeApp() && !document.hidden) return;
-          showAppNotificationOnce(
-            `msg-${m.id}`,
-            t("newMessage"),
-            (m.content || "").slice(0, 120),
-            "/dashboard",
-          );
-        },
-      )
+      // Chat messages now create a notifications row via a database trigger,
+      // so they arrive through the stream above (and as a real push alert).
+
       .subscribe();
 
     return () => {

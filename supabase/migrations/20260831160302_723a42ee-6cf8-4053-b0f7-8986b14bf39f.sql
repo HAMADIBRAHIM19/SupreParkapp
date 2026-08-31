@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.notify_new_chat_message() FROM anon, authenticated, PUBLIC;
