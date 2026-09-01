@@ -150,6 +150,36 @@ const Admin = () => {
       .map((b) => ({ booking: b, cancellation: cancellationMap.get(b.id) || null }));
   }, [bookings, cancellations]);
 
+  const orderStatusLabel = (status: string) => {
+    switch (status) {
+      case "pending": return t("orderStatusActive");
+      case "approved": return t("orderStatusAccepted");
+      case "cancelled": return t("orderStatusCancelled");
+      case "completed": return t("orderStatusCompleted");
+      default: return t(status) || status;
+    }
+  };
+
+  const orderStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending": return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">{t("orderStatusActive")}</Badge>;
+      case "approved": return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300">{t("orderStatusAccepted")}</Badge>;
+      case "cancelled": return <Badge variant="destructive">{t("orderStatusCancelled")}</Badge>;
+      case "completed": return <Badge variant="default">{t("orderStatusCompleted")}</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const filteredOrders = useMemo(() => {
+    return bookings.filter((b) => {
+      if (orderStatusFilter === "all") return true;
+      if (orderStatusFilter === "active") return b.status === "pending";
+      if (orderStatusFilter === "accepted") return b.status === "approved" || b.status === "completed";
+      if (orderStatusFilter === "cancelled") return b.status === "cancelled";
+      return true;
+    });
+  }, [bookings, orderStatusFilter]);
+
 
 
 
