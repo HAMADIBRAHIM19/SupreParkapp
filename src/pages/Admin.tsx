@@ -150,16 +150,6 @@ const Admin = () => {
       .map((b) => ({ booking: b, cancellation: cancellationMap.get(b.id) || null }));
   }, [bookings, cancellations]);
 
-  const orderStatusLabel = (status: string) => {
-    switch (status) {
-      case "pending": return t("orderStatusActive");
-      case "approved": return t("orderStatusAccepted");
-      case "cancelled": return t("orderStatusCancelled");
-      case "completed": return t("orderStatusCompleted");
-      default: return t(status) || status;
-    }
-  };
-
   const orderStatusBadge = (status: string) => {
     switch (status) {
       case "pending": return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">{t("orderStatusActive")}</Badge>;
