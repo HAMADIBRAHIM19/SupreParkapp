@@ -123,13 +123,27 @@ const CrewDashboard = ({ bookings, loading, onRefresh, profileName }: CrewDashbo
   const handleAccept = async () => {
     if (!acceptingBookingId || !crewVehiclePlate.trim()) { toast({ title: t("error"), variant: "destructive" }); return; }
     setAccepting(true);
-    const { error } = await supabase.from("bookings").update({ crew_id: user?.id, status: "approved" as BookingStatus, crew_vehicle_name: crewVehicleName.trim() || null, crew_vehicle_plate: crewVehiclePlate.trim() }).eq("id", acceptingBookingId);
+    // Guard against a race: only accept if the request is still pending and unassigned
+    const { data, error } = await supabase
+      .from("bookings")
+      .update({ crew_id: user?.id, status: "approved" as BookingStatus, crew_vehicle_name: crewVehicleName.trim() || null, crew_vehicle_plate: crewVehiclePlate.trim() })
+      .eq("id", acceptingBookingId)
+      .is("crew_id", null)
+      .eq("status", "pending")
+      .select("id");
     setAccepting(false);
     if (error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); return; }
+    if (!data || data.length === 0) {
+      toast({ title: t("requestAlreadyTaken"), description: t("requestAlreadyTakenDesc"), variant: "destructive" });
+      setAcceptDialogOpen(false);
+      onRefresh();
+      return;
+    }
     toast({ title: t("success") });
     setAcceptDialogOpen(false);
     onRefresh();
   };
+
 
   const openUnableDialog = (booking: Booking) => { setUnableBooking(booking); setUnableReason(""); setUnableNote(""); };
 
