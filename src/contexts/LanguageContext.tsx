@@ -717,7 +717,23 @@ const translations = {
     payRefundPending: "Refund in progress",
     notPaidYet: "Not paid",
 
-
+    // Orders / requests
+    ordersTab: "Seeker requests",
+    orderStatus: "Request status",
+    orderStatusActive: "Active",
+    orderStatusAccepted: "Accepted",
+    orderStatusCancelled: "Cancelled",
+    orderStatusCompleted: "Completed",
+    orderStatusFilterAll: "All",
+    orderStatusFilterActive: "Active",
+    orderStatusFilterAccepted: "Accepted",
+    orderStatusFilterCancelled: "Cancelled",
+    requestIdLabel: "Request ID",
+    createdAtLabel: "Request date",
+    acceptedAtLabel: "Accepted date",
+    cancelledAtLabel: "Cancelled date",
+    eventDateLabel: "Accepted/Cancelled date",
+    noOrders: "No requests",
 
     // Crew Dashboard
     walletBalance: "Wallet Balance",
