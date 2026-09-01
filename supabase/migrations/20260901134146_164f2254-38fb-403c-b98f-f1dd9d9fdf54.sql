@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.notify_refund_status_change() FROM anon, authenticated, PUBLIC;
