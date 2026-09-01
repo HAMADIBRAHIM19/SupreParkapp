@@ -316,6 +316,65 @@ const Admin = () => {
           </TabsList>
 
 
+          <TabsContent value="orders">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("ordersTab")}</CardTitle></CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {(["all", "active", "accepted", "cancelled"] as const).map((f) => (
+                    <Button
+                      key={f}
+                      variant={orderStatusFilter === f ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setOrderStatusFilter(f)}
+                    >
+                      {t(f === "all" ? "orderStatusFilterAll" : f === "active" ? "orderStatusFilterActive" : f === "accepted" ? "orderStatusFilterAccepted" : "orderStatusFilterCancelled")}
+                    </Button>
+                  ))}
+                </div>
+                {loadingBookings ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : filteredOrders.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noOrders")}</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("requestIdLabel")}</TableHead>
+                          <TableHead>{t("seekerLabel")}</TableHead>
+                          <TableHead>{t("location")}</TableHead>
+                          <TableHead>{t("amountPaidLabel")}</TableHead>
+                          <TableHead>{t("orderStatus")}</TableHead>
+                          <TableHead>{t("createdAtLabel")}</TableHead>
+                          <TableHead>{t("eventDateLabel")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredOrders.map((b) => {
+                          const eventDate = b.status === "cancelled" ? b.cancelled_at : (b.status === "approved" || b.status === "completed" ? b.accepted_at : null);
+                          return (
+                            <TableRow key={b.id}>
+                              <TableCell className="font-mono text-xs whitespace-nowrap">{b.id.slice(0, 8)}</TableCell>
+                              <TableCell className="font-medium whitespace-nowrap">{profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}</TableCell>
+                              <TableCell className="max-w-[220px] truncate" title={b.location}>{b.location}</TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : "—"}
+                              </TableCell>
+                              <TableCell>{orderStatusBadge(b.status)}</TableCell>
+                              <TableCell className="text-xs whitespace-nowrap">{b.created_at ? fmtDateTime(b.created_at) : "—"}</TableCell>
+                              <TableCell className="text-xs whitespace-nowrap">{eventDate ? fmtDateTime(eventDate) : "—"}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="bookings">
             <Card>
               <CardHeader><CardTitle className="text-lg">{t("bookingsLog")}</CardTitle></CardHeader>
