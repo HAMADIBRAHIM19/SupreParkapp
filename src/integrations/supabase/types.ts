@@ -84,9 +84,11 @@ export type Database = {
       }
       bookings: {
         Row: {
+          accepted_at: string | null
           amount_paid: number | null
           cancellation_reason: string | null
           cancellation_reason_note: string | null
+          cancelled_at: string | null
           created_at: string
           crew_id: string | null
           crew_vehicle_name: string | null
@@ -107,9 +109,11 @@ export type Database = {
           vehicle_plate: string
         }
         Insert: {
+          accepted_at?: string | null
           amount_paid?: number | null
           cancellation_reason?: string | null
           cancellation_reason_note?: string | null
+          cancelled_at?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null
@@ -130,9 +134,11 @@ export type Database = {
           vehicle_plate: string
         }
         Update: {
+          accepted_at?: string | null
           amount_paid?: number | null
           cancellation_reason?: string | null
           cancellation_reason_note?: string | null
+          cancelled_at?: string | null
           created_at?: string
           crew_id?: string | null
           crew_vehicle_name?: string | null

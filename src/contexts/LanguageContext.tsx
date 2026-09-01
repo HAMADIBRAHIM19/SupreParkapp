@@ -237,7 +237,23 @@ const translations = {
     payRefundPending: "استرداد قيد التنفيذ",
     notPaidYet: "لم يتم الدفع",
 
-
+    // Orders / requests
+    ordersTab: "طلبات طالب الموقف",
+    orderStatus: "حالة الطلب",
+    orderStatusActive: "نشط",
+    orderStatusAccepted: "مقبول",
+    orderStatusCancelled: "ملغى",
+    orderStatusCompleted: "مكتمل",
+    orderStatusFilterAll: "الكل",
+    orderStatusFilterActive: "نشط",
+    orderStatusFilterAccepted: "مقبول",
+    orderStatusFilterCancelled: "ملغى",
+    requestIdLabel: "رقم الطلب",
+    createdAtLabel: "تاريخ الطلب",
+    acceptedAtLabel: "تاريخ القبول",
+    cancelledAtLabel: "تاريخ الإلغاء",
+    eventDateLabel: "تاريخ القبول/الإلغاء",
+    noOrders: "لا توجد طلبات",
 
     // Crew Dashboard
     walletBalance: "رصيد المحفظة",
@@ -701,7 +717,23 @@ const translations = {
     payRefundPending: "Refund in progress",
     notPaidYet: "Not paid",
 
-
+    // Orders / requests
+    ordersTab: "Seeker requests",
+    orderStatus: "Request status",
+    orderStatusActive: "Active",
+    orderStatusAccepted: "Accepted",
+    orderStatusCancelled: "Cancelled",
+    orderStatusCompleted: "Completed",
+    orderStatusFilterAll: "All",
+    orderStatusFilterActive: "Active",
+    orderStatusFilterAccepted: "Accepted",
+    orderStatusFilterCancelled: "Cancelled",
+    requestIdLabel: "Request ID",
+    createdAtLabel: "Request date",
+    acceptedAtLabel: "Accepted date",
+    cancelledAtLabel: "Cancelled date",
+    eventDateLabel: "Accepted/Cancelled date",
+    noOrders: "No requests",
 
     // Crew Dashboard
     walletBalance: "Wallet Balance",

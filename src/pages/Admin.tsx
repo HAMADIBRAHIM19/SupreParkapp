@@ -32,6 +32,7 @@ interface AdminBooking {
   id: string; seeker_id: string; crew_id: string | null; location: string; status: string;
   payment_status: string; amount_paid: number | null; currency: string | null; paid_at: string | null;
   cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string; updated_at: string;
+  accepted_at: string | null; cancelled_at: string | null;
   vehicle_plate: string | null;
 }
 
@@ -73,6 +74,7 @@ const Admin = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [userFilter, setUserFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "seeker" | "crew">("all");
+  const [orderStatusFilter, setOrderStatusFilter] = useState<"all" | "active" | "accepted" | "cancelled">("all");
 
 
 
@@ -101,7 +103,7 @@ const Admin = () => {
     setLoadingBookings(true);
     const { data } = await (supabase as any)
       .from("bookings")
-      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, updated_at, vehicle_plate")
+      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, updated_at, accepted_at, cancelled_at, vehicle_plate")
       .order("created_at", { ascending: false })
       .limit(200);
     if (data) {
@@ -147,6 +149,26 @@ const Admin = () => {
       .filter((b) => b.status === "cancelled")
       .map((b) => ({ booking: b, cancellation: cancellationMap.get(b.id) || null }));
   }, [bookings, cancellations]);
+
+  const orderStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending": return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">{t("orderStatusActive")}</Badge>;
+      case "approved": return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300">{t("orderStatusAccepted")}</Badge>;
+      case "cancelled": return <Badge variant="destructive">{t("orderStatusCancelled")}</Badge>;
+      case "completed": return <Badge variant="default">{t("orderStatusCompleted")}</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const filteredOrders = useMemo(() => {
+    return bookings.filter((b) => {
+      if (orderStatusFilter === "all") return true;
+      if (orderStatusFilter === "active") return b.status === "pending";
+      if (orderStatusFilter === "accepted") return b.status === "approved" || b.status === "completed";
+      if (orderStatusFilter === "cancelled") return b.status === "cancelled";
+      return true;
+    });
+  }, [bookings, orderStatusFilter]);
 
 
 
@@ -278,10 +300,73 @@ const Admin = () => {
           <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
             <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancelledBookings.length})</TabsTrigger>
+            <TabsTrigger value="orders">{t("ordersTab")} ({filteredOrders.length})</TabsTrigger>
             <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
             <TabsTrigger value="users"><Users className="w-3.5 h-3.5 me-1" />{t("usersTab")} ({users.length})</TabsTrigger>
           </TabsList>
 
+
+          <TabsContent value="orders">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("ordersTab")}</CardTitle></CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {(["all", "active", "accepted", "cancelled"] as const).map((f) => (
+                    <Button
+                      key={f}
+                      variant={orderStatusFilter === f ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setOrderStatusFilter(f)}
+                    >
+                      {t(f === "all" ? "orderStatusFilterAll" : f === "active" ? "orderStatusFilterActive" : f === "accepted" ? "orderStatusFilterAccepted" : "orderStatusFilterCancelled")}
+                    </Button>
+                  ))}
+                </div>
+                {loadingBookings ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : filteredOrders.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noOrders")}</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("requestIdLabel")}</TableHead>
+                          <TableHead>{t("seekerLabel")}</TableHead>
+                          <TableHead>{t("location")}</TableHead>
+                          <TableHead>{t("amountPaidLabel")}</TableHead>
+                          <TableHead>{t("orderStatus")}</TableHead>
+                          <TableHead>{t("createdAtLabel")}</TableHead>
+                          <TableHead>{t("eventDateLabel")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredOrders.map((b) => {
+                          const cancellation = cancellations.find((c) => c.booking_id === b.id);
+                          const eventDate = b.status === "cancelled"
+                            ? (b.cancelled_at || cancellation?.created_at)
+                            : (b.status === "approved" || b.status === "completed" ? b.accepted_at : null);
+                          return (
+                            <TableRow key={b.id}>
+                              <TableCell className="font-mono text-xs whitespace-nowrap">{b.id.slice(0, 8)}</TableCell>
+                              <TableCell className="font-medium whitespace-nowrap">{profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}</TableCell>
+                              <TableCell className="max-w-[220px] truncate" title={b.location}>{b.location}</TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : "—"}
+                              </TableCell>
+                              <TableCell>{orderStatusBadge(b.status)}</TableCell>
+                              <TableCell className="text-xs whitespace-nowrap">{b.created_at ? fmtDateTime(b.created_at) : "—"}</TableCell>
+                              <TableCell className="text-xs whitespace-nowrap">{eventDate ? fmtDateTime(eventDate) : "—"}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="bookings">
             <Card>

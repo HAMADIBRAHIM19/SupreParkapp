@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.set_booking_accepted_at() FROM anon, authenticated, public;
