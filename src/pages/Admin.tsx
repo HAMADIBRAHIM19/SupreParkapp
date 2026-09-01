@@ -364,7 +364,7 @@ const Admin = () => {
                           const cancelDate = c ? c.created_at : b.updated_at;
                           const reasonCode = c?.reason_code ?? b.cancellation_reason;
                           const reasonNote = c?.reason_note ?? b.cancellation_reason_note;
-                          const cancelledBy = c ? t("cancelledByCrew") : t("cancelledBySeeker");
+                          const cancelledBy = c ? t("cancelledByCrewLabel") : t("cancelledBySeekerLabel");
                           return (
                             <TableRow key={b.id}>
                               <TableCell className="font-medium whitespace-nowrap">{profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}</TableCell>
