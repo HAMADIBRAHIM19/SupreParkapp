@@ -75,6 +75,8 @@ const Admin = () => {
   const [userFilter, setUserFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "seeker" | "crew">("all");
   const [orderStatusFilter, setOrderStatusFilter] = useState<"all" | "active" | "accepted" | "cancelled">("all");
+  const [trackingFilter, setTrackingFilter] = useState("");
+
 
 
 
@@ -169,6 +171,72 @@ const Admin = () => {
       return true;
     });
   }, [bookings, orderStatusFilter]);
+
+  const trackedOrders = useMemo(() => {
+    const term = trackingFilter.trim().toLowerCase();
+    return bookings.filter((b) => {
+      if (!term) return true;
+      const seekerName = (profilesMap[b.seeker_id] || "").toLowerCase();
+      const crewName = (b.crew_id ? profilesMap[b.crew_id] || "" : "").toLowerCase();
+      return (
+        b.id.toLowerCase().includes(term) ||
+        b.location.toLowerCase().includes(term) ||
+        seekerName.includes(term) ||
+        crewName.includes(term)
+      );
+    });
+  }, [bookings, trackingFilter, profilesMap]);
+
+  const buildTimeline = (b: AdminBooking) => {
+    const cancellation = cancellations.find((c) => c.booking_id === b.id);
+    const steps: { label: string; date: string | null; detail?: string; done: boolean }[] = [
+      { label: t("stepCreated"), date: b.created_at, done: true },
+      {
+        label: t("stepPaid"),
+        date: b.paid_at,
+        done: b.payment_status === "paid" || b.payment_status === "refunded" || b.payment_status === "refund_pending",
+        detail: b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : undefined,
+      },
+      {
+        label: t("stepAccepted"),
+        date: b.accepted_at,
+        done: !!b.crew_id,
+        detail: b.crew_id ? (profilesMap[b.crew_id] || b.crew_id.slice(0, 8)) : t("trackingNoCrew"),
+      },
+    ];
+
+    if (b.status === "cancelled") {
+      const reasonCode = cancellation?.reason_code ?? b.cancellation_reason;
+      const reasonNote = cancellation?.reason_note ?? b.cancellation_reason_note;
+      steps.push({
+        label: t("stepCancelled"),
+        date: b.cancelled_at || cancellation?.created_at || b.updated_at,
+        done: true,
+        detail: [
+          cancellation ? t("cancelledByCrewLabel") : t("cancelledBySeekerLabel"),
+          reasonCode ? t(`reason_${reasonCode}` as any) : null,
+          reasonNote || null,
+        ].filter(Boolean).join(" — "),
+      });
+      if (b.payment_status === "refunded" || b.payment_status === "refund_pending") {
+        steps.push({
+          label: t("stepRefunded"),
+          date: b.updated_at,
+          done: b.payment_status === "refunded",
+          detail: b.payment_status === "refunded" ? t("payRefunded") : t("payRefundPending"),
+        });
+      }
+    } else {
+      steps.push({
+        label: t("stepCompleted"),
+        date: b.status === "completed" ? b.updated_at : null,
+        done: b.status === "completed",
+      });
+    }
+
+    return steps;
+  };
+
 
 
 
@@ -301,6 +369,8 @@ const Admin = () => {
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
             <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancelledBookings.length})</TabsTrigger>
             <TabsTrigger value="orders">{t("ordersTab")} ({filteredOrders.length})</TabsTrigger>
+            <TabsTrigger value="tracking">{t("trackingTab")} ({trackedOrders.length})</TabsTrigger>
+
             <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
             <TabsTrigger value="users"><Users className="w-3.5 h-3.5 me-1" />{t("usersTab")} ({users.length})</TabsTrigger>
           </TabsList>
@@ -368,7 +438,61 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="tracking">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("trackingTitle")}</CardTitle></CardHeader>
+              <CardContent>
+                <Input
+                  placeholder={t("trackingSearchPlaceholder")}
+                  value={trackingFilter}
+                  onChange={(e) => setTrackingFilter(e.target.value)}
+                  className="mb-4"
+                />
+                {loadingBookings || loadingCancellations ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-24 w-full" />)}</div>
+                ) : trackedOrders.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("trackingNoResults")}</p>
+                ) : (
+                  <div className="space-y-4">
+                    {trackedOrders.map((b) => (
+                      <div key={b.id} className="border rounded-lg p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                          <div className="min-w-0">
+                            <p className="font-mono text-xs text-muted-foreground">#{b.id.slice(0, 8)}</p>
+                            <p className="font-semibold text-sm truncate max-w-[320px]" title={b.location}>{b.location}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {t("seekerLabel")}: {profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}
+                              {" · "}
+                              {t("trackingCrewName")}: {b.crew_id ? (profilesMap[b.crew_id] || b.crew_id.slice(0, 8)) : "—"}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {paymentBadge(b.payment_status)}
+                            {orderStatusBadge(b.status)}
+                          </div>
+                        </div>
+                        <ol className="relative border-s border-border ms-2 space-y-4">
+                          {buildTimeline(b).map((step, idx) => (
+                            <li key={idx} className="ms-4">
+                              <span className={`absolute w-2.5 h-2.5 rounded-full mt-1.5 -start-[5px] ${step.done ? "bg-primary" : "bg-muted-foreground/40"}`} />
+                              <p className={`text-sm ${step.done ? "font-medium" : "text-muted-foreground"}`}>{step.label}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {step.date ? fmtDateTime(step.date) : t("stepPendingLabel")}
+                                {step.detail ? ` · ${step.detail}` : ""}
+                              </p>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="bookings">
+
             <Card>
               <CardHeader><CardTitle className="text-lg">{t("bookingsLog")}</CardTitle></CardHeader>
               <CardContent>

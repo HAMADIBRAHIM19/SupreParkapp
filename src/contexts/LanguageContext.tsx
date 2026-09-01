@@ -255,6 +255,22 @@ const translations = {
     eventDateLabel: "تاريخ القبول/الإلغاء",
     noOrders: "لا توجد طلبات",
 
+    // Admin order lifecycle tracking
+    trackingTab: "تتبع الطلبات",
+    trackingTitle: "تتبع دورة حياة الطلب",
+    trackingSearchPlaceholder: "ابحث برقم الطلب أو الموقع أو اسم طالب الموقف أو الطاقم",
+    trackingNoResults: "لا توجد طلبات مطابقة",
+    trackingCrewName: "اسم فرد الطاقم",
+    trackingNoCrew: "لم يُقبل من أي فرد طاقم",
+    stepCreated: "إنشاء الطلب",
+    stepPaid: "إتمام الدفع",
+    stepAccepted: "قبول الطلب من الطاقم",
+    stepCompleted: "إتمام الطلب",
+    stepCancelled: "إلغاء الطلب",
+    stepRefunded: "استرداد المبلغ",
+    stepPendingLabel: "بانتظار التنفيذ",
+
+
     // Crew Dashboard
     walletBalance: "رصيد المحفظة",
     withdraw: "سحب",
@@ -737,6 +753,22 @@ const translations = {
     cancelledAtLabel: "Cancelled date",
     eventDateLabel: "Accepted/Cancelled date",
     noOrders: "No requests",
+
+    // Admin order lifecycle tracking
+    trackingTab: "Order tracking",
+    trackingTitle: "Order lifecycle tracking",
+    trackingSearchPlaceholder: "Search by request ID, location, spot requester or crew name",
+    trackingNoResults: "No matching requests",
+    trackingCrewName: "Crew member",
+    trackingNoCrew: "Not accepted by any crew member",
+    stepCreated: "Request created",
+    stepPaid: "Payment completed",
+    stepAccepted: "Accepted by crew",
+    stepCompleted: "Request completed",
+    stepCancelled: "Request cancelled",
+    stepRefunded: "Amount refunded",
+    stepPendingLabel: "Pending",
+
 
     // Crew Dashboard
     walletBalance: "Wallet Balance",
