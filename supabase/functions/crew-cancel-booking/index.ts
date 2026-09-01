@@ -150,14 +150,25 @@ serve(async (req) => {
         ? " جاري استرداد المبلغ."
         : "";
 
-    await admin.from("notifications").insert({
-      user_id: booking.seeker_id,
-      booking_id: booking.id,
-      title: "تعذّر توفير موقف",
-      message: `اعتذر الطاقم عن طلبك في ${booking.location ?? ""} — السبب: ${
-        REASON_AR[reasonCode]
-      }${reasonNote ? ` (${reasonNote})` : ""}.${refundLine}`,
-    });
+    await admin.from("notifications").insert([
+      {
+        user_id: booking.seeker_id,
+        booking_id: booking.id,
+        title: "تعذّر توفير موقف",
+        message: `اعتذر الطاقم عن طلبك في ${booking.location ?? ""} — السبب: ${
+          REASON_AR[reasonCode]
+        }${reasonNote ? ` (${reasonNote})` : ""}.${refundLine}`,
+      },
+      {
+        user_id: user.id,
+        booking_id: booking.id,
+        title: "تم إلغاء الطلب",
+        message: `تم تأكيد إلغاء الطلب في ${booking.location ?? ""} — السبب: ${
+          REASON_AR[reasonCode]
+        }${reasonNote ? ` (${reasonNote})` : ""}.${refundLine}`,
+      },
+    ]);
+
 
     return json({ success: true, refundStatus }, 200);
   } catch (error) {
