@@ -65,6 +65,18 @@ const Dashboard = () => {
     return () => { supabase.removeChannel(channel); };
   }, [user]);
 
+  // Polling fallback: when another crew accepts a request, row-level security hides
+  // that booking from this crew, so no realtime event arrives — refetch periodically
+  // so requests taken by someone else drop out of the available list.
+  useEffect(() => {
+    if (!user) return;
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "visible") fetchBookings();
+    }, 15000);
+    return () => window.clearInterval(id);
+  }, [user]);
+
+
   // Coming back from a successful payment: verify + refresh right away
   useEffect(() => {
     const paidBookingId = (location.state as { paidBookingId?: string } | null)?.paidBookingId;
