@@ -31,7 +31,7 @@ interface BookingCancellation {
 interface AdminBooking {
   id: string; seeker_id: string; crew_id: string | null; location: string; status: string;
   payment_status: string; amount_paid: number | null; currency: string | null; paid_at: string | null;
-  cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string;
+  cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string; updated_at: string;
   vehicle_plate: string | null;
 }
 
@@ -101,7 +101,7 @@ const Admin = () => {
     setLoadingBookings(true);
     const { data } = await (supabase as any)
       .from("bookings")
-      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, vehicle_plate")
+      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, updated_at, vehicle_plate")
       .order("created_at", { ascending: false })
       .limit(200);
     if (data) {
@@ -140,6 +140,13 @@ const Admin = () => {
       );
     });
   }, [users, userFilter, typeFilter]);
+
+  const cancelledBookings = useMemo(() => {
+    const cancellationMap = new Map(cancellations.map((c) => [c.booking_id, c]));
+    return bookings
+      .filter((b) => b.status === "cancelled")
+      .map((b) => ({ booking: b, cancellation: cancellationMap.get(b.id) || null }));
+  }, [bookings, cancellations]);
 
 
 
@@ -268,9 +275,9 @@ const Admin = () => {
 
         <Tabs defaultValue="withdrawals" className="w-full">
           <TabsList className="mb-4 flex-wrap h-auto">
-            <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
+          <TabsTrigger value="withdrawals">{t("withdrawalRequestsTitle")}</TabsTrigger>
             <TabsTrigger value="support">{t("supportTickets")} {tickets.filter(t => t.status === "open").length > 0 && `(${tickets.filter(t => t.status === "open").length})`}</TabsTrigger>
-            <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancellations.length})</TabsTrigger>
+            <TabsTrigger value="cancellations">{t("cancellationsLog")} ({cancelledBookings.length})</TabsTrigger>
             <TabsTrigger value="bookings">{t("bookingsLog")} ({bookings.length})</TabsTrigger>
             <TabsTrigger value="users"><Users className="w-3.5 h-3.5 me-1" />{t("usersTab")} ({users.length})</TabsTrigger>
           </TabsList>
@@ -334,26 +341,53 @@ const Admin = () => {
             <Card>
               <CardHeader><CardTitle className="text-lg">{t("cancellationsLog")}</CardTitle></CardHeader>
               <CardContent>
-                {loadingCancellations ? (
-                  <p className="text-muted-foreground text-sm">...</p>
-                ) : cancellations.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center py-8">{t("noCancellations")}</p>
+                {loadingCancellations || loadingBookings ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : cancelledBookings.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("noCancelledBookings")}</p>
                 ) : (
-                  <div className="space-y-3">
-                    {cancellations.map((c) => (
-                      <div key={c.id} className="p-3 rounded-lg border flex flex-wrap items-center justify-between gap-2">
-                        <div>
-                          <p className="font-medium text-sm">{profilesMap[c.crew_id] || c.crew_id.slice(0, 8)}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {t("reasonLabel")}: {t(`reason_${c.reason_code}` as any)}{c.reason_note ? ` — ${c.reason_note}` : ""}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString(lang === "ar" ? "ar-SA" : "en-US")}</p>
-                        </div>
-                        <Badge variant={c.refund_status === "refunded" ? "default" : "secondary"}>
-                          {c.refund_status === "refunded" ? t("refundRefunded") : t("refundPending")}
-                        </Badge>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("seekerLabel")}</TableHead>
+                          <TableHead>{t("location")}</TableHead>
+                          <TableHead>{t("amountPaidLabel")}</TableHead>
+                          <TableHead>{t("paymentStatusLabel")}</TableHead>
+                          <TableHead>{t("cancellationDateLabel")}</TableHead>
+                          <TableHead>{t("cancelledByLabel")}</TableHead>
+                          <TableHead>{t("reasonLabel")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {cancelledBookings.map(({ booking: b, cancellation: c }) => {
+                          const cancelDate = c ? c.created_at : b.updated_at;
+                          const reasonCode = c?.reason_code ?? b.cancellation_reason;
+                          const reasonNote = c?.reason_note ?? b.cancellation_reason_note;
+                          const cancelledBy = c ? t("cancelledByCrewLabel") : t("cancelledBySeekerLabel");
+                          return (
+                            <TableRow key={b.id}>
+                              <TableCell className="font-medium whitespace-nowrap">{profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}</TableCell>
+                              <TableCell className="max-w-[220px] truncate" title={b.location}>{b.location}</TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : "—"}
+                              </TableCell>
+                              <TableCell>{paymentBadge(b.payment_status)}</TableCell>
+                              <TableCell className="text-xs whitespace-nowrap">{cancelDate ? fmtDateTime(cancelDate) : "—"}</TableCell>
+                              <TableCell className="text-xs whitespace-nowrap">{cancelledBy}</TableCell>
+                              <TableCell className="text-xs max-w-[260px]">
+                                {reasonCode ? (
+                                  <span>
+                                    {t(`reason_${reasonCode}` as any)}
+                                    {reasonNote ? ` — ${reasonNote}` : ""}
+                                  </span>
+                                ) : <span className="text-muted-foreground">—</span>}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
                   </div>
                 )}
               </CardContent>
