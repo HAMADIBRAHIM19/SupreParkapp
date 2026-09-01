@@ -438,7 +438,61 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="tracking">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">{t("trackingTitle")}</CardTitle></CardHeader>
+              <CardContent>
+                <Input
+                  placeholder={t("trackingSearchPlaceholder")}
+                  value={trackingFilter}
+                  onChange={(e) => setTrackingFilter(e.target.value)}
+                  className="mb-4"
+                />
+                {loadingBookings || loadingCancellations ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-24 w-full" />)}</div>
+                ) : trackedOrders.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">{t("trackingNoResults")}</p>
+                ) : (
+                  <div className="space-y-4">
+                    {trackedOrders.map((b) => (
+                      <div key={b.id} className="border rounded-lg p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                          <div className="min-w-0">
+                            <p className="font-mono text-xs text-muted-foreground">#{b.id.slice(0, 8)}</p>
+                            <p className="font-semibold text-sm truncate max-w-[320px]" title={b.location}>{b.location}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {t("seekerLabel")}: {profilesMap[b.seeker_id] || b.seeker_id.slice(0, 8)}
+                              {" · "}
+                              {t("trackingCrewName")}: {b.crew_id ? (profilesMap[b.crew_id] || b.crew_id.slice(0, 8)) : "—"}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {paymentBadge(b.payment_status)}
+                            {orderStatusBadge(b.status)}
+                          </div>
+                        </div>
+                        <ol className="relative border-s border-border ms-2 space-y-4">
+                          {buildTimeline(b).map((step, idx) => (
+                            <li key={idx} className="ms-4">
+                              <span className={`absolute w-2.5 h-2.5 rounded-full mt-1.5 -start-[5px] ${step.done ? "bg-primary" : "bg-muted-foreground/40"}`} />
+                              <p className={`text-sm ${step.done ? "font-medium" : "text-muted-foreground"}`}>{step.label}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {step.date ? fmtDateTime(step.date) : t("stepPendingLabel")}
+                                {step.detail ? ` · ${step.detail}` : ""}
+                              </p>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="bookings">
+
             <Card>
               <CardHeader><CardTitle className="text-lg">{t("bookingsLog")}</CardTitle></CardHeader>
               <CardContent>
