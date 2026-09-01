@@ -172,6 +172,72 @@ const Admin = () => {
     });
   }, [bookings, orderStatusFilter]);
 
+  const trackedOrders = useMemo(() => {
+    const term = trackingFilter.trim().toLowerCase();
+    return bookings.filter((b) => {
+      if (!term) return true;
+      const seekerName = (profilesMap[b.seeker_id] || "").toLowerCase();
+      const crewName = (b.crew_id ? profilesMap[b.crew_id] || "" : "").toLowerCase();
+      return (
+        b.id.toLowerCase().includes(term) ||
+        b.location.toLowerCase().includes(term) ||
+        seekerName.includes(term) ||
+        crewName.includes(term)
+      );
+    });
+  }, [bookings, trackingFilter, profilesMap]);
+
+  const buildTimeline = (b: AdminBooking) => {
+    const cancellation = cancellations.find((c) => c.booking_id === b.id);
+    const steps: { label: string; date: string | null; detail?: string; done: boolean }[] = [
+      { label: t("stepCreated"), date: b.created_at, done: true },
+      {
+        label: t("stepPaid"),
+        date: b.paid_at,
+        done: b.payment_status === "paid" || b.payment_status === "refunded" || b.payment_status === "refund_pending",
+        detail: b.amount_paid != null ? `${b.amount_paid} ${b.currency || t("sar")}` : undefined,
+      },
+      {
+        label: t("stepAccepted"),
+        date: b.accepted_at,
+        done: !!b.crew_id,
+        detail: b.crew_id ? (profilesMap[b.crew_id] || b.crew_id.slice(0, 8)) : t("trackingNoCrew"),
+      },
+    ];
+
+    if (b.status === "cancelled") {
+      const reasonCode = cancellation?.reason_code ?? b.cancellation_reason;
+      const reasonNote = cancellation?.reason_note ?? b.cancellation_reason_note;
+      steps.push({
+        label: t("stepCancelled"),
+        date: b.cancelled_at || cancellation?.created_at || b.updated_at,
+        done: true,
+        detail: [
+          cancellation ? t("cancelledByCrewLabel") : t("cancelledBySeekerLabel"),
+          reasonCode ? t(`reason_${reasonCode}` as any) : null,
+          reasonNote || null,
+        ].filter(Boolean).join(" — "),
+      });
+      if (b.payment_status === "refunded" || b.payment_status === "refund_pending") {
+        steps.push({
+          label: t("stepRefunded"),
+          date: b.updated_at,
+          done: b.payment_status === "refunded",
+          detail: b.payment_status === "refunded" ? t("payRefunded") : t("payRefundPending"),
+        });
+      }
+    } else {
+      steps.push({
+        label: t("stepCompleted"),
+        date: b.status === "completed" ? b.updated_at : null,
+        done: b.status === "completed",
+      });
+    }
+
+    return steps;
+  };
+
+
 
 
 
