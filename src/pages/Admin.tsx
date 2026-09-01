@@ -31,7 +31,7 @@ interface BookingCancellation {
 interface AdminBooking {
   id: string; seeker_id: string; crew_id: string | null; location: string; status: string;
   payment_status: string; amount_paid: number | null; currency: string | null; paid_at: string | null;
-  cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string;
+  cancellation_reason: string | null; cancellation_reason_note: string | null; created_at: string; updated_at: string;
   vehicle_plate: string | null;
 }
 
