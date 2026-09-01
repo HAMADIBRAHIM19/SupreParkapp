@@ -151,12 +151,18 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
     }
   };
 
-  const handleCancel = async (id: string) => {
-    setCancellingId(id);
-    const { error } = await supabase.from("bookings").update({ status: "cancelled" as const }).eq("id", id);
+  const handleCancelRefund = async (booking: Booking) => {
+    setCancellingId(booking.id);
+    const { data, error } = await supabase.functions.invoke("seeker-cancel-booking", { body: { bookingId: booking.id } });
     setCancellingId(null);
-    if (error) { toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" }); } else { toast({ title: t("success") }); onBookingUpdated?.(); }
+    if (error || !data?.success) {
+      toast({ title: t("error"), description: t("errorOccurred"), variant: "destructive" });
+      return;
+    }
+    toast({ title: t("success"), description: t("cancelRefundDone") });
+    onBookingUpdated?.();
   };
+
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("confirmDelete"))) return;
