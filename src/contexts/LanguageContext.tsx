@@ -754,6 +754,22 @@ const translations = {
     eventDateLabel: "Accepted/Cancelled date",
     noOrders: "No requests",
 
+    // Admin order lifecycle tracking
+    trackingTab: "Order tracking",
+    trackingTitle: "Order lifecycle tracking",
+    trackingSearchPlaceholder: "Search by request ID, location, spot requester or crew name",
+    trackingNoResults: "No matching requests",
+    trackingCrewName: "Crew member",
+    trackingNoCrew: "Not accepted by any crew member",
+    stepCreated: "Request created",
+    stepPaid: "Payment completed",
+    stepAccepted: "Accepted by crew",
+    stepCompleted: "Request completed",
+    stepCancelled: "Request cancelled",
+    stepRefunded: "Amount refunded",
+    stepPendingLabel: "Pending",
+
+
     // Crew Dashboard
     walletBalance: "Wallet Balance",
     withdraw: "Withdraw",
