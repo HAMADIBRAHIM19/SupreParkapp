@@ -88,6 +88,7 @@ serve(async (req) => {
         status: "cancelled",
         payment_status: paymentStatus,
         cancellation_reason: "seeker_no_crew",
+        cancelled_at: new Date().toISOString(),
       })
       .eq("id", booking.id);
 
