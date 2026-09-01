@@ -237,7 +237,23 @@ const translations = {
     payRefundPending: "استرداد قيد التنفيذ",
     notPaidYet: "لم يتم الدفع",
 
-
+    // Orders / requests
+    ordersTab: "طلبات طالب الموقف",
+    orderStatus: "حالة الطلب",
+    orderStatusActive: "نشط",
+    orderStatusAccepted: "مقبول",
+    orderStatusCancelled: "ملغى",
+    orderStatusCompleted: "مكتمل",
+    orderStatusFilterAll: "الكل",
+    orderStatusFilterActive: "نشط",
+    orderStatusFilterAccepted: "مقبول",
+    orderStatusFilterCancelled: "ملغى",
+    requestIdLabel: "رقم الطلب",
+    createdAtLabel: "تاريخ الطلب",
+    acceptedAtLabel: "تاريخ القبول",
+    cancelledAtLabel: "تاريخ الإلغاء",
+    eventDateLabel: "تاريخ القبول/الإلغاء",
+    noOrders: "لا توجد طلبات",
 
     // Crew Dashboard
     walletBalance: "رصيد المحفظة",
