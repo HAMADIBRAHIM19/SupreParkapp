@@ -74,6 +74,7 @@ const Admin = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [userFilter, setUserFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "seeker" | "crew">("all");
+  const [orderStatusFilter, setOrderStatusFilter] = useState<"all" | "active" | "accepted" | "cancelled">("all");
 
 
 
