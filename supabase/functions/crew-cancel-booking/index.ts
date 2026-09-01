@@ -138,6 +138,7 @@ serve(async (req) => {
         payment_status: paymentStatus,
         cancellation_reason: reasonCode,
         cancellation_reason_note: reasonNote || null,
+        cancelled_at: new Date().toISOString(),
       })
       .eq("id", booking.id);
 
