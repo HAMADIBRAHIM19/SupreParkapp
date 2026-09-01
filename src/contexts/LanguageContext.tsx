@@ -755,6 +755,9 @@ const translations = {
     accepting: "Accepting...",
     confirmAccept: "Confirm Accept",
     noAvailable: "No available requests at the moment",
+    requestAlreadyTaken: "Request already accepted by another crew member",
+    requestAlreadyTakenDesc: "This request is no longer available; the list has been refreshed",
+
     noActive: "No tasks in progress",
     noCompleted: "No completed tasks",
     vehicle: "Vehicle",
