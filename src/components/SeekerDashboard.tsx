@@ -250,14 +250,29 @@ const BookingsTable = ({ bookings, loading, onBookingUpdated, onChat, onTrack, o
                       </>
                     )}
                     {booking.status === "pending" ? (
-                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1" disabled={cancellingId === booking.id} onClick={() => handleCancel(booking.id)}>
-                        <XCircle className="w-4 h-4" />{cancellingId === booking.id ? t("cancelling") : t("cancel")}
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1" disabled={cancellingId === booking.id}>
+                            <XCircle className="w-4 h-4" />{cancellingId === booking.id ? t("cancelling") : t("cancelRefund")}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent dir={dir}>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("cancelRefundTitle")}</AlertDialogTitle>
+                            <AlertDialogDescription>{t("cancelRefundDesc")}</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-row-reverse gap-2">
+                            <AlertDialogAction onClick={() => handleCancelRefund(booking)}>{t("cancelRefundConfirm")}</AlertDialogAction>
+                            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     ) : (
                       <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1" disabled={deletingId === booking.id} onClick={() => handleDelete(booking.id)}>
                         <Trash className="w-4 h-4" />{deletingId === booking.id ? t("deleting") : t("delete")}
                       </Button>
                     )}
+
                   </div>
                 </TableCell>
               </TableRow>
