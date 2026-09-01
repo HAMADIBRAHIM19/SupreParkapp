@@ -15,16 +15,24 @@ const CrewHeroSection = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .is("crew_id", null)
-      .eq("status", "pending")
-      .eq("payment_status", "paid")
-      .then(({ count }) => {
-        if (count !== null) setPendingCount(count);
-      });
+    const load = () => {
+      supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .is("crew_id", null)
+        .eq("status", "pending")
+        .eq("payment_status", "paid")
+        .then(({ count }) => {
+          if (count !== null) setPendingCount(count);
+        });
+    };
+    load();
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, 15000);
+    return () => window.clearInterval(id);
   }, [user]);
+
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">

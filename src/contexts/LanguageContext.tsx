@@ -272,6 +272,9 @@ const translations = {
     accepting: "جاري القبول...",
     confirmAccept: "تأكيد القبول",
     noAvailable: "لا توجد طلبات متاحة حالياً",
+    requestAlreadyTaken: "تم قبول الطلب من فرد طاقم آخر",
+    requestAlreadyTakenDesc: "لم يعد هذا الطلب متاحاً، تم تحديث القائمة",
+
     noActive: "لا توجد مهام قيد التنفيذ",
     noCompleted: "لا توجد مهام مكتملة",
     vehicle: "السيارة",
@@ -752,6 +755,9 @@ const translations = {
     accepting: "Accepting...",
     confirmAccept: "Confirm Accept",
     noAvailable: "No available requests at the moment",
+    requestAlreadyTaken: "Request already accepted by another crew member",
+    requestAlreadyTakenDesc: "This request is no longer available; the list has been refreshed",
+
     noActive: "No tasks in progress",
     noCompleted: "No completed tasks",
     vehicle: "Vehicle",
