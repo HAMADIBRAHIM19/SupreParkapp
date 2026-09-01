@@ -103,7 +103,7 @@ const Admin = () => {
     setLoadingBookings(true);
     const { data } = await (supabase as any)
       .from("bookings")
-      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, updated_at, vehicle_plate")
+      .select("id, seeker_id, crew_id, location, status, payment_status, amount_paid, currency, paid_at, cancellation_reason, cancellation_reason_note, created_at, updated_at, accepted_at, cancelled_at, vehicle_plate")
       .order("created_at", { ascending: false })
       .limit(200);
     if (data) {
