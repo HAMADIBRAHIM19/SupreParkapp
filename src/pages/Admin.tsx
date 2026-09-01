@@ -342,7 +342,10 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {filteredOrders.map((b) => {
-                          const eventDate = b.status === "cancelled" ? b.cancelled_at : (b.status === "approved" || b.status === "completed" ? b.accepted_at : null);
+                          const cancellation = cancellations.find((c) => c.booking_id === b.id);
+                          const eventDate = b.status === "cancelled"
+                            ? (b.cancelled_at || cancellation?.created_at)
+                            : (b.status === "approved" || b.status === "completed" ? b.accepted_at : null);
                           return (
                             <TableRow key={b.id}>
                               <TableCell className="font-mono text-xs whitespace-nowrap">{b.id.slice(0, 8)}</TableCell>
