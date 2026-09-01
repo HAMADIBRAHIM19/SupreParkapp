@@ -141,6 +141,13 @@ const Admin = () => {
     });
   }, [users, userFilter, typeFilter]);
 
+  const cancelledBookings = useMemo(() => {
+    const cancellationMap = new Map(cancellations.map((c) => [c.booking_id, c]));
+    return bookings
+      .filter((b) => b.status === "cancelled")
+      .map((b) => ({ booking: b, cancellation: cancellationMap.get(b.id) || null }));
+  }, [bookings, cancellations]);
+
 
 
 
